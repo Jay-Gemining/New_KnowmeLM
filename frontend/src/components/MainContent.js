@@ -4,15 +4,25 @@ const MainContent = ({ selectedNotebook, selectedSource, onUpdateNotebook }) => 
   const [chatInput, setChatInput] = useState('');
   const [chatMessages, setChatMessages] = useState([]);
   const messagesEndRef = useRef(null); // For scrolling to bottom
+  const chatMessagesRef = useRef(chatMessages); // Ref to keep track of messages for async updates
+
+  const [isAiResponding, setIsAiResponding] = useState(false);
+  const [chatError, setChatError] = useState(null);
 
   // Effect to load/clear chat history when selectedNotebook changes
   useEffect(() => {
     if (selectedNotebook && selectedNotebook.chatHistory) {
       setChatMessages(selectedNotebook.chatHistory);
     } else {
-      setChatMessages([]); // Clear messages if no notebook or no history
+      setChatMessages([]);
     }
+    setChatError(null); // Clear errors when notebook changes
   }, [selectedNotebook]);
+
+  // Keep chatMessagesRef updated with chatMessages state
+  useEffect(() => {
+    chatMessagesRef.current = chatMessages;
+  }, [chatMessages]);
 
   // Scroll to bottom of messages when new messages are added
   useEffect(() => {
@@ -23,25 +33,73 @@ const MainContent = ({ selectedNotebook, selectedSource, onUpdateNotebook }) => 
     setChatInput(event.target.value);
   };
 
-  const handleSendChatMessage = () => {
-    if (!chatInput.trim() || !selectedNotebook) return;
+  const handleSendChatMessage = async () => {
+    const currentMessageText = chatInput.trim();
+    if (!currentMessageText || !selectedNotebook) return;
 
-    const userMessage = { id: Date.now(), sender: 'user', text: chatInput.trim() };
-    // More sophisticated AI response would involve actual API call and context from selectedSource
-    const aiResponseText = selectedSource
-      ? `AI response for '${selectedSource.name}' in notebook '${selectedNotebook.title}' (placeholder): You asked about: '${chatInput.trim()}'`
-      : `AI response for notebook '${selectedNotebook.title}' (placeholder): You said: '${chatInput.trim()}'`;
-    const aiMessage = { id: Date.now() + 1, sender: 'ai', text: aiResponseText };
+    const newUserMessage = { id: Date.now(), sender: 'user', text: currentMessageText };
 
-    const newMessages = [...chatMessages, userMessage, aiMessage];
-    setChatMessages(newMessages);
-
-    // Persist chat history
-    if (onUpdateNotebook && selectedNotebook) {
-      onUpdateNotebook(selectedNotebook.id, { chatHistory: newMessages });
-    }
-
+    // Update UI immediately with user's message
+    setChatMessages(prevMessages => [...prevMessages, newUserMessage]);
     setChatInput('');
+    setIsAiResponding(true);
+    setChatError(null);
+
+    // Filter sources based on isSelectedForChat, then map to summaries
+    const summaries = selectedNotebook?.sources
+        ?.filter(s => s.isSelectedForChat === undefined ? true : s.isSelectedForChat) // Default to true if undefined
+        .map(s => s.summary) || [];
+
+    try {
+      const response = await fetch('http://localhost:5001/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: currentMessageText,
+          summaries: summaries,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: `Server error: ${response.status} ${response.statusText}` }));
+        throw new Error(errorData.error || `Server error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const aiMessage = { id: Date.now() + 1, sender: 'ai', text: data.reply };
+
+      setChatMessages(prevMessages => [...prevMessages, aiMessage]);
+
+      // Persist updated chat history including AI response
+      if (onUpdateNotebook && selectedNotebook) {
+        // chatMessagesRef.current should have the user message already because setChatMessages for user message was called.
+        // However, the state update for chatMessages might not be flushed yet for chatMessagesRef to pick it up
+        // if we directly use it here.
+        // So, it's safer to construct the new history based on the previous state + new messages.
+        const newHistoryForStorage = [...chatMessagesRef.current, aiMessage]; // Assumes ref updated after user msg + ai msg
+                                                                                // This might be tricky. Let's directly use the state update pattern
+                                                                                // by ensuring chatMessagesRef is updated after each setChatMessages call.
+                                                                                // Or, simpler: build the array explicitly.
+        const finalHistory = [...(chatMessagesRef.current || []), aiMessage]; // chatMessagesRef.current already includes newUserMessage due to useEffect
+        onUpdateNotebook(selectedNotebook.id, { chatHistory: finalHistory });
+      }
+
+    } catch (error) {
+      console.error('Error fetching AI chat response:', error);
+      const TerrorMessage = error.message || 'Failed to get response from AI.';
+      setChatError(TerrorMessage);
+      const errorAiMessage = { id: Date.now() + 1, sender: 'ai', text: `Error: ${TerrorMessage}` };
+      setChatMessages(prevMessages => [...prevMessages, errorAiMessage]);
+       // Persist history even if there's an error message from AI side
+      if (onUpdateNotebook && selectedNotebook) {
+        const finalHistoryWithError = [...(chatMessagesRef.current || []), errorAiMessage];
+        onUpdateNotebook(selectedNotebook.id, { chatHistory: finalHistoryWithError });
+      }
+    } finally {
+      setIsAiResponding(false);
+    }
   };
 
   const handleKeyPress = (event) => {
@@ -100,26 +158,29 @@ const MainContent = ({ selectedNotebook, selectedSource, onUpdateNotebook }) => 
           <div className="chat-messages">
             {chatMessages.map(msg => (
               <div key={msg.id} className={`chat-message ${msg.sender}`}>
-                {msg.text}
+                {/* Basic sanitization or use a library if HTML in responses is a concern */}
+                {msg.text.split('\n').map((line, index) => <span key={index}>{line}<br/></span>)}
               </div>
             ))}
             <div ref={messagesEndRef} /> {/* Element to scroll to */}
           </div>
+          {isAiResponding && <p style={{textAlign: 'center', fontStyle: 'italic', color: '#5f6368'}}>AI is thinking...</p>}
+          {chatError && <p style={{textAlign: 'center', color: 'red'}}>Error: {chatError}</p>}
           <div className="chat-input-area">
             <input
               type="text"
               value={chatInput}
               onChange={handleChatInputChange}
               onKeyPress={handleKeyPress} // Send on Enter
-              placeholder="Type your message here..."
-              disabled={!selectedNotebook} // Disable if no notebook selected
+              placeholder={selectedNotebook ? "Type your message here..." : "Select a notebook to chat"}
+              disabled={!selectedNotebook || isAiResponding}
             />
             <button
                 onClick={handleSendChatMessage}
                 className="primary"
-                disabled={!selectedNotebook || !chatInput.trim()}
+                disabled={!selectedNotebook || !chatInput.trim() || isAiResponding}
             >
-              Send
+              {isAiResponding ? "Sending..." : "Send"}
             </button>
           </div>
         </div>

@@ -11,18 +11,16 @@ load_dotenv()
 app = Flask(__name__)
 
 # Placeholder for OpenAI API key
-api_key = os.environ.get("OPENAI_API_KEY")
-base_url = os.environ.get("OPENAI_BASE_URL")
-if api_key:
-    openai.api_key = api_key
-    openai.api_base = base_url
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if OPENAI_API_KEY:
+    openai.api_key = OPENAI_API_KEY
 
 def summarize_text_with_ai(text):
     """
     Placeholder function to simulate AI summarization.
     Returns the first 500 characters of the text or a fixed message.
     """
-    if not api_key:
+    if not OPENAI_API_KEY:
         return "OpenAI API key not configured. Returning placeholder summary."
 
     # In a real implementation, you would call the OpenAI API here.
@@ -34,8 +32,8 @@ def summarize_text_with_ai(text):
     # )
     # return response.choices[0].text.strip()
 
-    # if len(text) > 500:
-    #     return text[:500] + "..."
+    if len(text) > 500:
+        return text[:500] + "..."
     return text
 
 @app.route('/summarize-youtube', methods=['POST'])
@@ -136,6 +134,78 @@ def summarize_text_file():
 @app.route('/')
 def hello_world():
     return 'Hello, World! Backend is running.'
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    data = request.get_json()
+    user_message = data.get('message')
+    source_summaries = data.get('summaries') # Expecting a list of strings
+
+    if not user_message:
+        return jsonify({'error': 'Message is required'}), 400
+
+    # source_summaries can be an empty list, which is acceptable.
+    # If it's None, it means the key wasn't provided, which might be an issue depending on client.
+    # For now, let's treat None as "no summaries provided".
+    if source_summaries is None:
+        # Default to empty list if not provided, to simplify placeholder logic
+        source_summaries = []
+
+    # Concatenate Summaries (if any)
+    context_text = ""
+    if source_summaries:
+        context_text = "\n\n---\n\n".join(source_summaries)
+        # print(f"Context being used for chat: {context_text[:500]}...") # For debugging
+
+    # Actual OpenAI API Call
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        # This check is redundant if OPENAI_API_KEY at the top is used, but good for safety
+        # Or if the global openai.api_key wasn't set for some reason.
+        return jsonify({'error': 'OpenAI API key is not configured on the server.'}), 500
+
+    # openai.api_key = api_key # This should already be set globally if OPENAI_API_KEY is defined
+
+    if not source_summaries: # Or if context_text is empty
+        messages = [
+            {
+                "role": "system",
+                "content": "You are a helpful assistant. You are being asked a question without any specific source material provided for context. Answer generally, but acknowledge that no specific sources were given for this query. Do not use any external knowledge beyond very general information if absolutely necessary, and prioritize stating that context is missing."
+            },
+            {
+                "role": "user",
+                "content": user_message
+            }
+        ]
+    else:
+        messages = [
+            {
+                "role": "system",
+                "content": "You are a helpful assistant. Your task is to answer questions based *only* on the provided source material. If the answer cannot be found in the sources, state that clearly. Do not use any external knowledge. Be concise and directly answer the question."
+            },
+            {
+                "role": "user",
+                "content": f"Here is the source material:\n\nBEGIN SOURCE MATERIAL\n{context_text}\nEND SOURCE MATERIAL\n\nMy question is: {user_message}"
+            }
+        ]
+
+    try:
+        # Ensure openai.api_key is set before this call, ideally once when app starts
+        if not openai.api_key: # Final check if it wasn't set globally
+             openai.api_key = api_key
+
+        completion = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=messages,
+            temperature=0.2,
+            max_tokens=1000
+        )
+        ai_response_text = completion.choices[0].message['content'].strip()
+    except Exception as e:
+        print(f"Error calling OpenAI API: {e}") # Log to server console
+        return jsonify({'error': f'Error communicating with OpenAI: {str(e)}'}), 500
+
+    return jsonify({'reply': ai_response_text})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)

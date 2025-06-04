@@ -9,8 +9,9 @@ const Sidebar = ({
     onSelectNotebook,
     onAddNotebook,
     onAddSourceToNotebook,
-    onSelectSource, // New prop
-    selectedSourceId  // New prop
+    onSelectSource,
+    selectedSourceId,
+    onToggleSourceChatSelection // New prop for toggling source chat selection
 }) => {
     const [showYoutubeSummarizer, setShowYoutubeSummarizer] = useState(false);
     const [showTextFileSummarizer, setShowTextFileSummarizer] = useState(false);
@@ -82,11 +83,24 @@ const Sidebar = ({
                             {selectedNotebook.sources.slice().reverse().map((source) => ( // Newest first
                                 <li
                                     key={source.id}
-                                    onClick={() => onSelectSource(source.id)}
-                                    className={source.id === selectedSourceId ? 'selected' : ''}
-                                    // style removed as it's now handled by .selected class in CSS
+                                    // onClick to select source for viewing can remain on the li
+                                    // className for selection for viewing can also remain
+                                    className={`${source.id === selectedSourceId ? 'selected' : ''}`}
+                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
                                 >
-                                    {source.type === 'youtube' ? '📺' : '📄'} {source.name.length > 30 ? source.name.substring(0,30) + '...' : source.name}
+                                    <span onClick={() => onSelectSource(source.id)} style={{ flexGrow: 1, cursor: 'pointer' }}>
+                                        {source.type === 'youtube' ? '📺' : '📄'} {source.name.length > 25 ? source.name.substring(0,25) + '...' : source.name}
+                                    </span>
+                                    <input
+                                        type="checkbox"
+                                        checked={source.isSelectedForChat === undefined ? true : source.isSelectedForChat} // Default to checked if undefined
+                                        onChange={(e) => {
+                                            onToggleSourceChatSelection(selectedNotebook.id, source.id, e.target.checked);
+                                        }}
+                                        onClick={(e) => e.stopPropagation()} // Prevent li's onClick when clicking checkbox
+                                        title="Include in chat context"
+                                        style={{ marginLeft: '10px', cursor: 'pointer', flexShrink: 0 }}
+                                    />
                                 </li>
                             ))}
                         </ul>

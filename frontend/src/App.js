@@ -11,11 +11,19 @@ function App() {
 
   // Load notebooks from localStorage on mount
   useEffect(() => {
-    const loadedNotebooks = getNotebooks();
-    setNotebooks(loadedNotebooks);
+    const loadedNotebooksFromStorage = getNotebooks();
+    const migratedNotebooks = loadedNotebooksFromStorage.map(notebook => ({
+        ...notebook,
+        sources: (notebook.sources || []).map(source => ({
+            ...source,
+            // Default to true if property is missing (for migration)
+            isSelectedForChat: source.isSelectedForChat === undefined ? true : source.isSelectedForChat
+        }))
+    }));
+    setNotebooks(migratedNotebooks);
     // Optionally, select the first notebook by default or the last selected one
-    if (loadedNotebooks.length > 0) {
-      // setSelectedNotebookId(loadedNotebooks[0].id);
+    if (migratedNotebooks.length > 0) {
+      // setSelectedNotebookId(migratedNotebooks[0].id);
     }
   }, []);
 
@@ -48,17 +56,33 @@ function App() {
   const handleAddSourceToNotebook = useCallback((notebookId, sourceData) => {
     const updatedNotebooks = notebooks.map(nb => {
       if (nb.id === notebookId) {
-        const newSource = { ...sourceData, id: Date.now() };
+        // Initialize new source with isSelectedForChat: true
+        const newSource = { ...sourceData, id: Date.now(), isSelectedForChat: true };
         return { ...nb, sources: [...(nb.sources || []), newSource] };
       }
       return nb;
     });
     setNotebooks(updatedNotebooks);
     saveNotebooksToStorage(updatedNotebooks);
-    // Optionally, select the new source
-    // const newSourceInArray = updatedNotebooks.find(nb => nb.id === notebookId)?.sources.find(s => s.id === sourceData.id);
-    // if(newSourceInArray) setSelectedSourceId(newSourceInArray.id);
+  }, [notebooks]);
 
+  const handleToggleSourceChatSelection = useCallback((notebookId, sourceId, isSelected) => {
+    const updatedNotebooks = notebooks.map(nb => {
+      if (nb.id === notebookId) {
+        return {
+          ...nb,
+          sources: (nb.sources || []).map(source => {
+            if (source.id === sourceId) {
+              return { ...source, isSelectedForChat: isSelected };
+            }
+            return source;
+          })
+        };
+      }
+      return nb;
+    });
+    setNotebooks(updatedNotebooks);
+    saveNotebooksToStorage(updatedNotebooks);
   }, [notebooks]);
 
   // Derived state for selected notebook and source (optional, can also be done in child components)
@@ -86,6 +110,7 @@ function App() {
         onAddSourceToNotebook={handleAddSourceToNotebook}
         onSelectSource={handleSelectSource}
         selectedSourceId={selectedSourceId}
+        onToggleSourceChatSelection={handleToggleSourceChatSelection} // Pass new handler
       />
       <MainContent
         selectedNotebook={selectedNotebook}
