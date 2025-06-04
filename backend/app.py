@@ -32,8 +32,6 @@ def summarize_text_with_ai(text):
     # )
     # return response.choices[0].text.strip()
 
-    if len(text) > 500:
-        return text[:500] + "..."
     return text
 
 @app.route('/summarize-youtube', methods=['POST'])
