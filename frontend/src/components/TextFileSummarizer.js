@@ -72,14 +72,14 @@ function TextFileSummarizer({ onSummaryComplete }) { // Accept onSummaryComplete
                         ref={fileInputRef}
                         accept=".txt"
                         onChange={handleFileChange}
-                        style={{ marginLeft: '10px', marginRight: '10px' }}
+                        style={{ display: 'block', width: '100%', marginBottom: '10px' }} // Adjusted style
                     />
-                    <button type="submit" disabled={isLoading || !selectedFile}>
-                        {isLoading ? 'Processing...' : 'Add to Notebook'}
+                    <button type="submit" disabled={isLoading || !selectedFile} className="secondary" style={{width: '100%'}}>
+                        {isLoading ? 'Processing...' : 'Add File Summary'}
                     </button>
                 </div>
             </form>
-            {isLoading && <p>Loading...</p>}
+            {isLoading && <p style={{marginTop: '10px', textAlign: 'center'}}>Loading...</p>}
             {error && <p style={{ color: 'red' }}>Error: {error}</p>}
             {/* Summary display removed */}
         </div>

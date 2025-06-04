@@ -63,14 +63,14 @@ function YoutubeSummarizer({ onSummaryComplete }) { // Accept onSummaryComplete 
                         onChange={(e) => setYoutubeUrl(e.target.value)}
                         placeholder="Enter YouTube URL"
                         required
-                        style={{ width: '300px', marginLeft: '10px', marginRight: '10px' }}
+                        style={{ width: '100%', marginBottom: '10px' }} // Adjusted style for better flow
                     />
-                    <button type="submit" disabled={isLoading}>
-                        {isLoading ? 'Processing...' : 'Add to Notebook'}
+                    <button type="submit" disabled={isLoading} className="secondary" style={{width: '100%'}}>
+                        {isLoading ? 'Processing...' : 'Add YouTube Summary'}
                     </button>
                 </div>
             </form>
-            {isLoading && <p>Loading...</p>}
+            {isLoading && <p style={{marginTop: '10px', textAlign: 'center'}}>Loading...</p>}
             {error && <p style={{ color: 'red' }}>Error: {error}</p>}
             {/* The summary itself is no longer displayed here */}
         </div>

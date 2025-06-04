@@ -1,38 +1,303 @@
-.App {
-  text-align: center;
+/* Global */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f4f6f8; /* Light background for the page */
+  color: #333;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+* {
+  box-sizing: border-box;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.app-container {
+  display: flex;
+  height: 100vh;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Sidebar Enhancements */
+.sidebar {
+  width: 320px; /* Slightly wider */
+  flex-shrink: 0; /* Prevent sidebar from shrinking */
+  border-right: 1px solid #e0e0e0; /* Softer border */
+  padding: 20px;
+  background-color: #ffffff; /* White sidebar */
+  overflow-y: auto;
+}
+
+.sidebar h2 { /* App Title / Notebooks heading */
+  font-size: 1.4em;
+  color: #1a73e8; /* Google-ish blue for heading */
+  margin-top: 0;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.sidebar h3 { /* For "Sources in..." heading */
+    font-size: 1.1em;
+    color: #5f6368; /* Grey heading for sources */
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.sidebar ul { /* Notebook/Source lists */
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 20px;
+}
+
+.sidebar li { /* General list item styling */
+  padding: 10px 15px; /* More padding */
+  border-bottom: none;
+  border-radius: 4px;
+  margin-bottom: 5px; /* Space between items */
+  font-size: 0.95em;
+  cursor: pointer;
+}
+
+.sidebar li.selected {
+  background-color: #e8f0fe; /* Lighter blue for selection */
+  color: #1967d2;
+  font-weight: 500;
+}
+
+.sidebar li:not(.selected):hover {
+  background-color: #f1f3f4; /* Subtle hover */
+}
+
+/* Styles for specific list items in Sidebar (from previous steps) */
+.notebook-list li { /* if specific needed, otherwise general .sidebar li applies */
+}
+.source-list li { /* if specific needed, otherwise general .sidebar li applies */
+}
+
+
+/* Button Standardization */
+button { /* Base button reset/style */
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9em;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 10px; /* Default margin */
+  border: 1px solid #dadce0;
+  background-color: #fff;
+  color: #3c4043;
+}
+button:hover {
+  background-color: #f1f3f4;
+  border-color: #c6c9cc;
+}
+
+button.primary {
+  background-color: #1a73e8; /* Google blue */
+  color: white;
+  border: none;
+  font-weight: 500;
+  padding: 10px 15px;
+}
+button.primary:hover {
+  background-color: #1765c2; /* Darker blue on hover */
+}
+
+button.secondary { /* Default button style is already secondary-like */
+  /* background-color: #f8f9fa;
+  color: #3c4043;
+  border: 1px solid #dadce0; */
+}
+button.secondary:hover {
+  /* background-color: #f1f3f4;
+  border-color: #c6c9cc; */
+}
+
+.sidebar .summarizer-toggle-buttons button { /* Specific to sidebar toggles */
+    display: block;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 8px;
+    background-color: #f8f9fa; /* Lighter than default secondary */
+}
+.sidebar .summarizer-toggle-buttons button:hover {
+    background-color: #e9ecef;
+}
+
+
+/* Main Content Enhancements */
+.main-content {
+  flex-grow: 1;
+  padding: 25px 30px; /* More padding */
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  background-color: #ffffff; /* White main area */
+}
+
+.content-above-chat {
+  /* Styles for the area holding notebook/source details */
+}
+
+.content-above-chat h2 { /* Notebook title in main content when no source selected */
+    font-size: 1.8em;
+    color: #202124;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+.content-above-chat p.placeholder-message-main { /* Placeholder messages in main content */
+    font-size: 1em;
+    color: #5f6368;
+    text-align: center;
+    margin-top: 30px;
+}
+
+
+/* Source Detail View (within .content-above-chat) */
+.source-detail-view {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  background-color: #fff; /* Already white from main-content, but can be specific */
+  border-radius: 4px;
+}
+
+.source-detail-view h3 { /* Source Name */
+  margin-top: 0;
+  font-size: 1.6em; /* Slightly adjusted */
+  color: #202124; /* Darker for more emphasis */
+}
+
+.source-detail-view .source-type {
+  font-size: 0.9em;
+  color: #5f6368; /* Consistent grey */
+  margin-bottom: 10px;
+  text-transform: capitalize;
+}
+
+.source-detail-view .source-timestamp {
+  font-size: 0.8em;
+  color: #5f6368; /* Consistent grey */
+  margin-top: 15px;
+}
+
+.source-summary-content {
+  white-space: pre-wrap;
+  font-family: 'Roboto Mono', 'Courier New', Courier, monospace; /* More modern mono */
+  background-color: #f8f9fa; /* Light bg for summary block */
+  padding: 15px; /* More padding */
+  border: 1px solid #e0e0e0; /* Softer border */
+  border-radius: 4px;
+  max-height: 400px;
+  overflow-y: auto;
+  line-height: 1.5; /* Improved readability */
+  color: #3c4043; /* Darker text for summary */
+}
+
+.placeholder-message { /* General placeholder for initial welcome */
+  text-align: center;
+  color: #5f6368;
+  font-size: 1.2em; /* Larger for welcome */
+  margin-top: 50px;
+}
+.placeholder-message h2 { /* Welcome heading */
+    font-size: 1.8em;
+    color: #1a73e8;
+    margin-bottom: 15px;
+}
+
+
+/* Chat Interface Styles */
+.chat-area {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #e0e0e0; /* Softer border */
+  margin-top: 20px;
+  padding-top: 15px;
+}
+
+.chat-messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 15px;
+  background-color: #f4f6f8; /* Slightly different bg for chat message list */
+  margin-bottom: 15px; /* More space */
+  min-height: 150px; /* Increased min-height */
+  border-radius: 8px; /* More rounded */
+  border: 1px solid #e0e0e0;
+}
+
+.chat-message {
+  margin-bottom: 10px; /* Increased spacing */
+  padding: 10px 15px; /* More padding */
+  border-radius: 18px; /* More rounded messages */
+  max-width: 75%; /* Slightly wider */
+  line-height: 1.4;
+  word-wrap: break-word; /* Ensure long words break */
+}
+
+.chat-message.user {
+  background-color: #1a73e8;
   color: white;
+  margin-left: auto;
+  border-bottom-right-radius: 6px; /* Adjusted for bubble feel */
+  text-align: left; /* User text aligns left within bubble */
 }
 
-.App-link {
-  color: #61dafb;
+.chat-message.ai {
+  background-color: #e8eaed;
+  color: #3c4043;
+  margin-right: auto;
+  border-bottom-left-radius: 6px; /* Adjusted for bubble feel */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.chat-input-area {
+  display: flex;
+  padding-top: 10px; /* Remove bottom padding if not needed */
+}
+
+.chat-input-area input {
+  flex-grow: 1;
+  padding: 12px 15px; /* More padding */
+  border: 1px solid #dadce0; /* Consistent border */
+  border-radius: 18px; /* Rounded input */
+  margin-right: 10px;
+  font-size: 1em;
+}
+.chat-input-area input:focus {
+    border-color: #1a73e8;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+}
+
+
+.chat-input-area button { /* Send button */
+  padding: 10px 20px; /* More padding for send */
+  margin-bottom: 0;
+  /* Uses primary class styles if applied in JS */
+}
+
+/* General heading consistency (can be adjusted) */
+h1, h2, h3, h4, h5, h6 {
+    color: #202124; /* Default dark color for headings */
+    font-weight: 500; /* Medium weight for headings */
+}
+p {
+    color: #3c4043; /* Default text color */
+    line-height: 1.6; /* Improved line spacing for paragraphs */
+}
+
+/* Utility for visually hidden but accessible text (if needed) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
