@@ -11,16 +11,18 @@ load_dotenv()
 app = Flask(__name__)
 
 # Placeholder for OpenAI API key
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if OPENAI_API_KEY:
-    openai.api_key = OPENAI_API_KEY
+api_key = os.environ.get("OPENAI_API_KEY")
+base_url = os.environ.get("OPENAI_BASE_URL")
+if api_key:
+    openai.api_key = api_key
+    openai.api_base = base_url
 
 def summarize_text_with_ai(text):
     """
     Placeholder function to simulate AI summarization.
     Returns the first 500 characters of the text or a fixed message.
     """
-    if not OPENAI_API_KEY:
+    if not api_key:
         return "OpenAI API key not configured. Returning placeholder summary."
 
     # In a real implementation, you would call the OpenAI API here.
@@ -32,8 +34,8 @@ def summarize_text_with_ai(text):
     # )
     # return response.choices[0].text.strip()
 
-    if len(text) > 500:
-        return text[:500] + "..."
+    # if len(text) > 500:
+    #     return text[:500] + "..."
     return text
 
 @app.route('/summarize-youtube', methods=['POST'])
