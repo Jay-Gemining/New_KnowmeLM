@@ -222,5 +222,84 @@ def chat():
 
     return jsonify({'reply': ai_response_text})
 
+@app.route('/generate-html-report', methods=['POST'])
+def generate_html_report():
+    """
+    Generates a complete HTML document using an LLM based on provided summary text and an optional title.
+    Inputs from JSON request:
+        - 'summary_text' (str): The main content to be formatted into HTML. (Required)
+        - 'title' (str, optional): The title for the HTML document and main heading. Defaults to "Generated Report".
+    Outputs:
+        - JSON response with 'html_content' (str) containing the full HTML document.
+        - Error JSON if 'summary_text' is missing, API key is not configured, or LLM communication fails.
+    """
+    data = request.get_json()
+    summary_text = data.get('summary_text')
+    title = data.get('title') # Optional
+
+    if not summary_text:
+        return jsonify({'error': 'summary_text is required'}), 400
+
+    # Check for API Key (global variables api_key and base_url are used)
+    if not api_key:
+        return jsonify({'error': 'OpenAI API key not configured on the server.'}), 500
+
+    report_title = title if title else "Generated Report"
+    report_content = summary_text
+
+    # Construct the detailed prompt for the LLM.
+    # This prompt asks the LLM to generate a full HTML document,
+    # using the provided title and summary content, and to apply some basic styling.
+    prompt = f"Generate a complete HTML document from the following text. The HTML should be well-structured, easy to read, and visually presentable for a report. Use the title '{report_title}' for the document <title> tag and as a main heading (e.g., <h1>). Here is the content: {report_content}"
+
+    # Prepare messages for the LLM API call.
+    # The "system" message sets the role and expectations for the LLM.
+    # The "user" message provides the specific prompt with the content.
+    messages = [
+        {
+            "role": "system",
+            "content": "You are an expert HTML generator. Please create a valid and well-formatted HTML document based on the user's request. Ensure the output is a full HTML document starting with <!DOCTYPE html> and includes html, head, and body tags. Apply simple inline CSS for a clean, professional look, focusing on readability."
+        },
+        {
+            "role": "user",
+            "content": prompt
+        }
+    ]
+
+    try:
+        # Initialize the OpenAI client with the API key and base URL.
+        client = OpenAI(
+            api_key=api_key,
+            base_url=base_url
+        )
+        # Make the API call to the LLM.
+        response = client.chat.completions.create(
+            model="deepseek-ai/DeepSeek-R1-0528-Qwen3-8B", # Specify the model to use.
+            messages=messages, # Pass the prepared messages.
+            # Temperature and max_tokens can be adjusted for different response styles or lengths.
+            # temperature=0.7,
+            # max_tokens=2048,
+        )
+        # Extract the generated HTML string from the LLM's response.
+        generated_html_string = response.choices[0].message.content
+
+        # Basic validation: Check if the response starts with <!DOCTYPE html> (case-insensitive).
+        # This is a simple check to ensure the LLM attempted to return a full HTML document.
+        if not generated_html_string.strip().lower().startswith("<!doctype html"):
+            # Log a snippet of the response if it doesn't look like valid HTML.
+            print(f"LLM did not return a valid HTML document. Response: {generated_html_string[:200]}...")
+            # Return an error if the structure is not as expected.
+            # A more robust solution might involve trying to parse/fix the HTML,
+            # but the prompt explicitly asks for a complete document.
+            return jsonify({'error': 'LLM did not return a valid HTML document structure. Received: ' + generated_html_string[:100] + "..."}), 500
+
+        # Return the generated HTML content.
+        return jsonify({'html_content': generated_html_string})
+
+    except Exception as e:
+        # Log any errors during the LLM API call.
+        print(f"Error calling LLM for HTML generation: {e}")
+        return jsonify({'error': f'Error communicating with LLM: {str(e)}'}), 500
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
