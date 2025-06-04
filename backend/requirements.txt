@@ -1,5 +1,7 @@
 Flask
-yt-dlp
-pysrt
 openai
 python-dotenv
+pysrt
+yt-dlp
+flask-cors
+httpx

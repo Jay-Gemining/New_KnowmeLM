@@ -2,25 +2,33 @@ import os
 import tempfile
 import subprocess
 import pysrt
-import openai
+from openai import OpenAI
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
+from flask_cors import CORS
 
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app) # Enable CORS for all routes
 
 # Placeholder for OpenAI API key
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if OPENAI_API_KEY:
-    openai.api_key = OPENAI_API_KEY
+api_key = os.environ.get("OPENAI_API_KEY")
+base_url = os.environ.get("OPENAI_BASE_URL")
+youtube_cookies_file = os.environ.get("YOUTUBE_COOKIES_FILE") # Old: Path to YouTube cookies file
+youtube_browser_for_cookies = os.environ.get("YOUTUBE_BROWSER_FOR_COOKIES") # New: Browser to load cookies from
+print(api_key)
+print(base_url)
+if api_key:
+    api_key = api_key
+    api_base = base_url
 
 def summarize_text_with_ai(text):
     """
     Placeholder function to simulate AI summarization.
     Returns the first 500 characters of the text or a fixed message.
     """
-    if not OPENAI_API_KEY:
+    if not api_key:
         return "OpenAI API key not configured. Returning placeholder summary."
 
     # In a real implementation, you would call the OpenAI API here.
@@ -32,8 +40,8 @@ def summarize_text_with_ai(text):
     # )
     # return response.choices[0].text.strip()
 
-    if len(text) > 500:
-        return text[:500] + "..."
+    # if len(text) > 500:
+    #     return text[:500] + "..."
     return text
 
 @app.route('/summarize-youtube', methods=['POST'])
@@ -54,11 +62,15 @@ def summarize_youtube():
             cmd = [
                 'yt-dlp',
                 '--write-auto-sub',
-                '--sub-lang', 'en,*', # English first, then any other auto-sub
+                '--sub-lang', 'en', # Changed from 'en,*' to 'en' to fix regex error
                 '--skip-download',    # Don't download the video itself
                 '-o', f'{tmpdir}/%(id)s.%(ext)s', # Output to temp dir
                 youtube_url
             ]
+            print(f"YouTube Cookies File Path: {youtube_cookies_file}")
+            if youtube_browser_for_cookies: # New method: load cookies from browser
+                cmd.extend(['--cookies-from-browser', youtube_browser_for_cookies])
+            print(f"yt-dlp command: {cmd}")
             subprocess.run(cmd, check=True, capture_output=True, text=True)
 
             subtitle_text = None
@@ -158,7 +170,7 @@ def chat():
         # print(f"Context being used for chat: {context_text[:500]}...") # For debugging
 
     # Actual OpenAI API Call
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
         # This check is redundant if OPENAI_API_KEY at the top is used, but good for safety
         # Or if the global openai.api_key wasn't set for some reason.
@@ -191,16 +203,19 @@ def chat():
 
     try:
         # Ensure openai.api_key is set before this call, ideally once when app starts
-        if not openai.api_key: # Final check if it wasn't set globally
-             openai.api_key = api_key
-
-        completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=messages,
-            temperature=0.2,
-            max_tokens=1000
+        # if not api_key: # Final check if it wasn't set globally
+        #      api_key = api_key
+        client = OpenAI(
+            api_key = api_key,
+            base_url = base_url
         )
-        ai_response_text = completion.choices[0].message['content'].strip()
+        response = client.chat.completions.create(
+            model="deepseek-ai/DeepSeek-R1-0528-Qwen3-8B",
+            messages=messages,  
+            # temperature=0.2,
+            # max_tokens=1000
+        )
+        ai_response_text = response.choices[0].message.content
     except Exception as e:
         print(f"Error calling OpenAI API: {e}") # Log to server console
         return jsonify({'error': f'Error communicating with OpenAI: {str(e)}'}), 500
