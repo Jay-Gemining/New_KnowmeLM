@@ -1,0 +1,41 @@
+.notification {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  border-radius: var(--default-border-radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 250px;
+  max-width: 500px;
+}
+.notification.success {
+  background-color: var(--accent-success);
+  color: var(--text-on-primary);
+}
+.notification.error {
+  background-color: var(--accent-error);
+  color: var(--text-on-primary);
+}
+.notification.info { /* Add an info type if needed */
+  background-color: var(--primary-blue);
+  color: var(--text-on-primary);
+}
+.notification .dismiss-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1.5em;
+  margin-left: 15px;
+  padding: 0 5px;
+  cursor: pointer;
+  line-height: 1;
+  box-shadow: none;
+}
+.notification .dismiss-btn:hover {
+    opacity: 0.8;
+}

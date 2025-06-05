@@ -2,12 +2,17 @@ import React, { useState, useEffect, useCallback } from 'react';
 import './App.css'; // Import new CSS
 import Sidebar from './components/Sidebar';
 import MainContent from './components/MainContent';
+import Notification from './components/Notification'; // New import
+import './components/Notification.css'; // New import for CSS
 import { getNotebooks, saveNotebooks as saveNotebooksToStorage } from './utils/localStorageHelper'; // Renamed for clarity
 
 function App() {
   const [notebooks, setNotebooks] = useState([]);
   const [selectedNotebookId, setSelectedNotebookId] = useState(null);
   const [selectedSourceId, setSelectedSourceId] = useState(null);
+  const [showYoutubeSummarizerInMain, setShowYoutubeSummarizerInMain] = useState(false);
+  const [showTextFileSummarizerInMain, setShowTextFileSummarizerInMain] = useState(false);
+  const [notification, setNotification] = useState({ message: '', type: '' }); // New state for notification
 
   // Load notebooks from localStorage on mount
   useEffect(() => {
@@ -85,6 +90,38 @@ function App() {
     saveNotebooksToStorage(updatedNotebooks);
   }, [notebooks]);
 
+  const handleEditNotebookTitle = useCallback((notebookId) => {
+    const notebookToEdit = notebooks.find(nb => nb.id === notebookId);
+    if (!notebookToEdit) return;
+    const newTitle = prompt("Enter new notebook title:", notebookToEdit.title);
+    if (newTitle && newTitle !== notebookToEdit.title) {
+      const updatedNotebooks = notebooks.map(nb =>
+        nb.id === notebookId ? { ...nb, title: newTitle, updatedAt: new Date().toISOString() } : nb
+      );
+      setNotebooks(updatedNotebooks);
+      saveNotebooksToStorage(updatedNotebooks);
+    }
+  }, [notebooks]);
+
+  const handleDeleteNotebook = useCallback((notebookId) => {
+    if (window.confirm("Are you sure you want to delete this notebook and all its sources? This action cannot be undone.")) {
+      const updatedNotebooks = notebooks.filter(nb => nb.id !== notebookId);
+      setNotebooks(updatedNotebooks);
+      saveNotebooksToStorage(updatedNotebooks);
+      if (selectedNotebookId === notebookId) {
+        setSelectedNotebookId(updatedNotebooks.length > 0 ? updatedNotebooks[0].id : null);
+        setSelectedSourceId(null);
+      }
+    }
+  }, [notebooks, selectedNotebookId]);
+
+  const handleToggleYoutubeSummarizerInMain = (show) => setShowYoutubeSummarizerInMain(show);
+  const handleToggleTextFileSummarizerInMain = (show) => setShowTextFileSummarizerInMain(show);
+
+  const showNotification = (message, type = 'info') => { // New function to show notification
+    setNotification({ message, type });
+  };
+
   // Derived state for selected notebook and source (optional, can also be done in child components)
   const selectedNotebook = notebooks.find(nb => nb.id === selectedNotebookId);
   const selectedSource = selectedNotebook?.sources.find(src => src.id === selectedSourceId);
@@ -110,12 +147,27 @@ function App() {
         onAddSourceToNotebook={handleAddSourceToNotebook}
         onSelectSource={handleSelectSource}
         selectedSourceId={selectedSourceId}
-        onToggleSourceChatSelection={handleToggleSourceChatSelection} // Pass new handler
+        // onToggleSourceChatSelection={handleToggleSourceChatSelection} // Prop removed
+        onEditNotebookTitle={handleEditNotebookTitle}
+        onDeleteNotebook={handleDeleteNotebook}
       />
       <MainContent
         selectedNotebook={selectedNotebook}
         selectedSource={selectedSource}
         onUpdateNotebook={handleUpdateNotebook} // Pass this down
+        showYoutubeSummarizerInMain={showYoutubeSummarizerInMain}
+        onToggleYoutubeSummarizerInMain={handleToggleYoutubeSummarizerInMain}
+        showTextFileSummarizerInMain={showTextFileSummarizerInMain}
+        onToggleTextFileSummarizerInMain={handleToggleTextFileSummarizerInMain}
+        onAddSourceToNotebook={handleAddSourceToNotebook}
+        selectedNotebookId={selectedNotebookId}
+        onToggleSourceChatSelection={handleToggleSourceChatSelection}
+        showNotification={showNotification} // Pass showNotification to MainContent
+      />
+      <Notification
+        message={notification.message}
+        type={notification.type}
+        onDismiss={() => setNotification({ message: '', type: '' })}
       />
     </div>
   );
