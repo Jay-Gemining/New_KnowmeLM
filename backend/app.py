@@ -231,7 +231,7 @@ def chat():
             base_url = base_url
         )
         response = client.chat.completions.create(
-            model="Pro/deepseek-ai/DeepSeek-R1-0120",
+            model="deepseek-ai/DeepSeek-R1-0528-Qwen3-8B",
             messages=messages,  
             # temperature=0.2,
             # max_tokens=1000
@@ -271,33 +271,7 @@ def generate_html_report():
     # Construct the detailed prompt for the LLM.
     # This prompt asks the LLM to generate a full HTML document,
     # using the provided title and summary content, and to apply some basic styling.
-    prompt = f"""Generate a complete HTML document from the following text. The HTML should be well-structured, easy to read, and visually presentable for a report. Use the title '{report_title}' for the document <title> tag and as a main heading (e.g., <h1>). Here is the content: {report_content},设计要求：
-1. 使用 Bento Grid 布局：创建一个由不同大小卡片组成的网格，每个卡片包含特定类别的信息，整体布局要紧凑但不拥挤
-2. 卡片设计：所有卡片应有明显圆角（20px 边框半径），白色/浅灰背景，细微的阴影效果，悬停时有轻微上浮动效果
-3. 色彩方案：使用简约配色方案，主要为白色/浅灰色背景，搭配渐变色作为强调色（可指定具体颜色，如从浅紫 #C084FC 到深紫 #7E22CE）
-4. 排版层次：
-- 大号粗体数字/标题：使用渐变色强调关键数据点和主要标题
-- 中等大小标题：用于卡片标题，清晰表明内容类别
-- 小号文本：用灰色呈现支持性描述文字
-5. 内容组织：
-- 顶部行：主要公告、产品特色、性能指标或主要卖点
-- 中间行：产品规格、技术细节、功能特性
-- 底部行：使用指南和结论/行动号召
-6. 视觉元素：
-- 使用简单图标表示各项特性
-- 进度条或图表展示比较数据
-- 网格和卡片布局创造视觉节奏
-- 标签以小胶囊形式展示分类信息
-7. 响应式设计：页面应能适应不同屏幕尺寸，在移动设备上保持良好的可读性
-设计风格参考：
-- 整体设计风格类似苹果官网产品规格页面
-- 使用大量留白和简洁的视觉元素
-- 强调数字和关键特性，减少冗长文字
-- 使用渐变色突出重要数据
-- 卡片间有适当间距，创造清晰的视觉分隔
-##输出规范:
-    只输出代码内容,不要输出其他任何文字信息。在输出代码内容时，错误输出格式: ```html XXX(html代码) ```   正确输出：XXX(html代码)
-"""
+    prompt = f"Generate a complete HTML document from the following text. The HTML should be well-structured, easy to read, and visually presentable for a report. Use the title '{report_title}' for the document <title> tag and as a main heading (e.g., <h1>). Here is the content: {report_content}"
 
     # Prepare messages for the LLM API call.
     # The "system" message sets the role and expectations for the LLM.
@@ -321,7 +295,7 @@ def generate_html_report():
         )
         # Make the API call to the LLM.
         response = client.chat.completions.create(
-            model="Pro/deepseek-ai/DeepSeek-R1-0120", # Specify the model to use.
+            model="deepseek-ai/DeepSeek-R1-0528-Qwen3-8B", # Specify the model to use.
             messages=messages, # Pass the prepared messages.
             # Temperature and max_tokens can be adjusted for different response styles or lengths.
             # temperature=0.7,

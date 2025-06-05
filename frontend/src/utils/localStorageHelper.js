@@ -42,6 +42,37 @@ export const updateNotebook = (updatedNotebook) => {
     return notebooks; // Return updated list
 };
 
+// HTML Report Storage Functions
+
+export const saveHtmlReport = (notebookId, sourceId, htmlContent) => {
+    const key = `html_report_${notebookId}_${sourceId}`;
+    try {
+        localStorage.setItem(key, htmlContent);
+    } catch (error) {
+        console.error('Error saving HTML report to localStorage:', error);
+        // Potentially throw error or return a status if needed by calling code
+    }
+};
+
+export const getHtmlReport = (notebookId, sourceId) => {
+    const key = `html_report_${notebookId}_${sourceId}`;
+    try {
+        return localStorage.getItem(key); // Returns null if key doesn't exist
+    } catch (error) {
+        console.error('Error retrieving HTML report from localStorage:', error);
+        return null;
+    }
+};
+
+export const deleteHtmlReport = (notebookId, sourceId) => {
+    const key = `html_report_${notebookId}_${sourceId}`;
+    try {
+        localStorage.removeItem(key);
+    } catch (error) {
+        console.error('Error deleting HTML report from localStorage:', error);
+    }
+};
+
 // Example of a function to delete a notebook by ID (might be useful later)
 export const deleteNotebookById = (id) => {
     let notebooks = getNotebooks();

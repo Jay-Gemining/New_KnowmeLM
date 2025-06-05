@@ -1,7 +1,7 @@
-import React, { useState } from 'react'; // Added useState
+import React, { useState } from 'react';
 import YoutubeSummarizer from './YoutubeSummarizer';
 import TextFileSummarizer from './TextFileSummarizer';
-// We don't directly need localStorageHelper here if App.js handles all data modifications
+import { getHtmlReport, saveHtmlReport } from '../utils/localStorageHelper'; // Import cache functions
 
 const Sidebar = ({
     notebooks,
@@ -77,26 +77,45 @@ const Sidebar = ({
             return;
         }
 
-        // Attempt to open a new tab immediately.
-        // This is done early to bypass popup blockers that might be triggered
-        // if window.open is called outside of a direct user interaction sequence (e.g., after an async call).
+        // Ensure selectedNotebook and its ID are available for caching key
+        if (!selectedNotebook || !selectedNotebook.id) {
+            alert('Cannot generate report: No notebook selected or notebook ID is missing.');
+            return;
+        }
+        const notebookId = selectedNotebook.id;
+
+        // Check for cached report first
+        const cachedHtml = getHtmlReport(notebookId, source.id);
+        if (cachedHtml) {
+            console.log('Displaying cached HTML report for source:', source.name);
+            const newTabCached = window.open('', '_blank');
+            if (newTabCached) {
+                newTabCached.document.open();
+                newTabCached.document.write(cachedHtml);
+                newTabCached.document.close();
+                newTabCached.focus();
+            } else {
+                alert('Failed to open new tab for cached report. Please check your popup blocker settings.');
+            }
+            return; // Stop further execution if cached version is displayed
+        }
+
+        // If we reach here, it's a cache miss, proceed to generate
+        // Attempt to open a new tab immediately for loading message.
         const newTab = window.open('', '_blank');
 
         if (!newTab) {
-            // If newTab is null, the popup blocker likely intervened.
             alert('Failed to open new tab. Please disable your popup blocker for this site and try again. Report generation cancelled.');
-            setGeneratingReportId(null); // Reset button state if tab opening fails
-            return; // Stop execution if tab cannot be opened
+            // No need to setGeneratingReportId(null) here as it hasn't been set yet for this path
+            return;
         }
 
-        // Write initial "loading" content to the new tab.
-        // This provides immediate feedback to the user.
         newTab.document.open();
         newTab.document.write('<!DOCTYPE html><html><head><title>Generating Report for ' + source.name + '</title><style>body { font-family: sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; } .spinner { border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 20px; } @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style></head><body><div class="spinner"></div><h1>Generating Report</h1><p>Please wait while the report for "<strong>' + source.name + '</strong>" is being generated.</p><p>This window will be updated automatically once the report is ready.</p></body></html>');
-        newTab.document.close(); // Close the document stream for the initial content.
+        newTab.document.close();
 
-        console.log('Generating report for:', source.name);
-        setGeneratingReportId(source.id); // Set loading state for the button in the main UI
+        console.log('Generating new report for (cache miss):', source.name);
+        setGeneratingReportId(source.id); // Set loading state ONLY when actually fetching
 
         try {
             const response = await fetch('http://localhost:5001/generate-html-report', {
@@ -116,20 +135,22 @@ const Sidebar = ({
                 if (newTab && !newTab.closed) { // Check if tab is still open
                     if (data && data.html_content && typeof data.html_content === 'string') {
                         console.log('HTML report content received. Updating the pre-opened tab.');
-                        newTab.document.open(); // Re-open the document stream to overwrite previous "Loading..." message
+                        newTab.document.open();
                         newTab.document.write(data.html_content);
                         newTab.document.close();
-                        newTab.focus(); // Bring the tab to the foreground
+
+                        // Save the newly generated report to cache
+                        saveHtmlReport(notebookId, source.id, data.html_content);
+                        console.log('New HTML report saved to cache for source:', source.name);
+
+                        newTab.focus();
                     } else {
-                        // HTML content is missing or invalid, even if API call was 'ok'
-                        console.error('HTML content missing or invalid in API response:', data);
-                        // HTML content is missing or invalid, even if API call was 'ok'
-                        console.error('HTML content missing or invalid in API response:', data);
+                        // HTML content is missing or invalid from API
                         displayErrorInNewTab(newTab, 'Report Content Error', 'Valid report content was not received from the server.');
                         alert('Report generation complete, but valid content was not received. The report tab has been updated with an error message.');
                     }
                 } else {
-                    // Tab was closed by user before content arrived
+                    // Tab was closed by user before content could be loaded
                     console.warn('Report tab was closed by the user before content could be loaded.');
                     // We can't write to a closed tab, so an alert in the main window is appropriate.
                     if (data && data.html_content && typeof data.html_content === 'string') {
