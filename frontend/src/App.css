@@ -301,3 +301,30 @@ p {
   white-space: nowrap;
   border-width: 0;
 }
+
+/* Report Button Styles */
+.report-button {
+  margin-left: 10px;
+  padding: 3px 8px; /* Adjusted padding for a smaller button */
+  font-size: 0.8em;
+  cursor: pointer;
+  border: 1px solid #dadce0; /* Similar to default button border */
+  background-color: #f8f9fa; /* Light background, similar to secondary buttons */
+  color: #3c4043; /* Standard text color */
+  border-radius: 4px;
+  flex-shrink: 0; /* Ensure it doesn't shrink in flex layout */
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out; /* Smooth transition */
+}
+
+.report-button:hover {
+  background-color: #f1f3f4; /* Slightly darker on hover, consistent with other buttons */
+  border-color: #c6c9cc;
+}
+
+.report-button:disabled {
+  background-color: #f8f9fa; /* Keep similar to normal or slightly lighter for disabled */
+  color: #999; /* Greyed out text for disabled state */
+  cursor: not-allowed;
+  opacity: 0.65; /* Standard opacity for disabled elements */
+  border-color: #e0e0e0; /* Lighter border for disabled */
+}
