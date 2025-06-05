@@ -215,7 +215,17 @@ const Sidebar = ({
                                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
                                 >
                                     <span onClick={() => onSelectSource(source.id)} style={{ flexGrow: 1, cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                        {source.type === 'youtube' ? '📺' : '📄'} {source.name} {/* Display full name, let CSS handle overflow */}
+                                        {(() => {
+                                            let icon = '📄'; // Default document icon
+                                            if (source.type === 'youtube') {
+                                                icon = '📺';
+                                            } else if (source.name && source.name.toLowerCase().endsWith('.pdf')) {
+                                                icon = '📰'; // Newspaper icon for PDF
+                                            } else if (source.name && source.name.toLowerCase().endsWith('.md')) {
+                                                icon = '📝'; // Memo icon for Markdown (as an example)
+                                            }
+                                            return icon;
+                                        })()} {source.name} {/* Display full name, let CSS handle overflow */}
                                     </span>
                                     <button
                                         onClick={(e) => {

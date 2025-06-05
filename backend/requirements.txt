@@ -5,3 +5,4 @@ pysrt
 yt-dlp
 flask-cors
 httpx
+PyPDF2

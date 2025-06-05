@@ -5,6 +5,7 @@ import pysrt
 from openai import OpenAI
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
+from PyPDF2 import PdfReader # Added for PDF processing
 from flask_cors import CORS
 
 load_dotenv()
@@ -128,13 +129,33 @@ def summarize_text_file():
     if file.filename == '':
         return jsonify({'error': 'No selected file'}), 400
 
-    if not file.filename.endswith('.txt'):
-        return jsonify({'error': 'Invalid file type, please upload a .txt file'}), 400
+    allowed_extensions = ('.txt', '.pdf', '.md')
+    file_extension = os.path.splitext(file.filename.lower())[1]
 
+    if file_extension not in allowed_extensions:
+        return jsonify({'error': f'Invalid file type, please upload a {", ".join(allowed_extensions)} file'}), 400
+
+    text_content = ""
     try:
-        text_content = file.read().decode('utf-8')
+        if file_extension == '.pdf':
+            try:
+                reader = PdfReader(file.stream) # Use file.stream for FileStorage object
+                for page in reader.pages:
+                    text_content += page.extract_text() or "" # Add null check for empty pages
+                if not text_content.strip():
+                    return jsonify({'error': 'Could not extract text from PDF or PDF is empty'}), 400
+            except Exception as e:
+                print(f"Error parsing PDF {file.filename}: {str(e)}")
+                return jsonify({'error': f'Failed to parse PDF file: {str(e)}'}), 500
+        elif file_extension in ['.txt', '.md']:
+            text_content = file.read().decode('utf-8')
+            if not text_content.strip():
+                return jsonify({'error': 'File is empty or contains only whitespace'}), 400
+
+        # Ensure text_content is not empty one last time before summarizing,
+        # although individual handlers should have caught empty content.
         if not text_content.strip():
-            return jsonify({'error': 'File is empty or contains only whitespace'}), 400
+             return jsonify({'error': 'Extracted text content is empty.'}),400
 
         summary = summarize_text_with_ai(text_content)
         return jsonify({'summary': summary})

@@ -17,7 +17,20 @@ function TextFileSummarizer({ onSummaryComplete }) { // Accept onSummaryComplete
         event.preventDefault();
 
         if (!selectedFile) {
-            setError('Please select a .txt file first.');
+            setError('Please select a file first.'); // More generic message
+            return;
+        }
+
+        // Client-side validation for allowed file types
+        const allowedExtensions = ['.txt', '.md', '.pdf'];
+        const fileName = selectedFile.name.toLowerCase();
+        if (!allowedExtensions.some(ext => fileName.endsWith(ext))) {
+            setError(`Invalid file type. Please select a ${allowedExtensions.join(', ')} file.`);
+            // Reset file input if invalid type
+            if(fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
+            setSelectedFile(null);
             return;
         }
 
@@ -62,15 +75,15 @@ function TextFileSummarizer({ onSummaryComplete }) { // Accept onSummaryComplete
 
     return (
         <div>
-            <h4>Add Text File (.txt) Summary</h4>
+            <h4>Add File Summary (.txt, .md, .pdf)</h4>
             <form onSubmit={handleSubmit}>
                 <div>
-                    <label htmlFor="fileInput">Choose .txt file:</label>
+                    <label htmlFor="fileInput">Choose .txt, .md, or .pdf file:</label>
                     <input
                         type="file"
                         id="fileInput"
                         ref={fileInputRef}
-                        accept=".txt"
+                        accept=".txt,.md,.pdf,text/plain,application/pdf,text/markdown" // Updated accept attribute
                         onChange={handleFileChange}
                         style={{ display: 'block', width: '100%', marginBottom: '10px' }} // Adjusted style
                     />
