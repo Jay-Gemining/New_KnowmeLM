@@ -115,7 +115,25 @@ const MainContent = ({
     // Removed if (selectedSource && activeTab === 'chat') condition
     if (selectedNotebook && selectedNotebook.sources) {
       const activeSources = selectedNotebook.sources.filter(s => s.isSelectedForChat === undefined ? true : s.isSelectedForChat);
-      summaries = activeSources.map(s => s.summary).filter(Boolean);
+
+      summaries = activeSources.map(s => {
+        // Check if s.summary is likely an error message from our backend's summarization process.
+        // These checks should align with error strings returned by `generate_detailed_summary_with_ai`.
+        const summaryIsError = s.summary && (
+            s.summary.startsWith("Error: OpenAI API key not configured") ||
+            s.summary.startsWith("LLM returned a very short or empty summary for") ||
+            s.summary.startsWith("Error generating detailed summary for")
+        );
+
+        if (summaryIsError) {
+          // If summary is an error, and original_content exists, use original_content.
+          // Ensure original_content is not null/undefined before using.
+          return s.original_content || ""; // Fallback to empty string if original_content is also missing
+        } else {
+          // Otherwise, use the summary (which should be the detailed one).
+          return s.summary;
+        }
+      }).filter(Boolean); // Keep the filter to remove empty strings that might result from fallbacks.
     }
     // If no specific source context, summaries array remains empty, backend handles general chat
 
