@@ -1,0 +1,8 @@
+Flask
+openai
+python-dotenv
+pysrt
+yt-dlp
+flask-cors
+httpx
+PyPDF2
