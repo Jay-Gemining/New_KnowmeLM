@@ -9,11 +9,12 @@ const Sidebar = ({
     onSelectNotebook,
     onAddNotebook,
     onAddSourceToNotebook,
-    onSelectSource,
-    selectedSourceId,
-    // onToggleSourceChatSelection, // Removed as per instructions
+    // Removed onSelectSource and selectedSourceId
+    onToggleSourceChatSelection, // Added this prop
     onEditNotebookTitle,
     onDeleteNotebook,
+    onToggleYoutubeSummarizer, // New prop
+    onToggleTextFileSummarizer, // New prop
 }) => {
     // const [showYoutubeSummarizer, setShowYoutubeSummarizer] = useState(false); // Removed
     // const [showTextFileSummarizer, setShowTextFileSummarizer] = useState(false); // Removed
@@ -74,41 +75,55 @@ const Sidebar = ({
 
             {selectedNotebook && (
                 <div style={{ marginTop: '20px' }}>
+                    {/* Add Source Buttons */}
+                    <div className="add-source-buttons-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
+                        <button onClick={() => onToggleYoutubeSummarizer(true)} className="primary icon-button">
+                            ➕ Add YouTube Source
+                        </button>
+                        <button onClick={() => onToggleTextFileSummarizer(true)} className="primary icon-button">
+                            ➕ Add File Source
+                        </button>
+                    </div>
+
                     <h3>Sources for: {selectedNotebook.title}</h3>
                     {/* Summarizer toggle buttons and summarizer components removed from here */}
 
                     {selectedNotebook.sources && selectedNotebook.sources.length > 0 ? (
-                        <ul className="source-list" style={{ marginTop: '15px' }}>
-                            {selectedNotebook.sources.slice().reverse().map((source) => (
-                                <li
-                                    key={source.id}
-                                    onClick={() => onSelectSource(source.id)} // This remains to select the source
-                                    className={`${source.id === selectedSourceId ? 'selected' : ''}`}
-                                    title={source.name} // Show full name on hover of the li
-                                >
-                                    <div className="source-info">
-                                        <span className="source-icon">
-                                            {(() => {
-                                                let icon = '📄'; // Default document icon
-                                                if (source.type === 'youtube') {
-                                                    icon = '📺';
-                                                } else if (source.name && source.name.toLowerCase().endsWith('.pdf')) {
-                                                    icon = '📰';
-                                                } else if (source.name && source.name.toLowerCase().endsWith('.md')) {
-                                                    icon = '📝';
-                                                }
-                                                return icon;
-                                            })()}
-                                        </span>
-                                        <span className="source-name">{source.name}</span>
-                                    </div>
-                                    {/* Removed Report button and Checkbox from here */}
-                                </li>
+                        <ul className="source-list" style={{ marginTop: '10px' }}>
+                            {selectedNotebook.sources.slice().reverse().map((source) => {
+                                const isSelectedForChat = source.isSelectedForChat === undefined ? true : source.isSelectedForChat;
+                                return (
+                                    <li
+                                        key={source.id}
+                                        onClick={() => onToggleSourceChatSelection(selectedNotebook.id, source.id, !isSelectedForChat)}
+                                        className={`source-list-item ${isSelectedForChat ? 'selected-for-chat' : ''}`}
+                                        title={`${source.name} - ${isSelectedForChat ? 'Included in chat context' : 'Not in chat context'}`}
+                                    >
+                                        <div className="source-info">
+                                            <span className="source-icon">
+                                                {(() => {
+                                                    let icon = '📄'; // Default document icon
+                                                    if (source.type === 'youtube') {
+                                                        icon = '📺';
+                                                    } else if (source.name && source.name.toLowerCase().endsWith('.pdf')) {
+                                                        icon = '📰';
+                                                    } else if (source.name && source.name.toLowerCase().endsWith('.md')) {
+                                                        icon = '📝';
+                                                    }
+                                                    return icon;
+                                                })()}
+                                            </span>
+                                            <span className="selection-indicator">{isSelectedForChat ? '✓ ' : '☐ '}</span>
+                                            <span className="source-name-text">{source.name}</span>
+                                        </div>
+                                    </li>
+                                );
+                            })}
                             ))}
                         </ul>
                     ) : (
-                        <p style={{ marginTop: '15px', fontSize: '0.9em', color: '#5f6368', textAlign: 'center' }}>
-                            No sources in this notebook yet. Add one above.
+                        <p style={{ marginTop: '10px', fontSize: '0.9em', color: '#5f6368', textAlign: 'center' }}>
+                            No sources in this notebook yet. Add one using the buttons above.
                         </p>
                     )}
                 </div>
