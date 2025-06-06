@@ -24,26 +24,50 @@ if api_key:
     api_key = api_key
     api_base = base_url
 
-def summarize_text_with_ai(text):
-    """
-    Placeholder function to simulate AI summarization.
-    Returns the first 500 characters of the text or a fixed message.
-    """
+# Removed old summarize_text_with_ai function
+
+def generate_detailed_summary_with_ai(text_content, source_name):
     if not api_key:
-        return "OpenAI API key not configured. Returning placeholder summary."
+        return "Error: OpenAI API key not configured. Cannot generate detailed summary."
 
-    # In a real implementation, you would call the OpenAI API here.
-    # For example:
-    # response = openai.Completion.create(
-    # engine="text-davinci-003",
-    # prompt=f"Summarize the following text:\n\n{text}",
-    # max_tokens=150
-    # )
-    # return response.choices[0].text.strip()
+    client = OpenAI(api_key=api_key, base_url=base_url)
 
-    # if len(text) > 500:
-    #     return text[:500] + "..."
-    return text
+    prompt = f"""Please provide a detailed and comprehensive summary of the following text from the source titled '{source_name}'.
+    The summary should capture the main points, key arguments, and any significant conclusions or information presented.
+    Organize the summary logically. Aim for a thorough representation of the original content.
+
+    Original Text:
+    ---
+    {text_content}
+    ---
+
+    Detailed Summary:"""
+
+    messages = [
+        {
+            "role": "system",
+            "content": "You are an expert summarizer. Your task is to generate a detailed and comprehensive summary of the provided text, maintaining the core message and important details."
+        },
+        {
+            "role": "user",
+            "content": prompt
+        }
+    ]
+
+    try:
+        response = client.chat.completions.create(
+            model="Pro/deepseek-ai/DeepSeek-R1-0120", # Or your preferred model
+            messages=messages,
+            # temperature=0.5,
+            # max_tokens=1024
+        )
+        detailed_summary = response.choices[0].message.content.strip()
+        if not detailed_summary or len(detailed_summary) < 50: # Arbitrary length check
+            return f"LLM returned a very short or empty summary for {source_name}. Original text could not be adequately summarized."
+        return detailed_summary
+    except Exception as e:
+        print(f"Error calling OpenAI API for detailed summary of '{source_name}': {e}")
+        return f"Error generating detailed summary for '{source_name}': {str(e)}. Original text could not be summarized by the LLM."
 
 @app.route('/summarize-youtube', methods=['POST'])
 def summarize_youtube():
@@ -63,19 +87,27 @@ def summarize_youtube():
             cmd = [
                 'yt-dlp',
                 '--write-auto-sub',
-                '--sub-lang', 'en', # Changed from 'en,*' to 'en' to fix regex error
-                '--skip-download',    # Don't download the video itself
-                '-o', f'{tmpdir}/%(id)s.%(ext)s', # Output to temp dir
+                '--sub-lang', 'en',
+                '--skip-download',
+                '-o', f'{tmpdir}/%(id)s.%(ext)s', # Subtitle output
+                '--print', 'title', # Print title to stdout
                 youtube_url
             ]
-            print(f"YouTube Cookies File Path: {youtube_cookies_file}")
-            if youtube_browser_for_cookies: # New method: load cookies from browser
+            # print(f"YouTube Cookies File Path: {youtube_cookies_file}") # Keep for debug if needed
+            if youtube_browser_for_cookies:
                 cmd.extend(['--cookies-from-browser', youtube_browser_for_cookies])
-            print(f"yt-dlp command: {cmd}")
-            subprocess.run(cmd, check=True, capture_output=True, text=True)
+            # print(f"yt-dlp command: {cmd}") # Keep for debug if needed
+            process_result = subprocess.run(cmd, check=True, capture_output=True, text=True, encoding='utf-8')
+
+            # The title is the first part of stdout, subtitles are in files
+            # yt-dlp might print other things to stdout before title if not careful,
+            # but with --print title, it should be the primary output.
+            # Splitting by lines and taking the first non-empty one is a robust way.
+            video_title_lines = process_result.stdout.strip().splitlines()
+            video_title = next((line for line in video_title_lines if line.strip()), youtube_url) # Use URL as fallback
 
             subtitle_text = None
-            # Search for downloaded subtitle files (.vtt or .srt)
+            # Search for downloaded subtitle files (.vtt or .srt) in tmpdir
             for filename in os.listdir(tmpdir):
                 if filename.endswith(('.vtt', '.srt')):
                     filepath = os.path.join(tmpdir, filename)
@@ -107,8 +139,9 @@ def summarize_youtube():
             if not subtitle_text:
                 return jsonify({'error': 'Could not find or parse subtitles'}), 404
 
-            summary = summarize_text_with_ai(subtitle_text)
-            return jsonify({'summary': summary})
+            # summary = summarize_text_with_ai(subtitle_text) # OLD
+            detailed_summary = generate_detailed_summary_with_ai(subtitle_text, video_title) # NEW
+            return jsonify({'summary': detailed_summary, 'name': video_title, 'original_content': subtitle_text})
 
         except subprocess.CalledProcessError as e:
             # Log the error for debugging
@@ -155,10 +188,12 @@ def summarize_text_file():
         # Ensure text_content is not empty one last time before summarizing,
         # although individual handlers should have caught empty content.
         if not text_content.strip():
-             return jsonify({'error': 'Extracted text content is empty.'}),400
+             return jsonify({'error': 'Extracted text content is empty.'}), 400
 
-        summary = summarize_text_with_ai(text_content)
-        return jsonify({'summary': summary})
+        # summary = summarize_text_with_ai(text_content) # OLD
+        file_name = file.filename # Get filename for the source_name
+        detailed_summary = generate_detailed_summary_with_ai(text_content, file_name) # NEW
+        return jsonify({'summary': detailed_summary, 'name': file_name, 'original_content': text_content})
     except Exception as e:
         # Log the error for debugging
         print(f"Error processing text file: {str(e)}")
