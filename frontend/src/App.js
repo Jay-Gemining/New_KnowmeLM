@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import './App.css'; // Import new CSS
 import Sidebar from './components/Sidebar';
 import MainContent from './components/MainContent';
+import RightSidebar from './components/RightSidebar'; // Import RightSidebar
 import Notification from './components/Notification'; // New import
 import './components/Notification.css'; // New import for CSS
 import { getNotebooks, saveNotebooks as saveNotebooksToStorage } from './utils/localStorageHelper'; // Renamed for clarity
@@ -9,7 +10,7 @@ import { getNotebooks, saveNotebooks as saveNotebooksToStorage } from './utils/l
 function App() {
   const [notebooks, setNotebooks] = useState([]);
   const [selectedNotebookId, setSelectedNotebookId] = useState(null);
-  const [selectedSourceId, setSelectedSourceId] = useState(null);
+  // Removed selectedSourceId state
   const [showYoutubeSummarizerInMain, setShowYoutubeSummarizerInMain] = useState(false);
   const [showTextFileSummarizerInMain, setShowTextFileSummarizerInMain] = useState(false);
   const [notification, setNotification] = useState({ message: '', type: '' }); // New state for notification
@@ -34,12 +35,10 @@ function App() {
 
   const handleSelectNotebook = (notebookId) => {
     setSelectedNotebookId(notebookId);
-    setSelectedSourceId(null); // Clear source selection when notebook changes
+    // setSelectedSourceId(null); // No longer needed
   };
 
-  const handleSelectSource = (sourceId) => {
-    setSelectedSourceId(sourceId);
-  };
+  // Removed handleSelectSource function
 
   const handleAddNotebook = () => {
     const title = prompt("Enter new notebook title:", `Untitled notebook ${notebooks.length + 1}`);
@@ -54,7 +53,7 @@ function App() {
       setNotebooks(updatedNotebooks);
       saveNotebooksToStorage(updatedNotebooks);
       setSelectedNotebookId(newNotebook.id); // Select the new notebook
-      setSelectedSourceId(null);
+      // setSelectedSourceId(null); // No longer needed
     }
   };
 
@@ -110,7 +109,7 @@ function App() {
       saveNotebooksToStorage(updatedNotebooks);
       if (selectedNotebookId === notebookId) {
         setSelectedNotebookId(updatedNotebooks.length > 0 ? updatedNotebooks[0].id : null);
-        setSelectedSourceId(null);
+        // setSelectedSourceId(null); // No longer needed
       }
     }
   }, [notebooks, selectedNotebookId]);
@@ -124,7 +123,7 @@ function App() {
 
   // Derived state for selected notebook and source (optional, can also be done in child components)
   const selectedNotebook = notebooks.find(nb => nb.id === selectedNotebookId);
-  const selectedSource = selectedNotebook?.sources.find(src => src.id === selectedSourceId);
+  // Removed selectedSource derived variable
 
   const handleUpdateNotebook = useCallback((notebookId, updatedProps) => {
     const updatedNotebooks = notebooks.map(nb => {
@@ -145,15 +144,16 @@ function App() {
         onSelectNotebook={handleSelectNotebook}
         onAddNotebook={handleAddNotebook}
         onAddSourceToNotebook={handleAddSourceToNotebook}
-        onSelectSource={handleSelectSource}
-        selectedSourceId={selectedSourceId}
-        // onToggleSourceChatSelection={handleToggleSourceChatSelection} // Prop removed
+        // Removed onSelectSource and selectedSourceId props
+        onToggleSourceChatSelection={handleToggleSourceChatSelection} // Ensured this is passed
         onEditNotebookTitle={handleEditNotebookTitle}
         onDeleteNotebook={handleDeleteNotebook}
+        onToggleYoutubeSummarizer={handleToggleYoutubeSummarizerInMain}
+        onToggleTextFileSummarizer={handleToggleTextFileSummarizerInMain}
       />
       <MainContent
         selectedNotebook={selectedNotebook}
-        selectedSource={selectedSource}
+        // Removed selectedSource prop
         onUpdateNotebook={handleUpdateNotebook} // Pass this down
         showYoutubeSummarizerInMain={showYoutubeSummarizerInMain}
         onToggleYoutubeSummarizerInMain={handleToggleYoutubeSummarizerInMain}
@@ -163,6 +163,11 @@ function App() {
         selectedNotebookId={selectedNotebookId}
         onToggleSourceChatSelection={handleToggleSourceChatSelection}
         showNotification={showNotification} // Pass showNotification to MainContent
+      />
+      <RightSidebar
+        selectedNotebook={selectedNotebook}
+        showNotification={showNotification}
+        onToggleSourceChatSelection={handleToggleSourceChatSelection}
       />
       <Notification
         message={notification.message}
