@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import WebsiteSummarizer from './WebsiteSummarizer'; // Changed from YoutubeSummarizer
 import TextFileSummarizer from './TextFileSummarizer';
 // Removed getHtmlReport, saveHtmlReport
@@ -260,7 +262,7 @@ const MainContent = ({
           <div className="chat-messages">
             {chatMessages.map(msg => (
               <div key={msg.id} className={`chat-message ${msg.sender}`}>
-                {msg.text.split('\n').map((line, index) => <span key={index}>{line}<br/></span>)}
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.text}</ReactMarkdown>
               </div>
             ))}
             <div ref={messagesEndRef} />
