@@ -119,7 +119,6 @@ const Sidebar = ({
                                     </li>
                                 );
                             })}
-                            ))}
                         </ul>
                     ) : (
                         <p style={{ marginTop: '10px', fontSize: '0.9em', color: '#5f6368', textAlign: 'center' }}>
