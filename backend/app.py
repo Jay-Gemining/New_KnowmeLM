@@ -26,13 +26,13 @@ if api_key:
 
 # Removed old summarize_text_with_ai function
 
-def generate_detailed_summary_with_ai(text_content, source_name):
+def generate_detailed_summary_with_ai(text_content):
     if not api_key:
         return "Error: OpenAI API key not configured. Cannot generate detailed summary."
 
     client = OpenAI(api_key=api_key, base_url=base_url)
 
-    prompt = f"""Please provide a detailed and comprehensive summary of the following text from the source titled '{source_name}'.
+    prompt = f"""Please provide a detailed and comprehensive summary of the following text from the source titled .
     The summary should capture the main points, key arguments, and any significant conclusions or information presented.
     Organize the summary logically. Aim for a thorough representation of the original content.
 
@@ -50,7 +50,7 @@ def generate_detailed_summary_with_ai(text_content, source_name):
         },
         {
             "role": "user",
-            "content": prompt
+            "content": prompt+"always response in Chinese"
         }
     ]
 
@@ -63,11 +63,11 @@ def generate_detailed_summary_with_ai(text_content, source_name):
         )
         detailed_summary = response.choices[0].message.content.strip()
         if not detailed_summary or len(detailed_summary) < 50: # Arbitrary length check
-            return f"LLM returned a very short or empty summary for {source_name}. Original text could not be adequately summarized."
+            return f"LLM returned a very short or empty summary for . Original text could not be adequately summarized."
         return detailed_summary
     except Exception as e:
-        print(f"Error calling OpenAI API for detailed summary of '{source_name}': {e}")
-        return f"Error generating detailed summary for '{source_name}': {str(e)}. Original text could not be summarized by the LLM."
+        print(f"Error calling OpenAI API for detailed summary of '': {e}")
+        return f"Error generating detailed summary for : {str(e)}. Original text could not be summarized by the LLM."
 
 @app.route('/summarize-youtube', methods=['POST'])
 def summarize_youtube():
@@ -87,27 +87,19 @@ def summarize_youtube():
             cmd = [
                 'yt-dlp',
                 '--write-auto-sub',
-                '--sub-lang', 'en',
-                '--skip-download',
-                '-o', f'{tmpdir}/%(id)s.%(ext)s', # Subtitle output
-                '--print', 'title', # Print title to stdout
+                '--sub-lang', 'en', # Changed from 'en,*' to 'en' to fix regex error
+                '--skip-download',    # Don't download the video itself
+                '-o', f'{tmpdir}/%(id)s.%(ext)s', # Output to temp dir
                 youtube_url
             ]
-            # print(f"YouTube Cookies File Path: {youtube_cookies_file}") # Keep for debug if needed
-            if youtube_browser_for_cookies:
+            print(f"YouTube Cookies File Path: {youtube_cookies_file}")
+            if youtube_browser_for_cookies: # New method: load cookies from browser
                 cmd.extend(['--cookies-from-browser', youtube_browser_for_cookies])
-            # print(f"yt-dlp command: {cmd}") # Keep for debug if needed
-            process_result = subprocess.run(cmd, check=True, capture_output=True, text=True, encoding='utf-8')
-
-            # The title is the first part of stdout, subtitles are in files
-            # yt-dlp might print other things to stdout before title if not careful,
-            # but with --print title, it should be the primary output.
-            # Splitting by lines and taking the first non-empty one is a robust way.
-            video_title_lines = process_result.stdout.strip().splitlines()
-            video_title = next((line for line in video_title_lines if line.strip()), youtube_url) # Use URL as fallback
+            print(f"yt-dlp command: {cmd}")
+            subprocess.run(cmd, check=True, capture_output=True, text=True)
 
             subtitle_text = None
-            # Search for downloaded subtitle files (.vtt or .srt) in tmpdir
+            # Search for downloaded subtitle files (.vtt or .srt)
             for filename in os.listdir(tmpdir):
                 if filename.endswith(('.vtt', '.srt')):
                     filepath = os.path.join(tmpdir, filename)
@@ -140,8 +132,8 @@ def summarize_youtube():
                 return jsonify({'error': 'Could not find or parse subtitles'}), 404
 
             # summary = summarize_text_with_ai(subtitle_text) # OLD
-            detailed_summary = generate_detailed_summary_with_ai(subtitle_text, video_title) # NEW
-            return jsonify({'summary': detailed_summary, 'name': video_title, 'original_content': subtitle_text})
+            detailed_summary = generate_detailed_summary_with_ai(subtitle_text) # NEW
+            return jsonify({'summary': detailed_summary,'original_content': subtitle_text})
 
         except subprocess.CalledProcessError as e:
             # Log the error for debugging
@@ -191,9 +183,8 @@ def summarize_text_file():
              return jsonify({'error': 'Extracted text content is empty.'}), 400
 
         # summary = summarize_text_with_ai(text_content) # OLD
-        file_name = file.filename # Get filename for the source_name
-        detailed_summary = generate_detailed_summary_with_ai(text_content, file_name) # NEW
-        return jsonify({'summary': detailed_summary, 'name': file_name, 'original_content': text_content})
+        detailed_summary = generate_detailed_summary_with_ai(text_content) # NEW
+        return jsonify({'summary': detailed_summary, 'original_content': text_content})
     except Exception as e:
         # Log the error for debugging
         print(f"Error processing text file: {str(e)}")
@@ -209,6 +200,7 @@ def chat():
     user_message = data.get('message')
     source_summaries = data.get('summaries') # Expecting a list of strings
 
+    print(data)
     if not user_message:
         return jsonify({'error': 'Message is required'}), 400
 
