@@ -39,6 +39,7 @@ body {
   display: flex;
   min-height: 100vh; /* Ensure it takes full viewport height */
   /* background-color: var(--neutral-bg); Rely on index.css or body rule */
+  position: relative;
 }
 
 /* General Container/Card Styling */
@@ -505,15 +506,19 @@ button.secondary:hover {
 
 /* Main Content Enhancements */
 .main-content {
-  flex-grow: 1; /* Takes up remaining space */
   padding: 1rem;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   background-color: #ffffff; /* White main area */
   border-radius: var(--default-border-radius); /* ADDED */
-  margin-left: 10px; /* If sidebar has shadow */
   box-shadow: var(--default-box-shadow); /* ADDED */
+  position: absolute;
+  top: 0;
+  left: 250px; /* Left sidebar width */
+  width: calc(100% - 250px - 300px); /* Total width minus left and right sidebar widths */
+  z-index: 10;
+  cursor: grab;
 }
 
 .right-sidebar {

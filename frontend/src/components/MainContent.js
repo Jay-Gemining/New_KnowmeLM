@@ -22,6 +22,11 @@ const MainContent = ({
   const messagesEndRef = useRef(null);
   const chatMessagesRef = useRef(chatMessages);
 
+  // Draggable state
+  const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState({ top: 0, left: 250 }); // Initial position from CSS
+  const dragStartPos = useRef({ x: 0, y: 0, initialTop: 0, initialLeft: 0 });
+
   const [isAiResponding, setIsAiResponding] = useState(false);
   const [chatError, setChatError] = useState(null); // Will be used with showNotification
   // Removed generatingReports, reportGenerationStatus
@@ -82,6 +87,63 @@ const MainContent = ({
     }
     setChatContextInfo(contextDescription);
   }, [selectedNotebook]); // Dependency only on selectedNotebook (and its inner properties like sources)
+
+  // Mouse event handlers for dragging
+  const handleMouseDown = (event) => {
+    // Prevent dragging on input elements, buttons, or scrollbars
+    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.tagName === 'BUTTON' || event.target.closest('.chat-messages') || event.target.closest('.sidebar') || event.target.closest('.right-sidebar')) {
+      return;
+    }
+    // Check if the click is on a scrollbar
+    const target = event.target;
+    const isScrollbarClick = target.scrollHeight > target.clientHeight && (event.offsetX > target.clientWidth || event.offsetY > target.clientHeight);
+    if (isScrollbarClick) {
+        return;
+    }
+
+    setIsDragging(true);
+    dragStartPos.current = {
+      x: event.clientX,
+      y: event.clientY,
+      initialTop: position.top,
+      initialLeft: position.left,
+    };
+    // Optional: Change cursor on the body to indicate dragging globally
+    // document.body.style.cursor = 'grabbing';
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleMouseMove = (event) => {
+    // No need to check isDragging here as listener is added/removed based on it
+    // but as a safeguard or if called from elsewhere, it's fine.
+    // if (!isDragging) return; // This check is implicitly handled by listener management
+
+    const deltaX = event.clientX - dragStartPos.current.x;
+    const deltaY = event.clientY - dragStartPos.current.y;
+    const newTop = dragStartPos.current.initialTop + deltaY;
+    const newLeft = dragStartPos.current.initialLeft + deltaX;
+    setPosition({ top: newTop, left: newLeft });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    // document.body.style.cursor = 'default'; // Reset body cursor
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  };
+
+  // Effect for cleaning up event listeners
+  useEffect(() => {
+    // This cleanup function will be called when the component unmounts
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      // if (document.body.style.cursor === 'grabbing') { // Reset body cursor if unmounting while dragging
+      //   document.body.style.cursor = 'default';
+      // }
+    };
+  }, []); // Empty dependency array means this effect runs once on mount and cleanup on unmount
 
   const autoResizeTextarea = (element) => {
     element.style.height = 'auto';
@@ -234,7 +296,15 @@ const MainContent = ({
 
   // Main return statement for MainContent
   return (
-    <div className="main-content">
+    <div
+      className="main-content"
+      style={{
+        top: position.top + 'px',
+        left: position.left + 'px',
+        cursor: isDragging ? 'grabbing' : 'grab'
+      }}
+      onMouseDown={handleMouseDown}
+    >
       <div className="content-above-chat">
         {!selectedNotebook && ( // Simplified condition: only depends on selectedNotebook
           <div className="placeholder-message">
