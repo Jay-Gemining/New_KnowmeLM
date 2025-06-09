@@ -37,7 +37,8 @@ body {
 
 .app-container {
   display: flex;
-  min-height: 100vh; /* Ensure it takes full viewport height */
+  height: 100vh; /* Ensure it takes full viewport height */
+  overflow: hidden;
   /* background-color: var(--neutral-bg); Rely on index.css or body rule */
 }
 
@@ -104,6 +105,9 @@ input[type="text"]:focus, textarea:focus {
   border-right: 1px solid var(--neutral-border); /* Softer border */
   padding: 20px;
   background-color: #ffffff; /* White sidebar */
+  height: 100vh;
+  position: sticky;
+  top: 0;
   overflow-y: auto;
   border-radius: 0; /* Keep sharp edge or apply only to top/bottom */
   box-shadow: var(--default-box-shadow); /* ADDED */
@@ -507,7 +511,8 @@ button.secondary:hover {
 .main-content {
   flex-grow: 1; /* Takes up remaining space */
   padding: 1rem;
-  overflow-y: auto;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   background-color: #ffffff; /* White main area */
@@ -521,6 +526,9 @@ button.secondary:hover {
   flex-shrink: 0; /* Prevent sidebar from shrinking */
   padding: 1rem;
   background-color: #f0f0f0; /* Placeholder background */
+  height: 100vh;
+  position: sticky;
+  top: 0;
   overflow-y: auto;
   border-left: 1px solid var(--neutral-border); /* Separator line */
   box-shadow: var(--default-box-shadow);
@@ -615,7 +623,7 @@ button.secondary:hover {
   padding: 15px;
   background-color: var(--neutral-bg-alt); /* Slightly different bg for chat message list */
   margin-bottom: 15px; /* More space */
-  min-height: 150px; /* Increased min-height */
+  min-height: 0; /* Increased min-height */
   border-radius: 8px; /* More rounded */
   border: 1px solid var(--neutral-border);
 }
