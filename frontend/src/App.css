@@ -615,6 +615,8 @@ button.secondary:hover {
   border-top: 1px solid var(--neutral-border); /* Softer border */
   margin-top: 20px;
   padding-top: 15px;
+  min-height: 0;
+  overflow: hidden; /* To ensure it doesn't try to scroll, letting chat-messages do it */
 }
 
 .chat-messages {
