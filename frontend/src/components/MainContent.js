@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import YoutubeSummarizer from './YoutubeSummarizer';
+import WebsiteSummarizer from './WebsiteSummarizer'; // Changed from YoutubeSummarizer
 import TextFileSummarizer from './TextFileSummarizer';
 // Removed getHtmlReport, saveHtmlReport
 
@@ -7,8 +7,8 @@ const MainContent = ({
   selectedNotebook,
   // selectedSource, // Removed prop
   onUpdateNotebook,
-  showYoutubeSummarizerInMain, // New
-  onToggleYoutubeSummarizerInMain,
+  showWebsiteSummarizerInMain, // Renamed from showYoutubeSummarizerInMain
+  onToggleWebsiteSummarizerInMain, // Renamed from onToggleYoutubeSummarizerInMain
   showTextFileSummarizerInMain,
   onToggleTextFileSummarizerInMain,
   onAddSourceToNotebook,
@@ -44,7 +44,7 @@ const MainContent = ({
       onAddSourceToNotebook(selectedNotebookId, summaryData);
       showNotification(`Source '${summaryData.name}' added successfully!`, 'success'); // Notification
     }
-    onToggleYoutubeSummarizerInMain(false);
+    onToggleWebsiteSummarizerInMain(false); // Changed from onToggleYoutubeSummarizerInMain
     onToggleTextFileSummarizerInMain(false);
   };
 
@@ -205,7 +205,7 @@ const MainContent = ({
   const NotebookOverviewContent = () => (
     <div className="notebook-overview">
       <h2 style={{ textAlign: 'center' }}>{selectedNotebook.title}</h2>
-      {!(showYoutubeSummarizerInMain || showTextFileSummarizerInMain) && (
+      {!(showWebsiteSummarizerInMain || showTextFileSummarizerInMain) && ( // Changed from showYoutubeSummarizerInMain
         <>
           <p className="placeholder-message-main" style={{ textAlign: 'center', margin: '20px 0' }}>
             Welcome to your notebook! Add sources using the buttons in the sidebar.
@@ -214,16 +214,20 @@ const MainContent = ({
           {/* Removed Add Source buttons from here */}
         </>
       )}
-      {showYoutubeSummarizerInMain && (
+      {showWebsiteSummarizerInMain && ( // Changed from showYoutubeSummarizerInMain
         <div className="summarizer-container-main">
-          <YoutubeSummarizer onSummaryComplete={handleSummaryCompleteInMain} />
-          <button onClick={() => onToggleYoutubeSummarizerInMain(false)} style={{ marginTop: '10px' }}>Cancel</button>
+          <WebsiteSummarizer onSummaryComplete={handleSummaryCompleteInMain} onCancel={() => onToggleWebsiteSummarizerInMain(false)} />
+          {/* Updated to WebsiteSummarizer and passed onCancel */}
+          {/* The button below is now redundant if WebsiteSummarizer has its own cancel, but keeping if it's an outer cancel */}
+          {/* <button onClick={() => onToggleWebsiteSummarizerInMain(false)} style={{ marginTop: '10px' }}>Cancel</button> */}
+          {/* The above cancel button is now part of WebsiteSummarizer's internal structure via onCancel prop */}
         </div>
       )}
       {showTextFileSummarizerInMain && (
         <div className="summarizer-container-main">
-          <TextFileSummarizer onSummaryComplete={handleSummaryCompleteInMain} />
-          <button onClick={() => onToggleTextFileSummarizerInMain(false)} style={{ marginTop: '10px' }}>Cancel</button>
+          <TextFileSummarizer onSummaryComplete={handleSummaryCompleteInMain} onCancel={() => onToggleTextFileSummarizerInMain(false)} />
+          {/* Updated TextFileSummarizer to also accept onCancel for consistency if it also has its own cancel button */}
+          {/* <button onClick={() => onToggleTextFileSummarizerInMain(false)} style={{ marginTop: '10px' }}>Cancel</button> */}
         </div>
       )}
       {/* Removed the source-selection-container card and related report generation UI */}

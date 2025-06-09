@@ -6,3 +6,5 @@ yt-dlp
 flask-cors
 httpx
 PyPDF2
+requests
+beautifulsoup4

@@ -11,7 +11,7 @@ function App() {
   const [notebooks, setNotebooks] = useState([]);
   const [selectedNotebookId, setSelectedNotebookId] = useState(null);
   // Removed selectedSourceId state
-  const [showYoutubeSummarizerInMain, setShowYoutubeSummarizerInMain] = useState(false);
+  const [showWebsiteSummarizerInMain, setShowWebsiteSummarizerInMain] = useState(false);
   const [showTextFileSummarizerInMain, setShowTextFileSummarizerInMain] = useState(false);
   const [notification, setNotification] = useState({ message: '', type: '' }); // New state for notification
 
@@ -114,7 +114,7 @@ function App() {
     }
   }, [notebooks, selectedNotebookId]);
 
-  const handleToggleYoutubeSummarizerInMain = (show) => setShowYoutubeSummarizerInMain(show);
+  const handleToggleWebsiteSummarizerInMain = (show) => setShowWebsiteSummarizerInMain(show);
   const handleToggleTextFileSummarizerInMain = (show) => setShowTextFileSummarizerInMain(show);
 
   const showNotification = (message, type = 'info') => { // New function to show notification
@@ -148,15 +148,15 @@ function App() {
         onToggleSourceChatSelection={handleToggleSourceChatSelection} // Ensured this is passed
         onEditNotebookTitle={handleEditNotebookTitle}
         onDeleteNotebook={handleDeleteNotebook}
-        onToggleYoutubeSummarizer={handleToggleYoutubeSummarizerInMain}
+        onToggleWebsiteSummarizer={handleToggleWebsiteSummarizerInMain}
         onToggleTextFileSummarizer={handleToggleTextFileSummarizerInMain}
       />
       <MainContent
         selectedNotebook={selectedNotebook}
         // Removed selectedSource prop
         onUpdateNotebook={handleUpdateNotebook} // Pass this down
-        showYoutubeSummarizerInMain={showYoutubeSummarizerInMain}
-        onToggleYoutubeSummarizerInMain={handleToggleYoutubeSummarizerInMain}
+        showWebsiteSummarizerInMain={showWebsiteSummarizerInMain}
+        onToggleWebsiteSummarizerInMain={handleToggleWebsiteSummarizerInMain}
         showTextFileSummarizerInMain={showTextFileSummarizerInMain}
         onToggleTextFileSummarizerInMain={handleToggleTextFileSummarizerInMain}
         onAddSourceToNotebook={handleAddSourceToNotebook}

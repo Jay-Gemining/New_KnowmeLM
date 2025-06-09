@@ -148,7 +148,10 @@ const RightSidebar = ({ selectedNotebook, showNotification, onToggleSourceChatSe
                 />
                 <label htmlFor={`report-source-select-${source.id}`} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                   <span className="source-icon">
-                    {source.type === 'youtube' ? '📺' : source.name?.toLowerCase().endsWith('.pdf') ? '📰' : '📄'}
+                    {source.type === 'website' ? '🌐' :
+                      (source.name?.toLowerCase().endsWith('.pdf') ? '📰' :
+                         '📄') /* Default icon for non-website, non-pdf types */
+                    }
                   </span>
                   <span className="source-name" title={source.name}>{source.name}</span>
                 </label>

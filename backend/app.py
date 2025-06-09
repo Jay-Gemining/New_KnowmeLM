@@ -7,6 +7,8 @@ from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader # Added for PDF processing
 from flask_cors import CORS
+import requests
+from bs4 import BeautifulSoup
 
 load_dotenv()
 
@@ -26,13 +28,16 @@ if api_key:
 
 # Removed old summarize_text_with_ai function
 
-def generate_detailed_summary_with_ai(text_content):
+def generate_detailed_summary_with_ai(text_content, document_name=""): # Added document_name parameter
     if not api_key:
         return "Error: OpenAI API key not configured. Cannot generate detailed summary."
 
     client = OpenAI(api_key=api_key, base_url=base_url)
 
-    prompt = f"""Please provide a detailed and comprehensive summary of the following text from the source titled .
+    # Use document_name in the prompt if provided, otherwise use a generic placeholder.
+    source_title_text = f"the source titled '{document_name}'" if document_name else "the provided source"
+
+    prompt = f"""Please provide a detailed and comprehensive summary of the following text from {source_title_text}.
     The summary should capture the main points, key arguments, and any significant conclusions or information presented.
     Organize the summary logically. Aim for a thorough representation of the original content.
 
@@ -63,11 +68,67 @@ def generate_detailed_summary_with_ai(text_content):
         )
         detailed_summary = response.choices[0].message.content.strip()
         if not detailed_summary or len(detailed_summary) < 50: # Arbitrary length check
-            return f"LLM returned a very short or empty summary for . Original text could not be adequately summarized."
+            return f"LLM returned a very short or empty summary for {document_name if document_name else 'the document'}. Original text could not be adequately summarized."
         return detailed_summary
     except Exception as e:
-        print(f"Error calling OpenAI API for detailed summary of '': {e}")
-        return f"Error generating detailed summary for : {str(e)}. Original text could not be summarized by the LLM."
+        print(f"Error calling OpenAI API for detailed summary of '{document_name}': {e}")
+        return f"Error generating detailed summary for {document_name if document_name else 'the document'}: {str(e)}. Original text could not be summarized by the LLM."
+
+def extract_text_from_url(url):
+    try:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status() # Raises an HTTPError for bad responses (4XX or 5XX)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # Remove script and style elements
+        for script_or_style in soup(["script", "style"]):
+            script_or_style.decompose()
+
+        # Attempt to get title
+        title = soup.title.string if soup.title else url
+
+        # Basic content extraction (can be improved)
+        # Prioritize common content containers
+        main_content_tags = soup.find_all(['article', 'main'])
+        if not main_content_tags:
+            # If no <article> or <main>, try common div classes or body
+            main_content_tags = soup.find_all('div', class_=['content', 'post-content', 'entry-content', 'article-body'])
+            if not main_content_tags:
+                main_content_tags = [soup.body] if soup.body else []
+
+        text_parts = []
+        for tag in main_content_tags:
+            if tag: # Ensure tag is not None
+                 # Get text, trying to preserve some structure with separators
+                paragraphs = tag.find_all(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li'])
+                if paragraphs:
+                    for p in paragraphs:
+                        text_parts.append(p.get_text(separator=' ', strip=True))
+                else: # Fallback if no specific paragraph tags found in main content
+                    text_parts.append(tag.get_text(separator=' ', strip=True))
+
+        extracted_text = "\n\n".join(filter(None, text_parts)) # Join non-empty parts
+
+        # If extracted_text is very short, try a simpler body extraction as a fallback
+        if len(extracted_text) < 200 and soup.body:
+            body_text = soup.body.get_text(separator='\n', strip=True)
+            if len(body_text) > len(extracted_text): # Only use if it's substantially better
+                extracted_text = body_text
+
+        return title, extracted_text
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching URL {url}: {e}")
+        # Consider re-raising a custom exception or returning a specific error indicator
+        raise ValueError(f"Failed to fetch or read URL: {url}. Error: {str(e)}")
+    except Exception as e:
+        print(f"Error processing URL {url}: {e}")
+        # General error during parsing
+        raise ValueError(f"Failed to parse content from URL: {url}. Error: {str(e)}")
 
 @app.route('/summarize-youtube', methods=['POST'])
 def summarize_youtube():
@@ -374,6 +435,46 @@ def generate_html_report():
         # Log any errors during the LLM API call.
         print(f"Error calling LLM for HTML generation: {e}")
         return jsonify({'error': f'Error communicating with LLM: {str(e)}'}), 500
+
+@app.route('/summarize-website', methods=['POST'])
+def summarize_website_route():
+    data = request.get_json()
+    if not data or 'url' not in data:
+        return jsonify({"error": "URL is required"}), 400
+
+    url = data['url']
+
+    try:
+        # Step 1: Extract content from URL
+        # This function (extract_text_from_url) should have been added in the previous step.
+        # It returns (title, extracted_text) or raises ValueError.
+        website_title, extracted_text = extract_text_from_url(url)
+
+        if not extracted_text.strip():
+             return jsonify({"error": "Could not extract meaningful content from the URL."}), 400
+
+        # Step 2: Generate summary using existing summarization logic
+        # Assuming generate_detailed_summary_with_ai exists and takes text + title.
+        # Adjust if its signature is different (e.g., if it doesn't need a title, or needs other params).
+        # The existing function might return a string summary or an object; adapt as needed.
+        # For this example, let's assume it returns the summary string.
+        summary_text = generate_detailed_summary_with_ai(extracted_text, document_name=website_title) # or however it's called
+
+        return jsonify({
+            "name": website_title,
+            "type": "website",
+            "original_content": extracted_text,
+            "summary": summary_text
+        }), 200
+
+    except ValueError as ve: # Catch errors from extract_text_from_url or summarization
+        return jsonify({"error": str(ve)}), 400
+    except openai.OpenAIError as oae: # Catch specific OpenAI errors if summarizer uses it
+        app.logger.error(f"OpenAI API error during website summarization for {url}: {oae}")
+        return jsonify({"error": f"Summarization service error: {str(oae)}"}), 500
+    except Exception as e:
+        app.logger.error(f"Unexpected error during website summarization for {url}: {e}")
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
