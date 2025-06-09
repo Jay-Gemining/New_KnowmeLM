@@ -13,7 +13,7 @@ const Sidebar = ({
     onToggleSourceChatSelection, // Added this prop
     onEditNotebookTitle,
     onDeleteNotebook,
-    onToggleYoutubeSummarizer, // New prop
+    onToggleWebsiteSummarizer, // Changed from onToggleYoutubeSummarizer
     onToggleTextFileSummarizer, // New prop
 }) => {
     // const [showYoutubeSummarizer, setShowYoutubeSummarizer] = useState(false); // Removed
@@ -77,8 +77,8 @@ const Sidebar = ({
                 <div style={{ marginTop: '20px' }}>
                     {/* Add Source Buttons */}
                     <div className="add-source-buttons-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
-                        <button onClick={() => onToggleYoutubeSummarizer(true)} className="primary icon-button">
-                            ➕ Add YouTube Source
+                        <button onClick={() => onToggleWebsiteSummarizer(true)} className="primary icon-button">
+                            ➕ Add Website Source
                         </button>
                         <button onClick={() => onToggleTextFileSummarizer(true)} className="primary icon-button">
                             ➕ Add File Source
@@ -103,8 +103,8 @@ const Sidebar = ({
                                             <span className="source-icon">
                                                 {(() => {
                                                     let icon = '📄'; // Default document icon
-                                                    if (source.type === 'youtube') {
-                                                        icon = '📺';
+                                                    if (source.type === 'website') { // New case for website
+                                                        icon = '🌐';
                                                     } else if (source.name && source.name.toLowerCase().endsWith('.pdf')) {
                                                         icon = '📰';
                                                     } else if (source.name && source.name.toLowerCase().endsWith('.md')) {
