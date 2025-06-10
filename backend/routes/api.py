@@ -7,8 +7,8 @@ import pysrt # For summarize_youtube_route (if kept)
 from PyPDF2 import PdfReader # For summarize_text_file_route
 
 # Import utility functions from the utils directory
-from backend.utils.extractor import extract_text_from_url
-from backend.utils.summarizer import generate_detailed_summary_with_ai
+from utils.extractor import extract_text_from_url
+from utils.summarizer import generate_detailed_summary_with_ai
 # config.py is imported in app.py, and it sets up openai.api_key globally
 
 api_bp = Blueprint('api_bp', __name__)
@@ -158,7 +158,7 @@ def chat_route():
 
     user_message = data['message']
     summaries = data.get('summaries', [])
-
+    print(data) #debug
     client = openai.OpenAI(
         api_key=os.environ.get("OPENAI_API_KEY"), # API key is set by config.py globally for openai module
         base_url=os.environ.get("OPENAI_BASE_URL")
@@ -177,7 +177,7 @@ def chat_route():
 
     try:
         completion = client.chat.completions.create(
-            model=os.getenv("OPENAI_MODEL", "gpt-3.5-turbo"),
+            model=os.getenv("OPENAI_MODEL"),
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_message}
@@ -240,7 +240,7 @@ def generate_html_report_route():
 """
     try:
         completion = client.chat.completions.create(
-            model=os.getenv("OPENAI_MODEL", "gpt-3.5-turbo"), # Ensure OPENAI_MODEL is set in .env
+            model=os.getenv("OPENAI_MODEL"), # Ensure OPENAI_MODEL is set in .env
             messages=[
                 {"role": "system", "content": "You are an expert HTML generator. Please create a valid and well-formatted HTML document based on the user's request. Ensure the output is a full HTML document starting with <!DOCTYPE html> and includes html, head, and body tags. Apply simple inline CSS for a clean, professional look, focusing on readability."},
                 {"role": "user", "content": prompt}
@@ -261,4 +261,3 @@ def generate_html_report_route():
         print(f"Unexpected error during HTML report generation: {e}")
         return jsonify({"error": f"An unexpected error occurred in HTML report generation: {str(e)}"}), 500
 
-```

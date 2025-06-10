@@ -78,7 +78,7 @@ def generate_detailed_summary_with_ai(text_content, document_name=""):
                 {"role": "user", "content": user_prompt}
             ],
             temperature=0.5, # Lower temperature for more factual summaries
-            max_tokens=max_tokens_for_summary
+            # max_tokens=max_tokens_for_summary
         )
         summary = completion.choices[0].message.content.strip()
         if not summary or len(summary) < 20: # Check for very short/empty summary

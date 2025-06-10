@@ -8,9 +8,9 @@ from flask import Flask, jsonify # request removed, send_from_directory not pres
 from flask_cors import CORS
 # import requests # No longer needed here
 # from bs4 import BeautifulSoup # No longer needed here
-import backend.config # Import the new config module
-from backend.routes.api import api_bp
-from backend.routes.static import static_bp
+import config # Import the new config module
+from routes.api import api_bp
+from routes.static import static_bp
 
 app = Flask(__name__, static_folder='../frontend/build', static_url_path='/')
 CORS(app) # Enable CORS for all routes
