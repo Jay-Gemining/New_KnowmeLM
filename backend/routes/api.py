@@ -261,3 +261,4 @@ def generate_html_report_route():
         print(f"Unexpected error during HTML report generation: {e}")
         return jsonify({"error": f"An unexpected error occurred in HTML report generation: {str(e)}"}), 500
 
+
