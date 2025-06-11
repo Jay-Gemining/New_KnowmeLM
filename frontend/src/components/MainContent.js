@@ -100,11 +100,10 @@ const MainContent = ({
     const currentMessageText = chatInput.trim();
     if (!currentMessageText || !selectedNotebook) return;
 
-    // The existing chatMessages state before adding the new user message IS the history.
-    const historyToSend = [...chatMessages]; // Create a snapshot
-
     const newUserMessage = { id: Date.now(), sender: 'user', text: currentMessageText };
-    setChatMessages(prevMessages => [...prevMessages, newUserMessage]);
+    const updatedChatMessagesForAPI = [...chatMessages, newUserMessage];
+
+    setChatMessages(updatedChatMessagesForAPI);
 
     setChatInput('');
     const textarea = document.querySelector('.chat-input-area textarea');
@@ -151,7 +150,7 @@ const MainContent = ({
         body: JSON.stringify({
           message: currentMessageText,
           summaries: summaries,
-          chat_history: historyToSend // Send the snapshot of chat history
+          chat_history: updatedChatMessagesForAPI
         }),
       });
 
