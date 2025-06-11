@@ -1,8 +1,31 @@
 import requests
 from bs4 import BeautifulSoup
+import re
 
 # This is the extract_text_from_url function previously in app.py
 def extract_text_from_url(url):
+    # Regex for common YouTube URL patterns
+    youtube_regex = r'(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?([^&=%\?]{11})'
+    is_youtube_url = re.search(youtube_regex, url)
+
+    if is_youtube_url:
+        # Attempt to fetch page title for YouTube URL, or use a generic one
+        title = "YouTube Video"
+        try:
+            temp_headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+            temp_response = requests.get(url, headers=temp_headers, timeout=5) # Shorter timeout for title
+            temp_response.raise_for_status()
+            temp_soup = BeautifulSoup(temp_response.content, 'html.parser')
+            if temp_soup.title and temp_soup.title.string:
+                title = temp_soup.title.string.strip()
+        except Exception:
+            # If fetching title fails, use the default "YouTube Video" or the URL itself
+            title = url
+
+        return title, "For YouTube videos, please use the 'Summarize YouTube' feature for better results. Full page text extraction is not suitable for this type of content."
+
     try:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
