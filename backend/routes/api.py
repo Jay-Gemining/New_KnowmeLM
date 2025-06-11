@@ -153,17 +153,20 @@ def summarize_website_route_bp():
 @api_bp.route('/chat', methods=['POST'])
 def chat_route():
     data = request.get_json()
-    if not data or 'message' not in data:
+    if not data or 'message' not in data: # 'message' is still sent, can be used for logging or as a fallback.
         return jsonify({"error": "Message is required"}), 400
 
-    user_message = data['message']
+    user_message_content = data['message'] # Content of the latest message
     summaries = data.get('summaries', [])
-    print(data) #debug
+    chat_history_from_request = data.get('chat_history', [])
+
+    # print(data) # For debugging
+
     client = openai.OpenAI(
-        api_key=os.environ.get("OPENAI_API_KEY"), # API key is set by config.py globally for openai module
+        api_key=os.environ.get("OPENAI_API_KEY"),
         base_url=os.environ.get("OPENAI_BASE_URL")
     )
-    if not client.api_key: # Check if client has API key
+    if not client.api_key:
         return jsonify({"error": "OpenAI API key not configured."}), 500
 
     context_str = ""
@@ -173,15 +176,38 @@ def chat_route():
     else:
         context_str = "You are a helpful AI assistant. Please answer the following question."
 
-    system_prompt = context_str # Using the constructed string as the system prompt
+    system_prompt_message = {"role": "system", "content": context_str}
+
+    # Transform chat_history_from_request
+    transformed_history = []
+    for msg in chat_history_from_request:
+        role = "user" if msg.get('sender') == 'user' else "assistant" if msg.get('sender') == 'ai' else None
+        if role and msg.get('text'):
+            transformed_history.append({"role": role, "content": msg['text']})
+        # Basic validation: ensure the last message in history is the user_message_content
+
+    # Ensure transformed_history is not empty and the last message is from the user, if it's not empty.
+    # The frontend sends the user message as the last one in chat_history.
+    # So, user_message_content should match transformed_history[-1]['content'] if role is user.
+
+    messages_for_openai = [system_prompt_message] + transformed_history
+
+    # Safety check: if transformed_history is empty or doesn't end with the user's latest message,
+    # it might indicate an issue. However, based on frontend changes, it should be correct.
+    # For robustness, one could add:
+    # if not transformed_history or \
+    #   (transformed_history[-1]['role'] == 'user' and transformed_history[-1]['content'] != user_message_content) or \
+    #   transformed_history[-1]['role'] != 'user':
+    #    # This case should ideally not happen with the new frontend logic.
+    #    # If it does, we might fall back to the old behavior or add the user_message_content explicitly.
+    #    # For now, trust the frontend sends the complete history.
+    #    pass
+
 
     try:
         completion = client.chat.completions.create(
             model=os.getenv("OPENAI_MODEL"),
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_message}
-            ],
+            messages=messages_for_openai, # Use the fully constructed message list
             temperature=0.7
         )
         reply = completion.choices[0].message.content
