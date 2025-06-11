@@ -160,12 +160,14 @@ def chat_route():
     summaries = data.get('summaries', [])
     chat_history_from_request = data.get('chat_history', [])
 
-    # print(data) # For debugging
-
+    print(data) # For debugging
+    print("&&&&&&&&&"*100)
     client = openai.OpenAI(
         api_key=os.environ.get("OPENAI_API_KEY"),
         base_url=os.environ.get("OPENAI_BASE_URL")
     )
+    print(f"summaries:{summaries}\n\n")
+    print(f"****************\nchat_history:{chat_history_from_request}\n\n*********************")
     if not client.api_key:
         return jsonify({"error": "OpenAI API key not configured."}), 500
 
@@ -190,8 +192,9 @@ def chat_route():
     # The frontend sends the user message as the last one in chat_history.
     # So, user_message_content should match transformed_history[-1]['content'] if role is user.
 
-    messages_for_openai = [system_prompt_message] + transformed_history
+    messages_for_openai = transformed_history+ [system_prompt_message]
 
+    print(f"********\n messages_for_openai:{messages_for_openai}\n")
     # Safety check: if transformed_history is empty or doesn't end with the user's latest message,
     # it might indicate an issue. However, based on frontend changes, it should be correct.
     # For robustness, one could add:
@@ -228,7 +231,8 @@ def generate_html_report_route():
 
     summary_text = data['summary_text']
     title = data['title']
-
+    print(summary_text)
+    print("\n\n\n")
     client = openai.OpenAI(
         api_key=os.environ.get("OPENAI_API_KEY"),
         base_url=os.environ.get("OPENAI_BASE_URL")
