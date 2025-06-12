@@ -8,13 +8,17 @@ import './components/Notification.css'; // New import for CSS
 import Modal from './components/Modal'; // Import Modal
 import WebsiteSummarizer from './components/WebsiteSummarizer'; // Import WebsiteSummarizer
 import TextFileSummarizer from './components/TextFileSummarizer'; // Import TextFileSummarizer
-import { getNotebooks, saveNotebooks as saveNotebooksToStorage } from './utils/localStorageHelper'; // Renamed for clarity
+import ReportGenerationModal from './components/ReportGenerationModal'; // Import ReportGenerationModal
+import { getNotebooks, saveNotebooks as saveNotebooksToStorage, getHtmlReport, saveHtmlReport } from './utils/localStorageHelper'; // Renamed for clarity, added report helpers
 
 function App() {
   const [notebooks, setNotebooks] = useState([]);
   const [selectedNotebookId, setSelectedNotebookId] = useState(null);
   const [activeModal, setActiveModal] = useState(null); // New state for active modal
   const [notification, setNotification] = useState({ message: '', type: '' }); // New state for notification
+  const [generatingReports, setGeneratingReports] = useState(false); // Moved from RightSidebar
+  const [reportGenerationStatus, setReportGenerationStatus] = useState([]); // Moved from RightSidebar
+
 
   // Load notebooks from localStorage on mount
   useEffect(() => {
@@ -133,6 +137,121 @@ function App() {
   // Derived state for selected notebook
   const selectedNotebook = notebooks.find(nb => nb.id === selectedNotebookId);
 
+  // Moved from RightSidebar.js
+  const displayErrorInNewTab = (tab, errorTitle, errorMessage, errorDetails = "") => {
+    if (tab && !tab.closed) {
+        tab.document.open();
+        tab.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Report Error</title>
+                <style>
+                    body { font-family: sans-serif; text-align: center; padding: 40px; background-color: #f8f9fa; color: #333; }
+                    .error-container { background-color: #fff; border: 1px solid #dee2e6; border-radius: 8px; padding: 30px; max-width: 600px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+                    h1 { color: #dc3545; font-size: 1.8em; margin-bottom: 15px; }
+                    p { font-size: 1.1em; margin-bottom: 10px; }
+                    pre {
+                        background-color: #e9ecef;
+                        padding: 15px;
+                        border-radius: 4px;
+                        text-align: left;
+                        white-space: pre-wrap;
+                        word-break: break-all;
+                        font-size: 0.9em;
+                        border: 1px solid #ced4da;
+                    }
+                    .close-instruction { font-size: 0.9em; color: #6c757d; margin-top: 20px; }
+                </style>
+            </head>
+            <body>
+                <div class="error-container">
+                    <h1>${errorTitle}</h1>
+                    <p>${errorMessage}</p>
+                    ${errorDetails ? `<pre>${JSON.stringify(errorDetails, null, 2)}</pre>` : ''}
+                    <p class="close-instruction">You can close this tab.</p>
+                </div>
+            </body>
+            </html>
+        `);
+        tab.document.close();
+        tab.focus();
+    }
+  };
+
+  // Moved from RightSidebar.js and modified to accept sourcesToReport
+  const handleGenerateReportForSelectedSources = async (sourcesToReport) => {
+    if (!selectedNotebook) {
+      showNotification("No notebook selected for report generation.", 'error');
+      return;
+    }
+    if (!sourcesToReport || sourcesToReport.length === 0) {
+      showNotification("No sources provided for report generation.", 'info');
+      return;
+    }
+
+    setGeneratingReports(true);
+    setReportGenerationStatus(sourcesToReport.map(s => ({ id: s.id, name: s.name, status: 'pending' })));
+    showNotification('Report generation process initiated for selected sources.', 'info');
+
+    for (const source of sourcesToReport) {
+      setReportGenerationStatus(prev => prev.map(s => s.id === source.id ? { ...s, status: 'generating' } : s));
+
+      const cachedHtml = getHtmlReport(selectedNotebook.id, source.id);
+      if (cachedHtml) {
+        const newTabCached = window.open('', '_blank');
+        if (newTabCached) {
+          newTabCached.document.open();
+          newTabCached.document.write(cachedHtml);
+          newTabCached.document.close();
+          newTabCached.focus();
+          setReportGenerationStatus(prev => prev.map(s => s.id === source.id ? { ...s, status: 'cached' } : s));
+          continue;
+        }
+      }
+
+      const newTab = window.open('', '_blank');
+      if (!newTab) {
+        showNotification(`Popup blocker prevented opening tab for ${source.name}`, 'error');
+        setReportGenerationStatus(prev => prev.map(s => s.id === source.id ? { ...s, status: 'error', message: 'Popup blocker' } : s));
+        continue;
+      }
+      newTab.document.open();
+      newTab.document.write(`<!DOCTYPE html><html><head><title>Generating Report for ${source.name}</title><body><h1>Generating Report...</h1><p>Please wait for ${source.name}.</p></body></html>`);
+      newTab.document.close();
+
+      try {
+        const response = await fetch('http://localhost:5001/generate-html-report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ summary_text: source.summary, title: source.name }),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (newTab && !newTab.closed) {
+            newTab.document.open();
+            newTab.document.write(data.html_content);
+            newTab.document.close();
+            saveHtmlReport(selectedNotebook.id, source.id, data.html_content);
+            newTab.focus();
+            setReportGenerationStatus(prev => prev.map(s => s.id === source.id ? { ...s, status: 'success' } : s));
+          } else {
+             setReportGenerationStatus(prev => prev.map(s => s.id === source.id ? { ...s, status: 'error', message: 'Tab closed by user' } : s));
+          }
+        } else {
+          const errorData = await response.json().catch(() => response.text());
+          displayErrorInNewTab(newTab, 'API Report Generation Error', `API Error for ${source.name}: Status ${response.status}`, errorData);
+          setReportGenerationStatus(prev => prev.map(s => s.id === source.id ? { ...s, status: 'error', message: `API Error: ${response.status}` } : s));
+        }
+      } catch (error) {
+         displayErrorInNewTab(newTab, 'Network Report Generation Error', `Network Error for ${source.name}: ${error.message}`);
+         setReportGenerationStatus(prev => prev.map(s => s.id === source.id ? { ...s, status: 'error', message: error.message } : s));
+      }
+    }
+    setGeneratingReports(false);
+  };
+
+
   const handleUpdateNotebook = useCallback((notebookId, updatedProps) => {
     const updatedNotebooks = notebooks.map(nb => {
       if (nb.id === notebookId) {
@@ -171,6 +290,7 @@ function App() {
         selectedNotebook={selectedNotebook}
         showNotification={showNotification}
         onToggleSourceChatSelection={handleToggleSourceChatSelection}
+        onOpenReportModal={() => setActiveModal('reportGeneration')}
       />
       <Notification
         message={notification.message}
@@ -189,6 +309,15 @@ function App() {
             <TextFileSummarizer
               onSummaryComplete={handleSummaryCompleteAndCloseModal}
               onCancel={handleCloseModal}
+            />
+          )}
+          {activeModal === 'reportGeneration' && (
+            <ReportGenerationModal
+              notebook={selectedNotebook}
+              onClose={handleCloseModal}
+              onGenerateReport={handleGenerateReportForSelectedSources}
+              generatingReports={generatingReports}
+              reportGenerationStatus={reportGenerationStatus}
             />
           )}
         </Modal>
