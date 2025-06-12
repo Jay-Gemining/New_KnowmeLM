@@ -69,7 +69,7 @@ function WebsiteSummarizer({ onSummaryComplete, onCancel }) {
     };
 
     return (
-        <div className="summarizer-container card">
+        <div className="summarizer-form-container">
             <h3>Add New Website Source</h3>
             <form onSubmit={handleSubmit}>
                 <div style={{ marginBottom: '15px' }}>

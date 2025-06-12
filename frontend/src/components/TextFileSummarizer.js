@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function TextFileSummarizer({ onSummaryComplete }) { // Accept onSummaryComplete prop
+function TextFileSummarizer({ onSummaryComplete, onCancel }) { // Accept onSummaryComplete and onCancel props
     const [selectedFile, setSelectedFile] = useState(null);
     // Removed summary state
     const [isLoading, setIsLoading] = useState(false);
@@ -74,26 +74,32 @@ function TextFileSummarizer({ onSummaryComplete }) { // Accept onSummaryComplete
     };
 
     return (
-        <div>
-            <h4>Add File Summary (.txt, .md, .pdf)</h4>
+        <div className="summarizer-form-container">
+            <h3>Add New File Source</h3>
             <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="fileInput">Choose .txt, .md, or .pdf file:</label>
+                <div style={{ marginBottom: '15px' }}>
+                    <label htmlFor="fileInput" style={{ display: 'block', marginBottom: '5px' }}>Choose .txt, .md, or .pdf file:</label>
                     <input
                         type="file"
                         id="fileInput"
                         ref={fileInputRef}
                         accept=".txt,.md,.pdf,text/plain,application/pdf,text/markdown" // Updated accept attribute
                         onChange={handleFileChange}
-                        style={{ display: 'block', width: '100%', marginBottom: '10px' }} // Adjusted style
+                        style={{ display: 'block', width: '100%', padding: '8px', boxSizing: 'border-box', marginBottom: '10px' }} // Adjusted style
                     />
-                    <button type="submit" disabled={isLoading || !selectedFile} className="secondary" style={{width: '100%'}}>
+                </div>
+                {error && <p style={{ color: 'red', fontSize: '0.9em', marginBottom: '10px' }}>Error: {error}</p>}
+                {isLoading && <p style={{marginTop: '10px', textAlign: 'center'}}>Loading...</p>}
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
+                    <button type="button" onClick={onCancel} disabled={isLoading} className="secondary">
+                        Cancel
+                    </button>
+                    <button type="submit" disabled={isLoading || !selectedFile} className="primary">
                         {isLoading ? 'Processing...' : 'Add File Summary'}
                     </button>
                 </div>
             </form>
-            {isLoading && <p style={{marginTop: '10px', textAlign: 'center'}}>Loading...</p>}
-            {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+            {/* Error and loading messages are now above the buttons for better flow */}
             {/* Summary display removed */}
         </div>
     );
