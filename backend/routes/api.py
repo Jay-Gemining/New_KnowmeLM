@@ -79,7 +79,7 @@ def summarize_youtube_route():
     with tempfile.TemporaryDirectory() as tmpdir:
         try:
             cmd = [
-                'yt-dlp', '--write-auto-sub', '--sub-lang', 'en',
+                'yt-dlp', '--write-auto-sub', '--sub-lang', 'zh,en',
                 '--skip-download', '-o', f'{tmpdir}/%(id)s.%(ext)s', youtube_url
             ]
             # if youtube_browser_for_cookies:
