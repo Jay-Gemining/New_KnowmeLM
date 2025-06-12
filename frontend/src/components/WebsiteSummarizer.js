@@ -5,6 +5,11 @@ function WebsiteSummarizer({ onSummaryComplete, onCancel }) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
+    const isYoutubeUrl = (url) => {
+        const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
+        return youtubeRegex.test(url);
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!websiteUrl.trim()) {
@@ -14,13 +19,27 @@ function WebsiteSummarizer({ onSummaryComplete, onCancel }) {
         setIsLoading(true);
         setError(null);
 
+        let endpoint = '';
+        let body = {};
+        let summaryType = '';
+
+        if (isYoutubeUrl(websiteUrl)) {
+            endpoint = 'http://localhost:5001/summarize-youtube';
+            body = JSON.stringify({ youtube_url: websiteUrl });
+            summaryType = 'youtube';
+        } else {
+            endpoint = 'http://localhost:5001/summarize-website';
+            body = JSON.stringify({ url: websiteUrl });
+            summaryType = 'website';
+        }
+
         try {
-            const response = await fetch('http://localhost:5001/summarize-website', {
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ url: websiteUrl }),
+                body: body,
             });
 
             if (!response.ok) {
@@ -32,8 +51,8 @@ function WebsiteSummarizer({ onSummaryComplete, onCancel }) {
 
             if (onSummaryComplete) {
                 onSummaryComplete({
-                    type: 'website',
-                    name: responseData.name || websiteUrl, // Use name from response, fallback to URL
+                    type: summaryType,
+                    name: responseData.name || websiteUrl,
                     summary: responseData.summary,
                     original_content: responseData.original_content,
                     timestamp: new Date().toISOString(),

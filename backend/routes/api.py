@@ -5,6 +5,8 @@ import tempfile # For summarize_youtube_route (if kept)
 import subprocess # For summarize_youtube_route (if kept)
 import pysrt # For summarize_youtube_route (if kept)
 from PyPDF2 import PdfReader # For summarize_text_file_route
+import sys # For logging to stderr
+import logging # For logging (if needed more formally later)
 
 # Import utility functions from the utils directory
 from utils.extractor import extract_text_from_url
@@ -68,6 +70,8 @@ def summarize_youtube_route():
 
     if not youtube_url:
         return jsonify({'error': 'youtube_url is required'}), 400
+    
+    print("Summarize YouTube route called for URL:", youtube_url, file=sys.stderr)
 
     youtube_cookies_file = os.environ.get("YOUTUBE_COOKIES_FILE")
     youtube_browser_for_cookies = os.environ.get("YOUTUBE_BROWSER_FOR_COOKIES")
@@ -78,14 +82,21 @@ def summarize_youtube_route():
                 'yt-dlp', '--write-auto-sub', '--sub-lang', 'en',
                 '--skip-download', '-o', f'{tmpdir}/%(id)s.%(ext)s', youtube_url
             ]
-            if youtube_browser_for_cookies:
-                cmd.extend(['--cookies-from-browser', youtube_browser_for_cookies])
-
-            subprocess.run(cmd, check=True, capture_output=True, text=True)
+            # if youtube_browser_for_cookies:
+            #     cmd.extend(['--cookies-from-browser', youtube_browser_for_cookies])
+            # Temp: Forcing no cookies to see if it resolves subtitle download issue
+            
+            print(f"Attempting to download subtitles for {youtube_url} using command: {' '.join(cmd)}", file=sys.stderr)
+            process_result = subprocess.run(cmd, capture_output=True, text=True)
+            print(f"yt-dlp stdout: {process_result.stdout}", file=sys.stderr)
+            print(f"yt-dlp stderr: {process_result.stderr}", file=sys.stderr)
+            process_result.check_returncode() # This will raise CalledProcessError if exit code is non-zero.
 
             subtitle_text = None
+            print(f"Files in temp directory {tmpdir}: {os.listdir(tmpdir)}", file=sys.stderr)
             for filename in os.listdir(tmpdir):
                 if filename.endswith(('.vtt', '.srt')):
+                    print(f"Found subtitle file: {filename}. Processing with {'SRT' if filename.endswith('.srt') else 'VTT'} parser.", file=sys.stderr)
                     filepath = os.path.join(tmpdir, filename)
                     if filename.endswith('.srt'):
                         subs = pysrt.open(filepath)
@@ -107,6 +118,7 @@ def summarize_youtube_route():
                     break
 
             if not subtitle_text:
+                print(f"No subtitle text could be extracted from {youtube_url}", file=sys.stderr)
                 return jsonify({'error': 'Could not find or parse subtitles'}), 404
 
             summary = generate_detailed_summary_with_ai(subtitle_text, document_name=youtube_url)
@@ -115,8 +127,12 @@ def summarize_youtube_route():
             return jsonify({'summary': summary,'original_content': subtitle_text, 'name': youtube_url, 'type': 'youtube'})
 
         except subprocess.CalledProcessError as e:
+            print(f"yt-dlp command failed. Stderr: {e.stderr}, Stdout: {e.stdout}", file=sys.stderr)
             return jsonify({'error': 'Failed to download subtitles', 'details': e.stderr}), 500
         except Exception as e:
+            print(f"An unexpected error occurred in summarize_youtube_route: {str(e)}", file=sys.stderr)
+            import traceback
+            print(traceback.format_exc(), file=sys.stderr)
             return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500
 
 
@@ -290,5 +306,3 @@ def generate_html_report_route():
     except Exception as e:
         print(f"Unexpected error during HTML report generation: {e}")
         return jsonify({"error": f"An unexpected error occurred in HTML report generation: {str(e)}"}), 500
-
-
