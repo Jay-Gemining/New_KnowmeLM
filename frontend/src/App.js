@@ -5,14 +5,15 @@ import MainContent from './components/MainContent';
 import RightSidebar from './components/RightSidebar'; // Import RightSidebar
 import Notification from './components/Notification'; // New import
 import './components/Notification.css'; // New import for CSS
+import Modal from './components/Modal'; // Import Modal
+import WebsiteSummarizer from './components/WebsiteSummarizer'; // Import WebsiteSummarizer
+import TextFileSummarizer from './components/TextFileSummarizer'; // Import TextFileSummarizer
 import { getNotebooks, saveNotebooks as saveNotebooksToStorage } from './utils/localStorageHelper'; // Renamed for clarity
 
 function App() {
   const [notebooks, setNotebooks] = useState([]);
   const [selectedNotebookId, setSelectedNotebookId] = useState(null);
-  // Removed selectedSourceId state
-  const [showWebsiteSummarizerInMain, setShowWebsiteSummarizerInMain] = useState(false);
-  const [showTextFileSummarizerInMain, setShowTextFileSummarizerInMain] = useState(false);
+  const [activeModal, setActiveModal] = useState(null); // New state for active modal
   const [notification, setNotification] = useState({ message: '', type: '' }); // New state for notification
 
   // Load notebooks from localStorage on mount
@@ -109,21 +110,28 @@ function App() {
       saveNotebooksToStorage(updatedNotebooks);
       if (selectedNotebookId === notebookId) {
         setSelectedNotebookId(updatedNotebooks.length > 0 ? updatedNotebooks[0].id : null);
-        // setSelectedSourceId(null); // No longer needed
       }
     }
   }, [notebooks, selectedNotebookId]);
 
-  const handleToggleWebsiteSummarizerInMain = (show) => setShowWebsiteSummarizerInMain(show);
-  const handleToggleTextFileSummarizerInMain = (show) => setShowTextFileSummarizerInMain(show);
+  const handleCloseModal = () => setActiveModal(null);
+
+  const handleSummaryCompleteAndCloseModal = (summaryData) => {
+    if (selectedNotebookId) {
+      handleAddSourceToNotebook(selectedNotebookId, summaryData);
+      showNotification(`Source '${summaryData.name}' added successfully!`, 'success');
+    } else {
+      showNotification('No notebook selected. Cannot add source.', 'error');
+    }
+    handleCloseModal();
+  };
 
   const showNotification = (message, type = 'info') => { // New function to show notification
     setNotification({ message, type });
   };
 
-  // Derived state for selected notebook and source (optional, can also be done in child components)
+  // Derived state for selected notebook
   const selectedNotebook = notebooks.find(nb => nb.id === selectedNotebookId);
-  // Removed selectedSource derived variable
 
   const handleUpdateNotebook = useCallback((notebookId, updatedProps) => {
     const updatedNotebooks = notebooks.map(nb => {
@@ -148,17 +156,12 @@ function App() {
         onToggleSourceChatSelection={handleToggleSourceChatSelection} // Ensured this is passed
         onEditNotebookTitle={handleEditNotebookTitle}
         onDeleteNotebook={handleDeleteNotebook}
-        onToggleWebsiteSummarizer={handleToggleWebsiteSummarizerInMain}
-        onToggleTextFileSummarizer={handleToggleTextFileSummarizerInMain}
+        onToggleWebsiteSummarizer={() => setActiveModal('website')}
+        onToggleTextFileSummarizer={() => setActiveModal('file')}
       />
       <MainContent
         selectedNotebook={selectedNotebook}
-        // Removed selectedSource prop
         onUpdateNotebook={handleUpdateNotebook} // Pass this down
-        showWebsiteSummarizerInMain={showWebsiteSummarizerInMain}
-        onToggleWebsiteSummarizerInMain={handleToggleWebsiteSummarizerInMain}
-        showTextFileSummarizerInMain={showTextFileSummarizerInMain}
-        onToggleTextFileSummarizerInMain={handleToggleTextFileSummarizerInMain}
         onAddSourceToNotebook={handleAddSourceToNotebook}
         selectedNotebookId={selectedNotebookId}
         onToggleSourceChatSelection={handleToggleSourceChatSelection}
@@ -174,6 +177,22 @@ function App() {
         type={notification.type}
         onDismiss={() => setNotification({ message: '', type: '' })}
       />
+      {activeModal && (
+        <Modal isOpen={!!activeModal} onClose={handleCloseModal}>
+          {activeModal === 'website' && (
+            <WebsiteSummarizer
+              onSummaryComplete={handleSummaryCompleteAndCloseModal}
+              onCancel={handleCloseModal}
+            />
+          )}
+          {activeModal === 'file' && (
+            <TextFileSummarizer
+              onSummaryComplete={handleSummaryCompleteAndCloseModal}
+              onCancel={handleCloseModal}
+            />
+          )}
+        </Modal>
+      )}
     </div>
   );
 }

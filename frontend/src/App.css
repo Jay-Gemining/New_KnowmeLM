@@ -768,3 +768,75 @@ p {
   display: inline-block;
   vertical-align: middle;
 }
+
+/* Styles for Summarizer Forms within Modal */
+.summarizer-form-container {
+  padding: 10px; /* Add some internal padding */
+  width: 100%; /* Ensure it takes the width of the modal content area */
+}
+
+.summarizer-form-container h3 {
+  margin-top: 0; /* Adjust heading margin */
+  text-align: center; /* Center the title */
+  margin-bottom: 20px; /* Space below heading */
+  color: var(--text-primary); /* Ensure heading color consistency */
+}
+
+/* Ensure form elements inside the summarizers are well-spaced and styled */
+.summarizer-form-container form div {
+  /* This was a bit too general, specific margins are applied below or in components */
+  /* margin-bottom: 15px; */
+}
+
+.summarizer-form-container form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: var(--text-secondary); /* Slightly lighter label text */
+}
+
+.summarizer-form-container input[type="text"],
+.summarizer-form-container input[type="file"] {
+  width: 100%;
+  padding: 10px 12px; /* Consistent padding with other inputs */
+  box-sizing: border-box;
+  border: 1px solid var(--neutral-border); /* Use variable */
+  border-radius: var(--default-border-radius); /* Use variable */
+  margin-bottom: 10px; /* Ensure space below input before error or buttons */
+}
+
+.summarizer-form-container input[type="file"] {
+    padding: 8px; /* File inputs often have slightly different padding needs */
+}
+
+
+.summarizer-form-container .button-group {
+  display: flex;
+  justify-content: space-between; /* This will space out buttons */
+  gap: 10px; /* Add some gap between buttons */
+  margin-top: 15px; /* Add space above button group */
+}
+
+.summarizer-form-container .button-group button {
+  flex-grow: 1; /* Make buttons take equal width */
+  margin-bottom: 0; /* Remove default button margin if group handles spacing */
+}
+
+/* Ensure error messages in summarizers are styled */
+.summarizer-form-container p[style*="color: red"], /* Targets inline styled error messages */
+.summarizer-form-container .error-message { /* Or if a class is used */
+  font-size: 0.9em;
+  color: var(--accent-error); /* Use error color variable */
+  margin-bottom: 10px;
+  text-align: center; /* Center error messages */
+}
+
+/* Ensure loading messages in summarizers are styled */
+.summarizer-form-container p[style*="text-align: center"], /* Targets inline styled loading messages */
+.summarizer-form-container .loading-message { /* Or if a class is used */
+  font-style: italic;
+  color: var(--text-secondary);
+  margin-top: 10px;
+  margin-bottom: 10px;
+  text-align: center;
+}
