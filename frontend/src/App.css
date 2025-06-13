@@ -2,6 +2,7 @@
   --primary-blue: #007BFF;
   --primary-blue-darker: #0056b3;
   --primary-blue-lighter: #e8f0fe; /* For selected items like in sidebar */
+  --user-message-background-blue: #6CBFFF;
 
   --neutral-bg: #F8F9FA; /* Soft gray for backgrounds/borders */
   --neutral-bg-alt: #E9ECEF; /* Slightly darker gray */
@@ -640,11 +641,16 @@ button.secondary:hover {
 }
 
 .chat-message.user {
-  background-color: var(--primary-blue);
+  background-color: var(--user-message-background-blue);
   color: var(--text-on-primary);
   margin-left: auto;
-  border-bottom-right-radius: 6px; /* Adjusted for bubble feel */
+  /* border-bottom-right-radius: 6px; */ /* Removed for consistent 18px radius */
   text-align: left; /* User text aligns left within bubble */
+  width: fit-content;
+  border: none;
+  box-shadow: var(--default-box-shadow);
+  padding: 3px 5px;
+  /* Ensure border-radius: 18px from .chat-message applies, or re-state if necessary */
 }
 
 .chat-message.ai {

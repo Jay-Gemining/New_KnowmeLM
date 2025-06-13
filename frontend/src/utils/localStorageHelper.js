@@ -42,6 +42,46 @@ export const updateNotebook = (updatedNotebook) => {
     return notebooks; // Return updated list
 };
 
+export const updateNotebookTitle = (notebookId, newTitle) => {
+    const notebooks = getNotebooks();
+    let notebookFound = false;
+    const updatedNotebooks = notebooks.map(notebook => {
+        if (notebook.id === notebookId) {
+            notebookFound = true;
+            return { ...notebook, title: newTitle, updatedAt: new Date().toISOString() };
+        }
+        return notebook;
+    });
+
+    if (notebookFound) {
+        saveNotebooks(updatedNotebooks);
+        return updatedNotebooks;
+    }
+    // Optionally, handle notebook not found (e.g., log an error or return original notebooks)
+    console.warn(`Notebook with ID ${notebookId} not found for title update.`);
+    return notebooks; // Or throw an error, or return null/undefined
+};
+
+export const updateNotebookTimestamp = (notebookId) => {
+    const notebooks = getNotebooks();
+    let notebookFound = false;
+    const updatedNotebooks = notebooks.map(notebook => {
+        if (notebook.id === notebookId) {
+            notebookFound = true;
+            return { ...notebook, updatedAt: new Date().toISOString() };
+        }
+        return notebook;
+    });
+
+    if (notebookFound) {
+        saveNotebooks(updatedNotebooks);
+        return updatedNotebooks;
+    }
+    // Optionally, handle notebook not found
+    console.warn(`Notebook with ID ${notebookId} not found for timestamp update.`);
+    return notebooks; // Or throw an error, or return null/undefined
+};
+
 // HTML Report Storage Functions
 
 export const saveHtmlReport = (notebookId, sourceId, htmlContent) => {
