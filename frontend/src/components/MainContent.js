@@ -197,35 +197,11 @@ const MainContent = ({
     autoResizeTextarea(event.target); // Also call on key press for dynamic resizing
   };
 
-  // Internal component for Notebook Overview
-  const NotebookOverviewContent = () => (
-    <div className="notebook-overview">
-      <h2 style={{ textAlign: 'center' }}>{selectedNotebook.title}</h2>
-      <p className="placeholder-message-main" style={{ textAlign: 'center', margin: '20px 0' }}>
-        Welcome to your notebook! Add sources using the buttons in the sidebar.
-        Select a source from the sidebar to view its details (if applicable).
-      </p>
-      {/* Removed Add Source buttons from here */}
-      {/* Removed WebsiteSummarizer and TextFileSummarizer conditional rendering */}
-      {/* Removed the source-selection-container card and related report generation UI */}
-    </div>
-  );
-
   // Removed SourceDetailViewWithTabs component
 
   // Main return statement for MainContent
   return (
     <div className="main-content">
-      <div className="content-above-chat">
-        {!selectedNotebook && ( // Simplified condition: only depends on selectedNotebook
-          <div className="placeholder-message">
-            <h2>Welcome to KnowmeLM!</h2>
-            <p>Select or create a notebook from the sidebar to get started.</p>
-          </div>
-        )}
-        {selectedNotebook && <NotebookOverviewContent />}
-        {/* Simplified condition: NotebookOverviewContent will render if a notebook is selected */}
-      </div>
 
       {selectedNotebook && (
         <div className="chat-area">
