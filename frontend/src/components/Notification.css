@@ -1,41 +1,67 @@
+/* frontend/src/components/Notification.css */
 .notification {
   position: fixed;
-  bottom: 20px;
+  bottom: var(--spacing-xl); /* 24px */
   left: 50%;
   transform: translateX(-50%);
-  padding: 12px 20px;
-  border-radius: var(--default-border-radius);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  z-index: 1000;
+  padding: var(--spacing-lg) var(--spacing-xl); /* 16px 24px */
+  border-radius: var(--border-radius-default); /* 6px */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Keep existing shadow, it's good */
+  z-index: 2000; /* Higher than modal overlay */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-width: 250px;
-  max-width: 500px;
+  min-width: 300px; /* Increased min-width */
+  max-width: 550px; /* Increased max-width */
+  font-size: var(--font-size-base); /* 16px */
 }
+
 .notification.success {
-  background-color: var(--accent-success);
-  color: var(--text-on-primary);
+  background-color: var(--color-accent-success); /* light green background */
+  color: var(--color-accent-success-text); /* dark green text */
+  border: 1px solid var(--color-accent-success-text); /* Optional border for definition */
 }
+
 .notification.error {
-  background-color: var(--accent-error);
-  color: var(--text-on-primary);
+  background-color: var(--color-accent-error); /* light red background */
+  color: var(--color-accent-error-text); /* dark red text */
+  border: 1px solid var(--color-accent-error-text); /* Optional border */
 }
-.notification.info { /* Add an info type if needed */
-  background-color: var(--primary-blue);
-  color: var(--text-on-primary);
+
+.notification.info {
+  background-color: var(--color-action-primary-lighter); /* light blue/purple background */
+  color: var(--color-action-primary); /* blue/purple text */
+  border: 1px solid var(--color-action-primary); /* Optional border */
 }
+
 .notification .dismiss-btn {
-  background: none;
+  background: transparent;
   border: none;
-  color: inherit;
-  font-size: 1.5em;
-  margin-left: 15px;
-  padding: 0 5px;
+  color: inherit; /* Inherits text color from parent .notification.<type> */
+  font-size: 1.6rem; /* Slightly larger */
+  font-weight: 300; /* Lighter weight */
+  margin-left: var(--spacing-lg); /* 16px */
+  padding: var(--spacing-xs); /* 4px */
   cursor: pointer;
   line-height: 1;
-  box-shadow: none;
+  border-radius: 50%;
+  width: calc(1.6rem + (2 * var(--spacing-xs)));
+  height: calc(1.6rem + (2 * var(--spacing-xs)));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
 }
+
 .notification .dismiss-btn:hover {
-    opacity: 0.8;
+  opacity: 0.7; /* Standard way to show hover for icon-like buttons */
+  /* Alternatively, change background for more emphasis, depending on text contrast */
+  /* e.g. background-color: rgba(0,0,0,0.1); */
 }
+
+/* Ensure this button styling is distinct enough from content if icons are used later */
+/* If using Material Symbols for dismiss button later in Notification.js:
+.notification .dismiss-btn .material-symbols {
+  font-size: 1.25rem; // Adjust as needed
+}
+*/

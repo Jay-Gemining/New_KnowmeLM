@@ -1,474 +1,214 @@
-:root {
-  --primary-blue: #007BFF;
-  --primary-blue-darker: #0056b3;
-  --primary-blue-lighter: #e8f0fe; /* For selected items like in sidebar */
-  --user-message-background-blue: #6CBFFF;
+/* frontend/src/App.css */
+/* Global styles that are more specific than index.css or component-level */
 
-  --neutral-bg: #F8F9FA; /* Soft gray for backgrounds/borders */
-  --neutral-bg-alt: #E9ECEF; /* Slightly darker gray */
-  --neutral-border: #DEE2E6; /* For borders */
-
-  --text-primary: #212529; /* Dark gray/black for main text */
-  --text-secondary: #495057; /* Lighter gray for secondary text */
-  --text-on-primary: #FFFFFF; /* White text on primary color */
-
-  --accent-success: #28A745; /* Green for success */
-  --accent-warning: #FFC107; /* Orange for warning/accent */
-  --accent-error: #DC3545; /* Red for errors */
-
-  --default-border-radius: 6px;
-  --default-box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  --hover-box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-/* Global */
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: var(--neutral-bg); /* Light background for the page */
-  color: var(--text-primary);
-}
-
-* {
-  box-sizing: border-box;
-}
-
+/* App Container */
 .app-container {
   display: flex;
-  height: 100vh; /* Ensure it takes full viewport height */
+  height: 100vh;
   overflow: hidden;
-  /* background-color: var(--neutral-bg); Rely on index.css or body rule */
+  /* background-color is set on body in index.css */
 }
 
 /* General Container/Card Styling */
 .card {
-  background-color: #fff;
-  border-radius: var(--default-border-radius);
-  box-shadow: var(--default-box-shadow);
-  border: 1px solid var(--neutral-border);
-  padding: 15px; /* Default padding, can be overridden */
+  background-color: var(--color-background-panel); /* Was #fff */
+  border-radius: var(--border-radius-default);
+  box-shadow: var(--box-shadow-default);
+  border: 1px solid var(--color-border-primary);
+  padding: var(--spacing-xl); /* Default padding, 24px */
 }
 
-/* General Button Styling Update (incorporate variables) */
+/* General Button Styling Update */
 button { /* Base button reset/style */
   cursor: pointer;
   font-family: inherit;
-  font-size: 0.9em;
-  border-radius: var(--default-border-radius); /* MODIFIED */
-  padding: 8px 12px;
-  margin-bottom: 10px; /* Default margin */
-  border: 1px solid var(--neutral-border); /* MODIFIED */
-  background-color: #fff;
-  color: var(--text-primary); /* MODIFIED */
-  box-shadow: var(--default-box-shadow); /* ADDED */
-  transition: background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; /* ADDED */
+  font-size: var(--font-size-sm); /* 14px */
+  border-radius: var(--border-radius-default);
+  padding: var(--spacing-sm) var(--spacing-md); /* 8px 12px */
+  margin-bottom: var(--spacing-md); /* Default margin, 12px */
+  border: 1px solid var(--color-border-secondary); /* Default to secondary border color */
+  background-color: var(--color-background-panel); /* Default white background */
+  color: var(--color-text-primary);
+  box-shadow: var(--box-shadow-default);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 button:hover {
-  background-color: #f1f3f4; /* This could become var(--neutral-bg-alt) or similar */
-  border-color: #c6c9cc; /* This could become a darker neutral border */
-  box-shadow: var(--hover-box-shadow); /* ADDED */
+  background-color: var(--color-background-primary); /* Light grey hover */
+  border-color: var(--color-text-secondary); /* Darker border on hover */
+  box-shadow: var(--box-shadow-hover);
 }
 
+/* Primary Button: Grey fill, white text */
 button.primary {
-  background-color: var(--primary-blue); /* MODIFIED */
-  color: var(--text-on-primary); /* MODIFIED */
-  border: 1px solid var(--primary-blue); /* MODIFIED BORDER */
-  font-weight: 500;
-  padding: 10px 15px;
-  /* box-shadow is inherited or can be specified if different */
+  background-color: var(--color-button-primary-fill);
+  color: var(--color-button-primary-text);
+  border: 1px solid var(--color-button-primary-fill);
+  font-weight: 500; /* Keep medium weight */
+  padding: var(--spacing-md) var(--spacing-lg); /* 12px 16px */
 }
 button.primary:hover {
-  background-color: var(--primary-blue-darker); /* MODIFIED */
-  border-color: var(--primary-blue-darker); /* MODIFIED BORDER */
+  background-color: var(--color-text-secondary); /* Darken the grey fill on hover */
+  border-color: var(--color-text-secondary);
 }
+
+/* Secondary Button: Grey border, grey text, transparent/white bg */
+button.secondary {
+  background-color: var(--color-background-panel); /* White background */
+  color: var(--color-button-secondary-text);
+  border: 1px solid var(--color-button-secondary-border);
+}
+button.secondary:hover {
+  background-color: var(--color-background-primary); /* Light grey bg on hover */
+  border-color: var(--color-text-primary); /* Darker border */
+  color: var(--color-text-primary); /* Darker text */
+}
+
+/* Action Button: Main action color (blue/purple) fill, white text */
+button.action {
+  background-color: var(--color-action-primary);
+  color: var(--color-button-primary-text); /* Assuming white text for action buttons too */
+  border: 1px solid var(--color-action-primary);
+  font-weight: 500;
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+button.action:hover {
+  background-color: var(--color-action-primary-darker);
+  border-color: var(--color-action-primary-darker);
+}
+
 
 /* Input fields */
-input[type="text"], textarea {
-  border-radius: var(--default-border-radius);
-  border: 1px solid var(--neutral-border);
-  padding: 10px 12px;
-  box-shadow: var(--default-box-shadow);
+input[type="text"],
+input[type="file"],
+textarea {
+  border-radius: var(--border-radius-default);
+  border: 1px solid var(--color-border-secondary);
+  padding: var(--spacing-md); /* 12px */
+  box-shadow: var(--box-shadow-default);
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-background-panel);
+  width: 100%; /* Make inputs take full width of their container by default */
+  margin-bottom: var(--spacing-sm); /* Default spacing below inputs */
 }
-input[type="text"]:focus, textarea:focus {
-  border-color: var(--primary-blue);
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+input[type="text"]:focus,
+input[type="file"]:focus,
+textarea:focus {
+  border-color: var(--color-action-primary);
+  box-shadow: 0 0 0 2px var(--color-action-primary-lighter);
   outline: none;
 }
+input[type="file"] {
+    padding: var(--spacing-sm); /* Slightly less padding for file inputs sometimes */
+}
 
 
-/* Sidebar Enhancements */
+/* Sidebar */
 .sidebar {
-  width: 250px; /* Fixed width for left sidebar */
-  flex-shrink: 0; /* Prevent sidebar from shrinking */
-  border-right: 1px solid var(--neutral-border); /* Softer border */
-  padding: 20px;
-  background-color: #ffffff; /* White sidebar */
+  width: 280px; /* Slightly wider */
+  flex-shrink: 0;
+  border-right: 1px solid var(--color-border-primary);
+  padding: var(--spacing-xl); /* 24px */
+  background-color: var(--color-background-panel); /* White sidebar */
   height: 100vh;
   position: sticky;
   top: 0;
   overflow-y: auto;
-  border-radius: 0; /* Keep sharp edge or apply only to top/bottom */
-  box-shadow: var(--default-box-shadow); /* ADDED */
+  box-shadow: var(--box-shadow-default);
 }
 
 .sidebar h2 { /* App Title / Notebooks heading */
-  font-size: 1.4em;
-  color: var(--primary-blue); /* Google-ish blue for heading */
+  font-size: 1.6rem; /* ~26px */
+  color: var(--color-action-primary);
   margin-top: 0;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--neutral-border);
+  margin-bottom: var(--spacing-xl); /* 24px */
+  padding-bottom: var(--spacing-lg); /* 16px */
+  border-bottom: 1px solid var(--color-border-primary);
 }
 
 .sidebar h3 { /* For "Sources in..." heading */
-    font-size: 1.1em;
-    color: var(--text-secondary); /* Grey heading for sources */
-    margin-top: 20px;
-    margin-bottom: 10px;
+  font-size: 1.25rem; /* ~20px */
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-xl);
+  margin-bottom: var(--spacing-md);
 }
 
-.sidebar ul { /* Notebook/Source lists */
+.sidebar ul {
   list-style: none;
   padding-left: 0;
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-xl);
 }
 
-.sidebar li { /* General list item styling */
-  padding: 10px 15px; /* More padding */
-  border-bottom: none;
-  border-radius: 4px; /* Kept as is, or var(--default-border-radius) can be used */
-  margin-bottom: 5px; /* Space between items */
-  font-size: 0.95em;
+.sidebar li {
+  padding: var(--spacing-md) var(--spacing-lg); /* 12px 16px */
+  border-radius: var(--border-radius-default);
+  margin-bottom: var(--spacing-sm); /* 8px */
+  font-size: var(--font-size-base); /* 16px */
   cursor: pointer;
-  color: var(--text-primary); /* ADDED general text color */
+  color: var(--color-text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .sidebar li.selected {
-  background-color: var(--primary-blue-lighter); /* Lighter blue for selection */
-  color: var(--primary-blue); /* MODIFIED */
-  font-weight: 500;
+  background-color: var(--color-action-primary-lighter);
+  color: var(--color-action-primary);
+  font-weight: 500; /* Medium weight for selected items */
 }
 
 .sidebar li:not(.selected):hover {
-  background-color: var(--neutral-bg-alt); /* Subtle hover */
+  background-color: var(--color-background-primary); /* Very light grey */
 }
 
-/* Styles for specific list items in Sidebar (from previous steps) */
-.notebook-list li { /* if specific needed, otherwise general .sidebar li applies */
-}
-.source-list li { /* if specific needed, otherwise general .sidebar li applies */
-}
-
-
-/* Button Standardization - This block will be mostly replaced by the general button styles above */
-/* Old button styles are below for reference during cleanup - they will be removed or merged */
-/* The following button rules (base and primary) are now handled by the general button styles added earlier. */
-/*
-button {
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 0.9em;
-  border-radius: 4px;
-  padding: 8px 12px;
-  margin-bottom: 10px;
-  border: 1px solid #dadce0;
-  background-color: #fff;
-  color: #3c4043;
-}
-button:hover {
-  background-color: #f1f3f4;
-  border-color: #c6c9cc;
-}
-
-button.primary {
-  background-color: #1a73e8;
-  color: white;
-  border: none;
-  font-weight: 500;
-  padding: 10px 15px;
-}
-button.primary:hover {
-  background-color: #1765c2;
-}
-*/
-
-button.secondary { /* Default button style is already secondary-like */
-  /* background-color: var(--neutral-bg);
-  color: var(--text-primary);
-  border: 1px solid var(--neutral-border); */
-}
-button.secondary:hover {
-  /* background-color: var(--neutral-bg-alt);
-  border-color: var(--neutral-border); */ /* Consider a darker border for hover */
-}
-
-.sidebar .summarizer-toggle-buttons { /* Container for the two buttons */
+.sidebar .summarizer-toggle-buttons {
   display: flex;
-  flex-direction: column; /* Stack them vertically */
-  gap: 10px; /* Space between buttons */
-  margin-bottom: 20px; /* Space after the buttons */
+  flex-direction: column;
+  gap: var(--spacing-md); /* 12px */
+  margin-bottom: var(--spacing-xl);
 }
 
 .sidebar .summarizer-toggle-buttons button {
   width: 100%;
-  text-align: center; /* Center text if using icons + text */
-  /* Assuming they use button.secondary or a new class for consistent styling */
-  /* If using icons, add flex properties to align icon and text */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px; /* Space between icon and text */
-  /* Ensure they adopt primary button styling - will be handled by adding .primary class in JS */
-  /* Override any specific text-align: left from general .sidebar button rules if necessary */
-}
-/* .sidebar .summarizer-toggle-buttons button:hover is handled by .primary:hover */
-
-/* Styles for MainContent summarizer integration */
-.notebook-overview {
-  padding: 20px;
-  text-align: center; /* Center title and placeholder text */
-}
-
-.add-source-buttons-main-content {
-  /* display: flex; justifyContent: center; gap: 15px; marginTop: 20px; */ /* Handled inline for now */
-}
-
-.add-source-buttons-main-content button.icon-button { /* If you add icons */
-  /* display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px; */
-}
-
-.summarizer-container-main {
-  margin-top: 20px;
-  padding: 20px;
-  border: 1px solid var(--neutral-border);
-  border-radius: var(--default-border-radius);
-  background-color: var(--neutral-bg); /* Or #fff for a card appearance */
-  box-shadow: var(--default-box-shadow);
-}
-
-.summarizer-container-main > button { /* Style for cancel button */
-    margin-top: 15px;
-    /* Add more specific styling if needed, e.g., make it a secondary button */
-    /* Using default button styles for now, can be made button.secondary */
-}
-
-/* Tab styling for MainContent source detail view */
-.source-header {
-  margin-bottom: 15px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--neutral-border);
-}
-
-.source-header h3 {
-  margin-top: 0;
-  font-size: 1.6em;
-  color: var(--text-primary);
-}
-.source-header .source-type, .source-header .source-timestamp {
-  font-size: 0.85em;
-  color: var(--text-secondary);
-  margin-bottom: 5px;
-}
-
-.tabs-container {
-  display: flex;
-  margin-bottom: 15px;
-  border-bottom: 1px solid var(--neutral-border);
-}
-
-.tab-button {
-  padding: 10px 15px;
-  cursor: pointer;
-  border: none;
-  background-color: transparent;
-  font-size: 0.95em;
-  color: var(--text-secondary);
-  border-bottom: 3px solid transparent; /* For active indicator */
-  margin-right: 5px; /* Spacing between tabs */
-  transition: color 0.2s ease, border-bottom-color 0.2s ease;
-}
-
-.tab-button:hover {
-  color: var(--primary-blue);
-}
-
-.tab-button.active {
-  color: var(--primary-blue);
-  font-weight: 500;
-  border-bottom-color: var(--primary-blue);
-}
-
-.tab-content {
-  padding: 15px 0; /* Add some padding if content directly follows */
-  min-height: 50px; /* Ensure it has some height even if empty */
-}
-
-.tab-content .empty-state-message, .tab-content .info-message {
-  color: var(--text-secondary);
-  font-style: italic;
   text-align: center;
-  padding: 20px;
-  background-color: var(--neutral-bg-alt);
-  border-radius: var(--default-border-radius);
-}
-
-.source-summary-content, .source-original-content { /* Re-use existing styling if appropriate */
-  white-space: pre-wrap;
-  font-family: 'Roboto Mono', 'Courier New', Courier, monospace;
-  background-color: var(--neutral-bg); /* Changed from neutral-bg-alt for differentiation */
-  padding: 15px;
-  border: 1px solid var(--neutral-border);
-  border-radius: var(--default-border-radius);
-  max-height: 300px; /* Adjust as needed */
-  overflow-y: auto;
-  line-height: 1.5;
-  color: var(--text-primary);
-}
-
-/* Styles for MainContent source selection and report generation */
-.source-selection-container {
-  /* Uses .card styling from global enhancements */
-  text-align: left; /* Override centered text from notebook-overview if it inherited */
-}
-.source-selection-container h4 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--neutral-border);
-  padding-bottom: 10px;
-}
-.main-source-list {
-  list-style: none;
-  padding: 0;
-  max-height: 250px; /* Or adjust as needed */
-  overflow-y: auto;
-  border: 1px solid var(--neutral-bg-alt);
-  border-radius: var(--default-border-radius);
-  padding: 10px;
-}
-.main-source-list-item {
-  display: flex;
-  align-items: center;
-  padding: 8px 5px;
-  border-bottom: 1px solid var(--neutral-bg-alt);
-}
-.main-source-list-item:last-child {
-  border-bottom: none;
-}
-.main-source-list-item .source-name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 0.9em;
-}
-.report-status-area p {
-    font-size: 0.85em;
-    color: var(--text-secondary);
-    margin-bottom: 5px;
-}
-
-/* Chat Input Area Enhancements */
-.chat-input-area textarea {
-  flex-grow: 1;
-  padding: 10px 12px; /* Consistent padding */
-  border: 1px solid var(--neutral-border);
-  border-radius: var(--default-border-radius); /* Consistent border-radius */
-  margin-right: 10px;
-  font-size: 1em; /* Consistent font size */
-  font-family: inherit; /* Ensure font consistency */
-  line-height: 1.4; /* Better for multi-line */
-  min-height: 40px; /* Min height for one row + padding */
-  max-height: 150px; /* Max height before scrolling */
-  resize: none; /* Disable manual resize, rely on auto-resize */
-  overflow-y: auto; /* Show scrollbar if content exceeds max-height */
-  box-shadow: var(--default-box-shadow);
-}
-.chat-input-area textarea:focus {
-  border-color: var(--primary-blue);
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Focus ring */
-  outline: none;
-}
-
-.chat-input-area button.send-button {
-  /* Assuming primary styles are applied */
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px; /* Space between text and icon */
+  gap: var(--spacing-sm); /* 8px, space between icon and text */
+  /* These buttons should likely be styled as 'action' or 'secondary' */
+  /* e.g. <button className="action">...</button> or <button className="secondary">...</button> */
 }
-.send-icon {
-  font-size: 1.2em; /* Adjust icon size if needed */
-  line-height: 1; /* Align icon better with text */
-}
-
-/* Chat Context Display Styling */
-.chat-context-display {
-  padding: 5px 10px;
-  text-align: center;
-  font-size: 0.85em;
-  color: var(--text-secondary);
-  /* background-color: var(--neutral-bg-alt); */ /* Optional subtle background */
-  /* border-bottom: 1px solid var(--neutral-border); */ /* Optional separator */
-  margin-bottom: 10px;
-}
-
-/* AI Thinking Message Styling */
-.ai-thinking-message {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 10px;
-  font-style: italic;
-  color: var(--text-secondary);
-}
-.spinner-inline {
-  width: 16px; height: 16px;
-  border: 2px solid var(--neutral-bg-alt);
-  border-top-color: var(--primary-blue);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
 
 .sidebar-section-separator {
-  border-top: 2px solid var(--neutral-bg-alt); /* Thicker, using variable */
-  margin: 25px 0;
+  border-top: 2px solid var(--color-border-primary); /* Was neutral-bg-alt */
+  margin: var(--spacing-xl) 0; /* 24px */
 }
 
 .sidebar .notebook-list li.selected {
-  background-color: var(--primary-blue-lighter);
-  color: var(--primary-blue); /* Darker blue text for better contrast on light blue bg */
+  background-color: var(--color-action-primary-lighter);
+  color: var(--color-action-primary);
   font-weight: 600; /* Slightly bolder */
-  border-left: 4px solid var(--primary-blue); /* Accent border */
-  padding-left: 11px; /* Adjust padding to account for border */
+  border-left: 4px solid var(--color-action-primary);
+  padding-left: calc(var(--spacing-lg) - 4px); /* Adjust padding to account for border */
 }
 
 .sidebar .source-list li {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Keep space for potential future icons if any, but not for checkbox/report */
-  padding: 8px 10px; /* Adjust padding */
-  /* Ensure it inherits general li hover/selected styles or define specific ones */
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md); /* 8px 12px */
 }
 
 .sidebar .source-list li .source-info {
   display: flex;
   align-items: center;
-  gap: 8px; /* Space between icon and text */
-  overflow: hidden; /* For text truncation */
+  gap: var(--spacing-sm); /* 8px */
+  overflow: hidden;
   flex-grow: 1;
 }
 
 .sidebar .source-list li .source-info .source-icon {
   flex-shrink: 0;
+  /* Use Material Symbols classes here, e.g. <span class="material-symbols-outlined">description</span> */
 }
 
 .sidebar .source-list li .source-info .source-name {
@@ -477,236 +217,370 @@ button.secondary:hover {
   text-overflow: ellipsis;
 }
 
-.notebook-item { /* Added for flex layout of notebook title and actions */
+.notebook-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .notebook-actions {
-  display: none; /* Hidden by default */
-  margin-left: auto; /* Pushes icons to the right */
+  display: none;
 }
 
 .notebook-list li:hover .notebook-actions {
-  display: flex; /* Show on hover of the li element */
+  display: flex;
   align-items: center;
 }
 
-.notebook-actions button {
+.notebook-actions button { /* Icon buttons for edit/delete */
   background: none;
   border: none;
   cursor: pointer;
-  padding: 5px;
-  margin-left: 5px;
-  color: var(--text-secondary);
-  box-shadow: none; /* Override general button shadow if not desired here */
+  padding: var(--spacing-xs); /* 4px */
+  margin-left: var(--spacing-sm); /* 8px */
+  color: var(--color-text-secondary);
+  box-shadow: none;
 }
 .notebook-actions button:hover {
-  color: var(--primary-blue);
-  background-color: var(--neutral-bg-alt); /* Subtle background on hover */
+  color: var(--color-action-primary);
+  background-color: var(--color-background-primary); /* Light grey background on hover */
 }
 
 
-/* Main Content Enhancements */
+/* Main Content Area */
 .main-content {
-  flex-grow: 1; /* Takes up remaining space */
-  padding: 1rem;
+  flex-grow: 1;
+  padding: var(--spacing-xl); /* 24px */
   height: 100vh;
-  overflow: hidden;
+  overflow: hidden; /* Content inside should scroll */
   display: flex;
   flex-direction: column;
-  background-color: #ffffff; /* White main area */
-  border-radius: var(--default-border-radius); /* ADDED */
-  margin-left: 10px; /* If sidebar has shadow */
-  box-shadow: var(--default-box-shadow); /* ADDED */
+  background-color: var(--color-background-panel); /* White main area */
+  border-radius: var(--border-radius-default);
+  margin-left: var(--spacing-md); /* 12px, if sidebar has shadow or distinct bg */
+  box-shadow: var(--box-shadow-default);
 }
 
+/* Right Sidebar (if it exists and needs styling) */
 .right-sidebar {
-  width: 300px; /* Fixed width for right sidebar */
-  flex-shrink: 0; /* Prevent sidebar from shrinking */
-  padding: 1rem;
-  background-color: #f0f0f0; /* Placeholder background */
+  width: 300px;
+  flex-shrink: 0;
+  padding: var(--spacing-xl); /* 24px */
+  background-color: var(--color-background-panel); /* White, consistent with main */
   height: 100vh;
   position: sticky;
   top: 0;
   overflow-y: auto;
-  border-left: 1px solid var(--neutral-border); /* Separator line */
-  box-shadow: var(--default-box-shadow);
+  border-left: 1px solid var(--color-border-primary);
+  box-shadow: var(--box-shadow-default);
 }
-
-.content-above-chat {
-  /* Styles for the area holding notebook/source details */
-}
-
-.content-above-chat h2 { /* Notebook title in main content when no source selected */
-    font-size: 1.8em;
-    color: var(--text-primary);
-    margin-top: 0;
-    margin-bottom: 15px;
-}
-.content-above-chat p.placeholder-message-main { /* Placeholder messages in main content */
-    font-size: 1em;
-    color: var(--text-secondary);
-    text-align: center;
-    margin-top: 30px;
-}
-
-
-/* Source Detail View (within .content-above-chat) */
-.source-detail-view { /* This can be considered a .card */
-  margin-bottom: 20px;
-  padding: 15px;
-  border: 1px solid var(--neutral-border);
-  background-color: #fff;
-  border-radius: var(--default-border-radius);
-  box-shadow: var(--default-box-shadow); /* ADDED */
-}
-
-.source-detail-view h3 { /* Source Name */
+.right-sidebar h3 { /* Heading in right sidebar */
+  font-size: 1.25rem;
+  color: var(--color-text-primary);
   margin-top: 0;
-  font-size: 1.6em; /* Slightly adjusted */
-  color: var(--text-primary); /* Darker for more emphasis */
+  margin-bottom: var(--spacing-lg);
 }
 
+/* Content Above Chat (Notebook Overview, Source Details) */
+.content-above-chat {
+  /* This area might not need specific styling if children are cards or styled individually */
+  margin-bottom: var(--spacing-lg); /* Space before chat area might start */
+}
+
+.content-above-chat h2 { /* Notebook title in main content */
+  font-size: 1.8rem; /* ~29px */
+  color: var(--color-text-primary);
+  margin-top: 0;
+  margin-bottom: var(--spacing-lg);
+}
+.content-above-chat p.placeholder-message-main {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  text-align: center;
+  margin-top: var(--spacing-xxl); /* 32px */
+}
+
+/* Source Detail View Card */
+.source-detail-view { /* This is effectively a .card */
+  margin-bottom: var(--spacing-xl); /* 24px */
+  padding: var(--spacing-xl);
+  border: 1px solid var(--color-border-primary);
+  background-color: var(--color-background-panel);
+  border-radius: var(--border-radius-default);
+  box-shadow: var(--box-shadow-default);
+}
+.source-detail-view h3 { /* Source Name */
+  font-size: 1.6rem; /* ~26px */
+  color: var(--color-text-primary);
+  margin-top: 0;
+  margin-bottom: var(--spacing-xs);
+}
 .source-detail-view .source-type {
-  font-size: 0.9em;
-  color: var(--text-secondary); /* Consistent grey */
-  margin-bottom: 10px;
+  font-size: var(--font-size-sm); /* 14px */
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md); /* 12px */
   text-transform: capitalize;
 }
-
 .source-detail-view .source-timestamp {
-  font-size: 0.8em;
-  color: var(--text-secondary); /* Consistent grey */
-  margin-top: 15px;
+  font-size: var(--font-size-sm); /* 14px */
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-lg); /* 16px */
 }
 
-.source-summary-content {
-  white-space: pre-wrap;
-  font-family: 'Roboto Mono', 'Courier New', Courier, monospace; /* More modern mono */
-  background-color: var(--neutral-bg-alt); /* Light bg for summary block */
-  padding: 15px; /* More padding */
-  border: 1px solid var(--neutral-border); /* Softer border */
-  border-radius: var(--default-border-radius); /* MODIFIED */
-  max-height: 400px;
-  overflow-y: auto;
-  line-height: 1.5; /* Improved readability */
-  color: var(--text-primary); /* Darker text for summary */
-}
-
-.placeholder-message { /* General placeholder for initial welcome */
+/* Styles for MainContent summarizer integration */
+.notebook-overview {
+  padding: var(--spacing-xl); /* 24px */
   text-align: center;
-  color: var(--text-secondary);
-  font-size: 1.2em; /* Larger for welcome */
-  margin-top: 50px;
 }
-.placeholder-message h2 { /* Welcome heading */
-    font-size: 1.8em;
-    color: var(--primary-blue);
-    margin-bottom: 15px;
+.summarizer-container-main { /* Container for adding new source */
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-xl);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-default);
+  background-color: var(--color-background-primary); /* Light grey, distinct from main panel */
+  box-shadow: var(--box-shadow-default);
+}
+.summarizer-container-main > button { /* Cancel button */
+    margin-top: var(--spacing-lg);
+    /* Style as secondary or default */
 }
 
+/* Tabs for Source Detail (Summary, Original Content) */
+.tabs-container {
+  display: flex;
+  margin-bottom: var(--spacing-lg); /* 16px */
+  border-bottom: 1px solid var(--color-border-primary);
+}
+.tab-button {
+  padding: var(--spacing-md) var(--spacing-lg); /* 12px 16px */
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  font-size: var(--font-size-base); /* 16px */
+  color: var(--color-text-secondary);
+  border-bottom: 3px solid transparent;
+  margin-right: var(--spacing-sm); /* 8px */
+  transition: color 0.2s ease, border-bottom-color 0.2s ease;
+}
+.tab-button:hover {
+  color: var(--color-action-primary);
+}
+.tab-button.active {
+  color: var(--color-action-primary);
+  font-weight: 500;
+  border-bottom-color: var(--color-action-primary);
+}
+.tab-content {
+  padding: var(--spacing-lg) 0; /* 16px top/bottom */
+  min-height: 50px;
+}
+.tab-content .empty-state-message, .tab-content .info-message {
+  color: var(--color-text-secondary);
+  font-style: italic;
+  text-align: center;
+  padding: var(--spacing-xl); /* 24px */
+  background-color: var(--color-background-primary); /* Light grey */
+  border-radius: var(--border-radius-default);
+}
 
-/* Chat Interface Styles */
+/* Content display for summary or original text */
+.source-summary-content, .source-original-content {
+  white-space: pre-wrap;
+  font-family: var(--font-family-monospace);
+  background-color: var(--color-background-primary); /* Light grey */
+  padding: var(--spacing-lg); /* 16px */
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-default);
+  max-height: 300px;
+  overflow-y: auto;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+}
+
+/* Source Selection for Report Generation in MainContent or RightSidebar */
+.source-selection-container {
+  /* Can be a .card or have its own padding/margins */
+  text-align: left;
+}
+.source-selection-container h4 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-lg);
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border-primary);
+  padding-bottom: var(--spacing-md);
+}
+.main-source-list { /* Used in RightSidebar for report generation */
+  list-style: none;
+  padding: 0;
+  max-height: 300px; /* Adjust as needed */
+  overflow-y: auto;
+  border: 1px solid var(--color-border-primary); /* Was neutral-bg-alt */
+  border-radius: var(--border-radius-default);
+  padding: var(--spacing-sm); /* 8px */
+}
+.main-source-list-item {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-xs); /* 8px 4px */
+  border-bottom: 1px solid var(--color-border-primary); /* Was neutral-bg-alt */
+}
+.main-source-list-item:last-child {
+  border-bottom: none;
+}
+.main-source-list-item .source-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--font-size-sm); /* 14px */
+  margin-left: var(--spacing-sm); /* Space next to checkbox */
+}
+.report-status-area p {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-xs);
+}
+
+/* General placeholder for initial welcome screen */
+.placeholder-message {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 1.2rem; /* ~19px */
+  margin-top: var(--spacing-xxl); /* 32px, or more like 50px */
+}
+.placeholder-message h2 {
+  font-size: 1.8rem; /* ~29px */
+  color: var(--color-action-primary); /* Use action color */
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Chat Area */
 .chat-area {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  border-top: 1px solid var(--neutral-border); /* Softer border */
-  margin-top: 20px;
-  padding-top: 15px;
-  min-height: 0;
-  overflow: hidden; /* To ensure it doesn't try to scroll, letting chat-messages do it */
+  border-top: 1px solid var(--color-border-primary);
+  margin-top: var(--spacing-xl); /* 24px */
+  padding-top: var(--spacing-lg); /* 16px */
+  min-height: 0; /* Important for flex column layout */
+  overflow: hidden;
 }
 
 .chat-messages {
   flex-grow: 1;
   overflow-y: auto;
-  padding: 15px;
-  background-color: var(--neutral-bg-alt); /* Slightly different bg for chat message list */
-  margin-bottom: 15px; /* More space */
-  min-height: 0; /* Increased min-height */
-  border-radius: 8px; /* More rounded */
-  border: 1px solid var(--neutral-border);
+  padding: var(--spacing-lg); /* 16px */
+  background-color: var(--color-background-primary); /* Light grey */
+  margin-bottom: var(--spacing-lg);
+  min-height: 100px; /* Ensure it has some visible height */
+  border-radius: var(--border-radius-default); /* Was 8px */
+  border: 1px solid var(--color-border-primary);
 }
 
 .chat-message {
-  margin-bottom: 10px; /* Increased spacing */
-  padding: 10px 15px; /* More padding */
-  border-radius: 18px; /* More rounded messages */
-  max-width: 75%; /* Slightly wider */
+  margin-bottom: var(--spacing-md); /* 12px */
+  padding: var(--spacing-sm) var(--spacing-md); /* 8px 12px */
+  border-radius: 18px; /* Keep chat bubble feel */
+  max-width: 80%; /* Slightly wider */
   line-height: 1.4;
-  word-wrap: break-word; /* Ensure long words break */
+  word-wrap: break-word;
 }
 
 .chat-message.user {
-  background-color: var(--user-message-background-blue);
-  color: var(--text-on-primary);
+  background-color: var(--color-action-primary); /* Blue/purple for user */
+  color: var(--color-button-primary-text); /* White text */
   margin-left: auto;
-  /* border-bottom-right-radius: 6px; */ /* Removed for consistent 18px radius */
-  text-align: left; /* User text aligns left within bubble */
-  width: fit-content;
-  border: none;
-  box-shadow: var(--default-box-shadow);
-  padding: 3px 5px;
-  /* Ensure border-radius: 18px from .chat-message applies, or re-state if necessary */
+  border-bottom-right-radius: var(--spacing-xs); /* 4px, for bubble tail */
+  text-align: left;
 }
 
 .chat-message.ai {
-  background-color: var(--neutral-bg-alt); /* MODIFIED */
-  color: var(--text-primary); /* MODIFIED */
+  background-color: var(--color-border-primary); /* Grey for AI, was neutral-bg-alt */
+  color: var(--color-text-primary);
   margin-right: auto;
-  border-bottom-left-radius: 6px; /* Adjusted for bubble feel */
+  border-bottom-left-radius: var(--spacing-xs); /* 4px, for bubble tail */
 }
 
 .chat-input-area {
   display: flex;
-  padding-top: 10px; /* Remove bottom padding if not needed */
+  align-items: stretch; /* Make items same height */
+  padding-top: var(--spacing-md); /* 12px */
 }
 
-.chat-input-area input { /* This is an input[type="text"] */
+.chat-input-area textarea { /* Updated from input to textarea */
   flex-grow: 1;
-  padding: 12px 15px; /* More padding */
-  border: 1px solid var(--neutral-border); /* Consistent border */
-  border-radius: var(--default-border-radius); /* MODIFIED from 18px */
-  margin-right: 10px;
-  font-size: 1em;
-  box-shadow: var(--default-box-shadow); /* ADDED */
+  padding: var(--spacing-md); /* 12px */
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-default);
+  margin-right: var(--spacing-md); /* 12px */
+  font-size: var(--font-size-base); /* 16px */
+  line-height: var(--line-height-base);
+  box-shadow: var(--box-shadow-default);
+  resize: none; /* Disable manual resize */
+  min-height: calc(var(--font-size-base) * var(--line-height-base) + 2 * var(--spacing-md) + 2px); /* Approx 1 row */
+  max-height: 150px; /* Allow ~5-6 rows before scroll */
 }
-.chat-input-area input:focus {
-    border-color: var(--primary-blue);
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* MODIFIED to match general input focus */
+.chat-input-area textarea:focus {
+  border-color: var(--color-action-primary);
+  box-shadow: 0 0 0 2px var(--color-action-primary-lighter);
+  outline: none;
+}
+
+.chat-input-area button.send-button { /* Send button */
+  padding: var(--spacing-md) var(--spacing-xl); /* 12px 24px */
+  margin-bottom: 0; /* Remove default margin */
+  /* Should be styled as 'action' or 'primary' button */
+  /* Example: class="action send-button" */
+  /* Defaulting to 'action' style for now */
+  background-color: var(--color-action-primary);
+  color: var(--color-button-primary-text);
+  border-color: var(--color-action-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+.chat-input-area button.send-button:hover {
+  background-color: var(--color-action-primary-darker);
+  border-color: var(--color-action-primary-darker);
+}
+.send-icon.material-symbols { /* If Material Symbol is used */
+  font-size: 1.25rem; /* ~20px */
 }
 
 
-.chat-input-area button { /* Send button - should be button.primary */
-  padding: 10px 20px; /* More padding for send */
-  margin-bottom: 0;
-  /* Apply .primary styles */
-  background-color: var(--primary-blue);
-  color: var(--text-on-primary);
-  border: 1px solid var(--primary-blue);
-  /* font-weight, border-radius, box-shadow are inherited or set by .primary */
-}
-.chat-input-area button:hover {
-    background-color: var(--primary-blue-darker);
-    border-color: var(--primary-blue-darker);
+/* Chat Context Display */
+.chat-context-display {
+  padding: var(--spacing-xs) var(--spacing-md); /* 4px 12px */
+  text-align: center;
+  font-size: var(--font-size-sm); /* 14px */
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md); /* 12px */
+  /* background-color: var(--color-background-primary); */ /* Optional subtle background */
+  /* border-bottom: 1px solid var(--color-border-primary); */ /* Optional separator */
 }
 
-
-/* General heading consistency (can be adjusted) */
-h1, h2, h3, h4, h5, h6 {
-    color: var(--text-primary); /* Default dark color for headings */
-    font-weight: 500; /* Medium weight for headings */
+/* AI Thinking Message */
+.ai-thinking-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md); /* 12px */
+  padding: var(--spacing-md);
+  font-style: italic;
+  color: var(--color-text-secondary);
 }
-p {
-    color: var(--text-secondary); /* Default text color */
-    line-height: 1.6; /* Improved line spacing for paragraphs */
+.spinner-inline {
+  width: 1rem; /* 16px */
+  height: 1rem; /* 16px */
+  border: 2px solid var(--color-background-primary); /* Was neutral-bg-alt */
+  border-top-color: var(--color-action-primary); /* Was primary-blue */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-/* Utility for visually hidden but accessible text (if needed) */
+
+/* Utility for visually hidden but accessible text */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -719,130 +593,105 @@ p {
   border-width: 0;
 }
 
-/* Report Button Styles */
+/* Report Button (if specific styling needed beyond default button) */
 .report-button {
-  margin-left: 10px;
-  padding: 3px 8px; /* Adjusted padding for a smaller button */
-  font-size: 0.8em;
-  cursor: pointer;
-  border: 1px solid var(--neutral-border); /* Similar to default button border */
-  background-color: var(--neutral-bg-alt); /* Light background, similar to secondary buttons */
-  color: var(--text-primary); /* Standard text color */
-  border-radius: 4px; /* Or var(--default-border-radius) if preferred */
-  flex-shrink: 0; /* Ensure it doesn't shrink in flex layout */
-  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; /* Smooth transition */
-  box-shadow: var(--default-box-shadow); /* ADDED */
+  /* Assuming it's a <button class="secondary report-button"> */
+  /* Or add specific styles if it's not a standard secondary button */
+  padding: var(--spacing-xs) var(--spacing-sm); /* 4px 8px, smaller */
+  font-size: var(--font-size-sm); /* 14px */
+  margin-left: var(--spacing-sm); /* 8px */
 }
-
-.report-button:hover {
-  background-color: var(--neutral-bg); /* Slightly darker on hover, consistent with other buttons */
-  border-color: var(--neutral-border); /* Darker shade of neutral border */
-  box-shadow: var(--hover-box-shadow); /* ADDED */
-}
-
 .report-button:disabled {
-  background-color: var(--neutral-bg-alt); /* Keep similar to normal or slightly lighter for disabled */
-  color: var(--text-secondary); /* Greyed out text for disabled state */
+  background-color: var(--color-background-primary); /* Was neutral-bg-alt */
+  color: var(--color-text-secondary);
   cursor: not-allowed;
-  opacity: 0.65; /* Standard opacity for disabled elements */
-  border-color: var(--neutral-border); /* Lighter border for disabled */
+  opacity: 0.65;
+  border-color: var(--color-border-primary); /* Was neutral-border */
 }
 
-/* Styles for source list item selection in Sidebar */
-.source-list-item {
-  /* Ensure other styles for source list items are compatible */
-  cursor: pointer;
+/* Source List Item Selection in Sidebar for Chat Context */
+.source-list-item.selected-for-chat .source-name-text {
+  font-weight: 600; /* Bolder for selected */
+  color: var(--color-action-primary);
 }
-
-.source-list-item.selected-for-chat .source-name-text { /* If using class to bold */
-  font-weight: bold;
-  color: var(--primary-blue); /* Match other selection colors */
-}
-
 .sidebar .source-list li .source-info .selection-indicator {
-  margin-right: 8px; /* Space between indicator and name */
-  font-weight: bold; /* Make ✓/☐ more prominent */
-  color: var(--primary-blue); /* Indicator color for selected */
+  margin-right: var(--spacing-sm); /* 8px */
+  font-weight: bold;
+  color: var(--color-action-primary);
+  font-size: 1.2em; /* Make check/box slightly larger */
 }
-
 .source-list-item:not(.selected-for-chat) .source-info .selection-indicator {
-  color: var(--text-secondary); /* Subdued color for unselected indicator */
+  color: var(--color-text-secondary);
 }
-
 .sidebar .source-list li .source-info .source-name-text {
-  /* Ensure proper alignment if icon/indicator and text are on the same line */
   display: inline-block;
   vertical-align: middle;
 }
 
 /* Styles for Summarizer Forms within Modal */
 .summarizer-form-container {
-  padding: 10px; /* Add some internal padding */
-  width: 100%; /* Ensure it takes the width of the modal content area */
+  padding: var(--spacing-lg); /* 16px, was 10px */
+  width: 100%;
 }
-
 .summarizer-form-container h3 {
-  margin-top: 0; /* Adjust heading margin */
-  text-align: center; /* Center the title */
-  margin-bottom: 20px; /* Space below heading */
-  color: var(--text-primary); /* Ensure heading color consistency */
+  margin-top: 0;
+  text-align: center;
+  margin-bottom: var(--spacing-xl); /* 24px */
+  color: var(--color-text-primary);
+  font-size: 1.5rem; /* ~24px */
 }
-
-/* Ensure form elements inside the summarizers are well-spaced and styled */
 .summarizer-form-container form div {
-  /* This was a bit too general, specific margins are applied below or in components */
-  /* margin-bottom: 15px; */
+  margin-bottom: var(--spacing-lg); /* 16px, general spacing for form groups */
 }
-
 .summarizer-form-container form label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-  color: var(--text-secondary); /* Slightly lighter label text */
+  margin-bottom: var(--spacing-sm); /* 8px */
+  font-weight: 500; /* Medium weight */
+  color: var(--color-text-secondary);
 }
-
-.summarizer-form-container input[type="text"],
-.summarizer-form-container input[type="file"] {
-  width: 100%;
-  padding: 10px 12px; /* Consistent padding with other inputs */
-  box-sizing: border-box;
-  border: 1px solid var(--neutral-border); /* Use variable */
-  border-radius: var(--default-border-radius); /* Use variable */
-  margin-bottom: 10px; /* Ensure space below input before error or buttons */
-}
-
-.summarizer-form-container input[type="file"] {
-    padding: 8px; /* File inputs often have slightly different padding needs */
-}
-
-
+/* Input styling is inherited from global input[type="text"], textarea */
 .summarizer-form-container .button-group {
   display: flex;
-  justify-content: space-between; /* This will space out buttons */
-  gap: 10px; /* Add some gap between buttons */
-  margin-top: 15px; /* Add space above button group */
+  justify-content: space-between;
+  gap: var(--spacing-md); /* 12px */
+  margin-top: var(--spacing-xl); /* 24px */
 }
-
 .summarizer-form-container .button-group button {
-  flex-grow: 1; /* Make buttons take equal width */
-  margin-bottom: 0; /* Remove default button margin if group handles spacing */
+  flex-grow: 1;
+  margin-bottom: 0;
+  /* Assign .primary, .secondary, or .action class in the component */
 }
-
-/* Ensure error messages in summarizers are styled */
-.summarizer-form-container p[style*="color: red"], /* Targets inline styled error messages */
-.summarizer-form-container .error-message { /* Or if a class is used */
-  font-size: 0.9em;
-  color: var(--accent-error); /* Use error color variable */
-  margin-bottom: 10px;
-  text-align: center; /* Center error messages */
-}
-
-/* Ensure loading messages in summarizers are styled */
-.summarizer-form-container p[style*="text-align: center"], /* Targets inline styled loading messages */
-.summarizer-form-container .loading-message { /* Or if a class is used */
-  font-style: italic;
-  color: var(--text-secondary);
-  margin-top: 10px;
-  margin-bottom: 10px;
+.summarizer-form-container .error-message {
+  font-size: var(--font-size-sm); /* 14px */
+  color: var(--color-accent-error-text); /* Use specific text color for error */
+  background-color: var(--color-accent-error); /* Light error bg */
+  padding: var(--spacing-md); /* 12px */
+  border-radius: var(--border-radius-default);
+  margin-bottom: var(--spacing-lg); /* 16px */
   text-align: center;
 }
+.summarizer-form-container .loading-message {
+  font-style: italic;
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+}
+
+/* Notification styling (using new accent colors) */
+/* Assuming Notification.css will be updated or these are overrides */
+.notification.success {
+  background-color: var(--color-accent-success);
+  color: var(--color-accent-success-text);
+}
+.notification.error {
+  background-color: var(--color-accent-error);
+  color: var(--color-accent-error-text);
+}
+.notification.info {
+  background-color: var(--color-action-primary-lighter); /* Example for info */
+  color: var(--color-action-primary);
+}
+
+/* Ensure Notification.css is also updated if it defines its own colors */
+/* This App.css provides a fallback/override based on the new palette */

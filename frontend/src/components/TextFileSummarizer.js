@@ -77,30 +77,33 @@ function TextFileSummarizer({ onSummaryComplete, onCancel }) { // Accept onSumma
         <div className="summarizer-form-container">
             <h3>Add New File Source</h3>
             <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: '15px' }}>
-                    <label htmlFor="fileInput" style={{ display: 'block', marginBottom: '5px' }}>Choose .txt, .md, or .pdf file:</label>
+                <div> {/* Removed inline style, rely on App.css for .summarizer-form-container form div */}
+                    <label htmlFor="fileInput">Choose .txt, .md, or .pdf file:</label>
                     <input
                         type="file"
                         id="fileInput"
                         ref={fileInputRef}
-                        accept=".txt,.md,.pdf,text/plain,application/pdf,text/markdown" // Updated accept attribute
+                        accept=".txt,.md,.pdf,text/plain,application/pdf,text/markdown"
                         onChange={handleFileChange}
-                        style={{ display: 'block', width: '100%', padding: '8px', boxSizing: 'border-box', marginBottom: '10px' }} // Adjusted style
+                        // Removed inline style, rely on App.css for input[type="file"]
                     />
                 </div>
-                {error && <p style={{ color: 'red', fontSize: '0.9em', marginBottom: '10px' }}>Error: {error}</p>}
-                {isLoading && <p style={{marginTop: '10px', textAlign: 'center'}}>Loading...</p>}
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
+                {error && <p className="error-message">Error: {error}</p>} {/* Used class for styling */}
+                {isLoading && <p className="loading-message">Loading...</p>} {/* Used class for styling */}
+                <div className="button-group"> {/* Used class from App.css */}
                     <button type="button" onClick={onCancel} disabled={isLoading} className="secondary">
                         Cancel
                     </button>
-                    <button type="submit" disabled={isLoading || !selectedFile} className="primary">
-                        {isLoading ? 'Processing...' : 'Add File Summary'}
+                    <button type="submit" disabled={isLoading || !selectedFile} className="action"> {/* Changed to action */}
+                        {isLoading ? 'Processing...' : (
+                            <>
+                                <span className="material-symbols-outlined" style={{ marginRight: 'var(--spacing-sm)'}}>upload_file</span>
+                                Add File Summary
+                            </>
+                        )}
                     </button>
                 </div>
             </form>
-            {/* Error and loading messages are now above the buttons for better flow */}
-            {/* Summary display removed */}
         </div>
     );
 }

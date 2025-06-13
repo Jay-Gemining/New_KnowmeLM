@@ -40,39 +40,59 @@ const ReportGenerationModal = ({ notebook, onClose, onGenerateReport, generating
   }
 
   return (
+    // The parent div for modal content is styled by Modal.css
+    // We are styling the internal layout of the ReportGenerationModal specifically
     <div>
       <h4>Generate Report for "{notebook.title}"</h4>
       {notebook.sources && notebook.sources.length > 0 ? (
-        <div style={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid #eee', padding: '10px', marginTop: '10px', marginBottom: '10px' }}>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+        // Using class names similar to those in RightSidebar for source listing
+        <div className="source-selection-container" style={{ marginTop: 'var(--spacing-lg)', marginBottom: 'var(--spacing-lg)'}}>
+          {/* Removed h4 from here as it's redundant with modal title, or rephrase if needed */}
+          <ul className="main-source-list"> {/* Re-using class from App.css potentially */}
             {notebook.sources.map(source => (
-              <li key={source.id} style={{ padding: '5px 0', borderBottom: '1px solid #f0f0f0' }}>
-                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+              <li key={source.id} className="main-source-list-item"> {/* Re-using class */}
+                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', width: '100%', padding: 'var(--spacing-xs) 0' }}>
                   <input
                     type="checkbox"
                     checked={selectedSourcesMap[source.id] || false}
                     onChange={() => handleCheckboxChange(source.id)}
-                    style={{ marginRight: '10px' }}
+                    style={{ marginRight: 'var(--spacing-md)' }} // Use variable
                   />
-                  {source.name}
+                  <span className="source-name">{source.name}</span> {/* Added class for consistent styling */}
                 </label>
               </li>
             ))}
           </ul>
         </div>
       ) : (
-        <p>This notebook has no sources.</p>
+        <div style={{ textAlign: 'center', padding: 'var(--spacing-xl) 0', color: 'var(--color-text-secondary)' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '2.5rem', marginBottom: 'var(--spacing-md)', display: 'block' }}>
+                filter_none
+            </span>
+            <p style={{ fontSize: 'var(--font-size-base)', margin: 0, color: 'var(--color-text-primary)' }}>
+                No sources available.
+            </p>
+            <p style={{ fontSize: 'var(--font-size-sm)', marginTop: 'var(--spacing-xs)'}}>
+                Add sources to this notebook to generate a report.
+            </p>
+        </div>
       )}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px', gap: '10px' }}>
-        <button onClick={onClose} disabled={generatingReports}>
+      {/* Using button-group class for styling button containers */}
+      <div className="button-group" style={{ marginTop: 'var(--spacing-xl)', justifyContent: 'flex-end' }}>
+        <button onClick={onClose} disabled={generatingReports} className="secondary"> {/* Changed to secondary */}
           Cancel
         </button>
         <button
           onClick={handleGenerateClick}
-          className="primary"
+          className="action" /* Changed to action */
           disabled={!isAnySourceSelected || generatingReports}
         >
-          {generatingReports ? 'Generating...' : 'Generate Report'}
+          {generatingReports ? 'Generating...' : (
+            <>
+              <span className="material-symbols-outlined" style={{ marginRight: 'var(--spacing-sm)'}}>summarize</span>
+              Generate Report
+            </>
+          )}
         </button>
       </div>
       {/* Optional: Display detailed status from reportGenerationStatus if needed in modal */}

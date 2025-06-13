@@ -19,9 +19,10 @@ const RightSidebar = ({ selectedNotebook, showNotification, onToggleSourceChatSe
     <div className="right-sidebar-content" style={{ padding: '1rem' }}>
       <button
         onClick={onOpenReportModal} // This prop is from App.js to open the modal
-        className="primary"
-        style={{ width: 'fit-content', marginTop: '20px' }}
+        className="action" /* Changed from primary to action */
+        style={{ width: 'fit-content', marginTop: 'var(--spacing-xl)' }} /* Used CSS variable */
       >
+        <span className="material-symbols-outlined" style={{ marginRight: 'var(--spacing-sm)'}}>summarize</span>
         Generate HTML Report
       </button>
     </div>

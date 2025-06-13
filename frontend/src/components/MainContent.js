@@ -202,8 +202,21 @@ const MainContent = ({
   // Main return statement for MainContent
   return (
     <div className="main-content">
-
-      {selectedNotebook && (
+      {!selectedNotebook ? (
+        <div className="placeholder-message" style={{margin: 'auto', maxWidth: '500px'}}> {/* Centering the placeholder */}
+          <span className="material-symbols-outlined" style={{ fontSize: '4rem', marginBottom: 'var(--spacing-lg)', display: 'block', color: 'var(--color-text-secondary)'}}>
+            library_books
+          </span>
+          <h2>Welcome to KnowmeLM!</h2>
+          <p style={{ fontSize: 'var(--font-size-lg)', color: 'var(--color-text-secondary)'}}>
+            Select a notebook from the sidebar to view its content,
+            or create a new notebook to start organizing your knowledge.
+          </p>
+          <p style={{ fontSize: 'var(--font-size-base)', marginTop: 'var(--spacing-md)'}}>
+            Once a notebook is selected, you can add sources and chat with the AI about their content.
+          </p>
+        </div>
+      ) : (
         <div className="chat-area">
           {chatContextInfo && (
             <div className="chat-context-display">
@@ -231,11 +244,11 @@ const MainContent = ({
             />
             <button
                 onClick={handleSendChatMessage}
-                className="primary send-button"
+                className="action send-button" /* Changed from primary to action */
                 disabled={!selectedNotebook || !chatInput.trim() || isAiResponding}
             >
               {isAiResponding ? "Sending..." : "Send"}
-              <span className="send-icon">➔</span>
+              <span className="material-symbols-outlined send-icon">send</span> {/* Replaced icon */}
             </button>
           </div>
         </div>
