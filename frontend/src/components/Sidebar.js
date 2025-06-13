@@ -44,27 +44,42 @@ const Sidebar = ({
             <h2>Notebooks</h2>
             <button
                 onClick={onAddNotebook}
-                className="primary"
-                style={{ width: '100%', marginBottom: '15px' }}
+                className="action" // Changed from primary to action
+                style={{ width: '100%', marginBottom: 'var(--spacing-lg)' }} // Used CSS var
             >
+                {/* Using Material Symbol for consistency if desired, or keep text */}
+                {/* <span className="material-symbols-outlined" style={{ marginRight: 'var(--spacing-sm)'}}>add_circle</span> */}
                 Create New Notebook
             </button>
             {notebooks.length === 0 ? (
-                <p style={{textAlign: 'center', color: '#5f6368'}}>No notebooks yet. Click "Create New Notebook" to start.</p>
+                <div style={{ textAlign: 'center', padding: 'var(--spacing-xl) var(--spacing-sm)', color: 'var(--color-text-secondary)' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '2.5rem', marginBottom: 'var(--spacing-md)', display: 'block' }}>
+                        note_add
+                    </span>
+                    <p style={{ fontSize: 'var(--font-size-base)', margin: 0, color: 'var(--color-text-primary)' }}>
+                        No notebooks yet.
+                    </p>
+                    <p style={{ fontSize: 'var(--font-size-sm)', marginTop: 'var(--spacing-xs)'}}>
+                        Click "Create New Notebook" to get started.
+                    </p>
+                </div>
             ) : (
                 <ul className="notebook-list">
                     {notebooks.map((notebook) => (
                         <li
                             key={notebook.id}
                             className={`${notebook.id === selectedNotebookId ? 'selected' : ''} notebook-item`}
-                            // onClick is now on the span to avoid triggering selection when clicking icons
                         >
-                            <span onClick={() => onSelectNotebook(notebook.id)} style={{ flexGrow: 1, cursor: 'pointer' }}>
+                            <span onClick={() => onSelectNotebook(notebook.id)} style={{ flexGrow: 1, cursor: 'pointer', padding: 'var(--spacing-sm) 0' }}>
                                 {notebook.title}
                             </span>
                             <div className="notebook-actions">
-                                <button onClick={(e) => { e.stopPropagation(); onEditNotebookTitle(notebook.id); }} title="Edit notebook title">✏️</button>
-                                <button onClick={(e) => { e.stopPropagation(); onDeleteNotebook(notebook.id); }} title="Delete notebook">🗑️</button>
+                                <button onClick={(e) => { e.stopPropagation(); onEditNotebookTitle(notebook.id); }} title="Edit notebook title">
+                                    <span className="material-symbols-outlined">edit</span>
+                                </button>
+                                <button onClick={(e) => { e.stopPropagation(); onDeleteNotebook(notebook.id); }} title="Delete notebook">
+                                    <span className="material-symbols-outlined">delete</span>
+                                </button>
                             </div>
                         </li>
                     ))}
@@ -76,22 +91,31 @@ const Sidebar = ({
             {selectedNotebook && (
                 <div style={{ marginTop: '20px' }}>
                     {/* Add Source Buttons */}
-                    <div className="add-source-buttons-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
-                        <button onClick={() => onToggleWebsiteSummarizer(true)} className="primary icon-button">
-                            ➕ Add Website Source
+                    <div className="add-source-buttons-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)', marginBottom: 'var(--spacing-xl)' }}>
+                        <button onClick={() => onToggleWebsiteSummarizer(true)} className="action icon-button"> {/* Changed from primary to action */}
+                            <span className="material-symbols-outlined" style={{ marginRight: 'var(--spacing-sm)'}}>add_link</span>
+                            Add Website Source
                         </button>
-                        <button onClick={() => onToggleTextFileSummarizer(true)} className="primary icon-button">
-                            ➕ Add File Source
+                        <button onClick={() => onToggleTextFileSummarizer(true)} className="action icon-button"> {/* Changed from primary to action */}
+                            <span className="material-symbols-outlined" style={{ marginRight: 'var(--spacing-sm)'}}>note_add</span>
+                            Add File Source
                         </button>
                     </div>
 
                     <h3>Sources for: {selectedNotebook.title}</h3>
-                    {/* Summarizer toggle buttons and summarizer components removed from here */}
 
                     {selectedNotebook.sources && selectedNotebook.sources.length > 0 ? (
-                        <ul className="source-list" style={{ marginTop: '10px' }}>
+                        <ul className="source-list" style={{ marginTop: 'var(--spacing-md)' }}>
                             {selectedNotebook.sources.slice().reverse().map((source) => {
                                 const isSelectedForChat = source.isSelectedForChat === undefined ? true : source.isSelectedForChat;
+                                let iconName = 'description'; // Default for TXT or other files
+                                if (source.type === 'website') {
+                                    iconName = 'language';
+                                } else if (source.name && source.name.toLowerCase().endsWith('.pdf')) {
+                                    iconName = 'picture_as_pdf';
+                                } else if (source.name && source.name.toLowerCase().endsWith('.md')) {
+                                    iconName = 'article';
+                                }
                                 return (
                                     <li
                                         key={source.id}
@@ -100,20 +124,13 @@ const Sidebar = ({
                                         title={`${source.name} - ${isSelectedForChat ? 'Included in chat context' : 'Not in chat context'}`}
                                     >
                                         <div className="source-info">
-                                            <span className="source-icon">
-                                                {(() => {
-                                                    let icon = '📄'; // Default document icon
-                                                    if (source.type === 'website') { // New case for website
-                                                        icon = '🌐';
-                                                    } else if (source.name && source.name.toLowerCase().endsWith('.pdf')) {
-                                                        icon = '📰';
-                                                    } else if (source.name && source.name.toLowerCase().endsWith('.md')) {
-                                                        icon = '📝';
-                                                    }
-                                                    return icon;
-                                                })()}
+                                            <span className="material-symbols-outlined source-icon">{iconName}</span>
+                                            <span className="selection-indicator">
+                                                {/* Using Material Symbols for checkbox state */}
+                                                <span className="material-symbols-outlined">
+                                                    {isSelectedForChat ? 'check_box' : 'check_box_outline_blank'}
+                                                </span>
                                             </span>
-                                            <span className="selection-indicator">{isSelectedForChat ? '✓ ' : '☐ '}</span>
                                             <span className="source-name-text">{source.name}</span>
                                         </div>
                                     </li>
@@ -121,9 +138,17 @@ const Sidebar = ({
                             })}
                         </ul>
                     ) : (
-                        <p style={{ marginTop: '10px', fontSize: '0.9em', color: '#5f6368', textAlign: 'center' }}>
-                            No sources in this notebook yet. Add one using the buttons above.
-                        </p>
+                        <div style={{ textAlign: 'center', padding: 'var(--spacing-lg) var(--spacing-sm)', color: 'var(--color-text-secondary)' }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: '2.5rem', marginBottom: 'var(--spacing-md)', display: 'block' }}>
+                                playlist_add
+                            </span>
+                            <p style={{ fontSize: 'var(--font-size-base)', margin: 0, color: 'var(--color-text-primary)' }}>
+                                This notebook is empty.
+                            </p>
+                            <p style={{ fontSize: 'var(--font-size-sm)', marginTop: 'var(--spacing-xs)'}}>
+                                Add a website or file source to begin.
+                            </p>
+                        </div>
                     )}
                 </div>
             )}

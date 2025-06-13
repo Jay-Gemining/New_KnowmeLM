@@ -72,25 +72,30 @@ function WebsiteSummarizer({ onSummaryComplete, onCancel }) {
         <div className="summarizer-form-container">
             <h3>Add New Website Source</h3>
             <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: '15px' }}>
-                    <label htmlFor="websiteUrl" style={{ display: 'block', marginBottom: '5px' }}>Website URL:</label>
+                <div> {/* Removed inline style */}
+                    <label htmlFor="websiteUrl">Website URL:</label>
                     <input
                         type="text"
                         id="websiteUrl"
                         value={websiteUrl}
                         onChange={(e) => setWebsiteUrl(e.target.value)}
                         placeholder="Enter Website URL (e.g., https://example.com/article)"
-                        style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                        // Removed inline style, rely on App.css for input[type="text"]
                         disabled={isLoading}
                     />
                 </div>
-                {error && <p style={{ color: 'red', fontSize: '0.9em', marginBottom: '10px' }}>{error}</p>}
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
+                {error && <p className="error-message">{error}</p>} {/* Used class for styling */}
+                <div className="button-group"> {/* Used class from App.css */}
                     <button type="button" onClick={onCancel} disabled={isLoading} className="secondary">
                         Cancel
                     </button>
-                    <button type="submit" disabled={isLoading} className="primary">
-                        {isLoading ? 'Processing...' : 'Add Website Summary'}
+                    <button type="submit" disabled={isLoading} className="action"> {/* Changed to action */}
+                        {isLoading ? 'Processing...' : (
+                            <>
+                                <span className="material-symbols-outlined" style={{ marginRight: 'var(--spacing-sm)'}}>add_link</span>
+                                Add Website Summary
+                            </>
+                        )}
                     </button>
                 </div>
             </form>

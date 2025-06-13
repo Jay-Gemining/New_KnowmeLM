@@ -1,14 +1,148 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+/* frontend/src/index.css */
+
+:root {
+  /* Color Palette */
+  --color-background-primary: #F8F9FA; /* very light grey */
+  --color-background-panel: #FFFFFF;   /* white */
+
+  --color-text-primary: #3C4043;     /* deep grey */
+  --color-text-secondary: #5F6368;   /* mid-grey */
+
+  --color-action-primary: #89B3FF;     /* blue/purple */
+  --color-action-primary-darker: #6A9EFF; /* For hover/active states */
+  --color-action-primary-lighter: #EBF1FF; /* For light backgrounds/highlights */
+
+
+  --color-accent-success: #E6F4EA;    /* light green (background for notification) */
+  --color-accent-success-text: #1E854A; /* Darker green text for success notification */
+  --color-accent-error: #FCE8E6;      /* Light red for error notification */
+  --color-accent-error-text: #C5221F;   /* Darker red text for error notification */
+  --color-accent-warning: #FEF7E0;   /* Light yellow for warning notification */
+  --color-accent-warning-text: #AF5C00; /* Darker yellow/brown text for warning */
+
+  --color-button-primary-fill: #5F6368; /* grey (for primary button background) */
+  --color-button-primary-text: #FFFFFF;   /* white (for primary button text) */
+  --color-button-secondary-border: #5F6368; /* grey (for secondary button border) */
+  --color-button-secondary-text: #5F6368;   /* grey (for secondary button text) */
+
+  --color-border-primary: #DEE2E6;    /* Standard border color */
+  --color-border-secondary: #CED4DA;  /* Slightly darker border or for inputs */
+
+  /* Typography */
+  --font-family-base: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --font-family-monospace: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+
+  --font-size-base: 16px;
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-lg: 1.125rem; /* 18px */
+
+  --line-height-base: 1.6;
+  --line-height-heading: 1.3;
+
+  /* Spacing Units */
+  --spacing-unit: 8px;
+  --spacing-xs: calc(0.5 * var(--spacing-unit));   /* 4px */
+  --spacing-sm: var(--spacing-unit);              /* 8px */
+  --spacing-md: calc(1.5 * var(--spacing-unit));  /* 12px */
+  --spacing-lg: calc(2 * var(--spacing-unit));   /* 16px */
+  --spacing-xl: calc(3 * var(--spacing-unit));   /* 24px */
+  --spacing-xxl: calc(4 * var(--spacing-unit));  /* 32px */
+
+  /* Borders & Shadows */
+  --border-radius-default: 6px;
+  --box-shadow-default: 0 1px 3px rgba(0,0,0,0.05);
+  --box-shadow-hover: 0 2px 6px rgba(0,0,0,0.1);
+}
 
 body {
   margin: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-background-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #F8F9FA;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: var(--font-family-monospace);
+}
+
+/* Basic Typographic Hierarchy */
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-lg);
+  font-weight: 500; /* Or 700 for more emphasis, 500 is a good default */
+  line-height: var(--line-height-heading);
+  color: var(--color-text-primary); /* Default heading color */
+}
+
+h1 {
+  font-size: 2rem; /* ~32px */
+}
+
+h2 {
+  font-size: 1.75rem; /* ~28px */
+}
+
+h3 {
+  font-size: 1.5rem; /* ~24px */
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Base style for Material Symbols */
+.material-symbols, /* Generic class for any symbol type */
+.material-symbols-outlined,
+.material-symbols-rounded,
+.material-symbols-sharp {
+  font-family: 'Material Symbols Outlined'; /* Default to Outlined, can be overridden */
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Preferred icon size, can be overridden */
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -moz-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+
+  /* Default Font Variation Settings (can be customized per instance) */
+  /* Adjust optical size (opsz), weight (wght), fill (FILL), grade (GRAD) */
+  /* Example: 'opsz' 24, 'wght' 400, 'FILL' 0, 'GRAD' 0 */
+  font-variation-settings:
+    'opsz' 24, /* Optical size: 20-48 */
+    'wght' 400, /* Weight: 100-700 */
+    'FILL' 0, /* Fill: 0 or 1 */
+    'GRAD' 0; /* Grade: -50 to 200 */
+}
+
+/* Specific family overrides if needed, e.g. if an element MUST be Rounded */
+.material-symbols-rounded { font-family: 'Material Symbols Rounded'; }
+.material-symbols-sharp { font-family: 'Material Symbols Sharp'; }
+
+/* Global Resets & Box Sizing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Optional: Basic link styling */
+a {
+  color: var(--color-action-primary);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--color-action-primary-darker);
+  text-decoration: underline;
 }

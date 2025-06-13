@@ -1,178 +1,162 @@
-# KnowmeLM
+# KnowmeLM: Your Intelligent Knowledge Management Assistant
 
-## 概述
+## Project Overview
 
-KnowmeLM 是一款功能强大的知识管理应用程序，旨在帮助用户组织、总结和互动来自各种来源的信息。它允许用户创建笔记本，从 YouTube 视频和基于文本的文件（TXT、PDF、MD）添加内容，生成由人工智能驱动的摘要，并根据摘要内容进行交互式聊天会话。此外，用户可以从其处理过的信息生成 HTML 报告。
+KnowmeLM is a powerful knowledge management application designed to help you organize, summarize, and interact with information from various sources. It allows users to create distinct notebooks for different topics or projects, add content from YouTube videos and text-based files (TXT, PDF, Markdown), and then leverage AI to generate comprehensive summaries. Users can engage in interactive chat sessions based on these summaries and generate HTML reports for sharing or archiving.
 
-## 主要功能
+KnowmeLM aims to streamline the process of information consumption and knowledge extraction, making it easier to manage and draw insights from your digital content.
 
--   **笔记本管理**：创建和选择笔记本以组织您的知识领域。
--   **来源管理**：
-    -   通过提供 YouTube 视频的 URL 添加视频。
-    -   上传文本文档，包括 TXT、PDF 和 Markdown (MD) 格式。
--   **人工智能驱动的摘要 (AI-Powered Summaries)**：首先提取原始内容（例如 YouTube 字幕或文件文本），然后利用第二层 AI 模型对提取出的内容进行深度分析并生成一份**详尽的摘要**。这份详尽摘要将作为后续聊天和报告生成的基础。
--   **交互式人工智能聊天 (Interactive AI Chat)**：与一个使用您选定来源的AI生成的详尽摘要作为其知识库的人工智能进行对话。这有助于针对性地检索信息并更深入地理解您的内容。为确保对话的连贯性，在AI详尽摘要生成失败的情况下，系统会智能地回退到使用原始内容作为上下文。
--   **HTML 报告生成**：从您的来源的AI生成的详尽摘要创建结构良好的 HTML 报告，非常适合共享或存档。
+## Features
 
-## 使用的技术
+*   **Notebook Management**:
+    *   Create, rename, and delete notebooks to organize your knowledge domains.
+    *   Each notebook acts as a container for related information sources.
+*   **Source Management**:
+    *   **Add YouTube Videos**: Provide a YouTube video URL to extract its transcript.
+    *   **Upload Text Files**: Supports TXT, PDF, and Markdown (MD) files for text extraction.
+    *   (Functionality for website summarization might also be present or planned via `WebsiteSummarizer.js`)
+*   **AI-Powered Summaries**:
+    *   After extracting content (e.g., YouTube subtitles, file text), KnowmeLM utilizes an AI model to generate a detailed and comprehensive summary.
+    *   This summary becomes the primary knowledge base for subsequent interactions.
+*   **Interactive AI Chat**:
+    *   Engage in conversations with an AI that uses the generated summaries from your selected sources as its knowledge context.
+    *   Select one or more sources within a notebook to define the scope of the chat.
+    *   If a detailed summary isn't available or fails to generate, the system can fall back to using the original extracted content for chat context.
+*   **HTML Report Generation**:
+    *   Create well-structured HTML reports from the AI-generated summaries of selected sources.
+    *   Useful for sharing insights, archiving information, or offline viewing.
+*   **Notification System**:
+    *   Receive in-app notifications for important actions, errors, or status updates (e.g., "Source added successfully," "Report generation initiated").
+*   **Local Data Persistence**:
+    *   Notebooks, source metadata, and generated HTML reports are cached in the browser's `localStorage` for improved performance and user experience, allowing you to retain your data between sessions.
 
--   **后端**：
-    -   Python (Flask)
-    -   OpenAI API
-    -   `yt-dlp`（用于下载 YouTube 视频信息）
-    -   `PyPDF2`（用于处理 PDF 文件）
--   **前端**：
-    -   React
-    -   JavaScript
--   **数据存储**：
-    -   使用浏览器 `localStorage` 缓存笔记本和生成的报告，以增强性能和用户体验。
+## Tech Stack
 
-## 前端设计与用户界面 (Frontend Design and User Interface)
+*   **Backend**:
+    *   Python (Flask framework)
+    *   OpenAI API (for summarization and chat functionalities)
+    *   `yt-dlp` (or similar, for downloading YouTube video information/transcripts)
+    *   `PyPDF2` (or similar, for processing PDF files)
+*   **Frontend**:
+    *   React (JavaScript library for building user interfaces)
+    *   JavaScript (ES6+)
+    *   CSS3 (for styling, potentially with CSS variables for theming)
+*   **Data Storage (Client-Side)**:
+    *   Browser `localStorage` for caching notebooks, source metadata, and HTML reports.
 
-KnowmeLM 的前端采用 React 构建，旨在提供一个直观、高效的用户体验。应用程序的整体布局遵循现代设计原则，采用清晰的三栏布局：
+## Frontend Design Overview
 
-*   **左侧边栏 (Left Sidebar):** 用于导航和来源选择。
-*   **中间的主内容区 (Main Content Area):** 专注于聊天和内容输入。
-*   **右侧边栏 (Right Sidebar):** 提供报告生成等辅助功能。
+KnowmeLM features a modern and intuitive three-column layout:
 
-这种布局旨在将导航、核心交互和辅助任务清晰分离，使用户能够轻松定位信息并专注于当前任务。
+*   **Left Sidebar (`Sidebar.js`)**:
+    *   Manages notebook creation, listing, selection, renaming, and deletion.
+    *   Displays the list of sources for the currently selected notebook.
+    *   Allows users to add new sources (YouTube, text files) via dedicated buttons that activate input forms in the main content area.
+    *   Enables selection of sources to be included in the chat context.
+*   **Main Content Area (`MainContent.js`)**:
+    *   Displays the primary user interface for interaction, which varies based on context:
+        *   Welcome screen or notebook overview.
+        *   Input forms for adding new YouTube or text file sources (using `YoutubeSummarizer.js`, `TextFileSummarizer.js`).
+        *   The interactive chat interface for conversing with the AI.
+*   **Right Sidebar (`RightSidebar.js`)**:
+    *   Dedicated to HTML report generation.
+    *   Lists sources from the selected notebook, allowing users to choose which ones to include in a report.
+    *   Contains the button to trigger report generation and displays its progress.
 
-### 主要 UI 组件及其职责
+## Setup and Installation
 
-应用程序的界面由多个关键组件构成，它们协同工作以提供流畅的用户体验：
+Follow these steps to set up and run KnowmeLM on your local machine:
 
-*   **`App.js` (应用外壳):** 作为整个前端应用的根组件，负责编排整体三栏布局，管理全局状态（如笔记本列表、当前选中的笔记本、来源的聊天上下文选择状态等），并处理核心的导航与交互逻辑。
+### Backend Setup
 
-*   **`Sidebar.js` (左侧边栏 - Left Sidebar):**
-    *   **笔记本管理:** 用户可以通过此侧边栏创建新的笔记本，输入笔记本标题。已创建的笔记本会在此列出，用户可以轻松选择、编辑标题或删除笔记本。
-    *   **内容来源列表:** 当用户选定一个笔记本后，该笔记本下的所有内容来源（**经过 AI 详细总结后的版本**）会清晰地展示在侧边栏。不同类型的内容来源会以直观的图标加以区分。
-    *   **添加来源功能:** 提供“➕ 添加 YouTube 来源”和“➕ 添加文件来源”按钮 (当笔记本被选定时)，用于激活在主内容区显示的相应输入表单。
-    *   **聊天上下文选择:** 点击来源列表中的条目会切换该来源是否被包含在聊天上下文中，并有视觉指示器（如 ✓ 或 ☐）显示当前状态。
-
-*   **`MainContent.js` (主内容区 - Main Content Area):** 此区域现在主要用于显示聊天机器人界面，以及在添加新内容来源时展示 `YoutubeSummarizer` 或 `TextFileSummarizer` 组件的输入表单。
-    *   **欢迎界面:** 当应用启动且未选择任何笔记本时，主内容区会显示欢迎信息。
-    *   **笔记本概览 (Notebook Overview):** 当用户选择了某个笔记本但未激活任何内容添加表单时，此视图会显示。它主要展示当前笔记本的标题和欢迎信息。添加新来源的按钮已移至左侧边栏。
-    *   **内容来源详情视图已被移除:** 先前用于显示单个来源摘要、原始内容和特定来源聊天的标签页界面已不复存在。来源的上下文选择现在通过左侧边栏直接管理。
-
-*   **`RightSidebar.js` (右侧边栏 - Right Sidebar):**
-    *   新增的右侧边栏专门用于生成 HTML 报告。
-    *   当选定一个笔记本后，此侧边栏会列出该笔记本中的所有内容来源，并提供复选框，允许用户选择一个或多个来源以生成报告。
-    *   包含“生成 HTML 报告(所选)”按钮及其相关状态显示（如生成进度）。
-
-*   **聊天界面 (Chat Interface):** 位于 `MainContent` 区域（当笔记本被选定时）。
-    *   清晰地展示用户与 AI 之间的对话历史。
-    *   提供一个文本输入区域供用户键入消息。
-    *   上下文信息会明确提示当前用于聊天的来源组合（基于在左侧边栏中的选择）。
-    *   负责将用户消息发送到后端，并实时显示 AI 的回复。
-
-*   **`Notification.js` (通知系统):** 应用通过一个通知组件向用户提供非阻塞性的反馈信息，例如操作成功、错误提示或状态更新。
-
-*   **嵌入式内容添加工具:**
-    *   **`YoutubeSummarizer.js` 和 `TextFileSummarizer.js`:** 这些组件现在通过左侧边栏中的按钮激活，但其用户界面会显示在主内容区，引导用户输入 URL 或上传文件，从而捕获信息并触发后续的**内容提取和 AI 详细摘要流程**。
-
-这种组件化的设计不仅使得代码更易于管理和维护，也确保了用户在与 KnowmeLM 交互时，每一步操作都有清晰的界面反馈和高效的功能支持。
-
-### 典型用户交互流程
-
-以下是一些用户在使用 KnowmeLM 时典型的操作路径：
-
-1.  **创建新笔记本:**
-    *   用户在 `Sidebar`（左侧边栏）点击“创建新笔记本”按钮。
-    *   在弹出的对话框中输入笔记本的标题，确认后新的笔记本将出现在侧边栏列表中，并自动被选中。
-    *   主内容区会切换到该新笔记本的概览视图，提示用户从左侧边栏添加来源或开始聊天。
-
-2.  **添加内容来源:**
-    *   在左侧边栏，当一个笔记本被选定时，用户点击“➕ 添加 YouTube 来源”或“➕ 添加文件来源”按钮。
-    *   `YoutubeSummarizer` 或 `TextFileSummarizer` 组件的表单会显示在主内容区。
-    *   用户粘贴 YouTube 视频 URL 或选择本地文本文件并提交。
-    *   处理完成后，系统首先提取原始内容，然后调用 AI 生成一份**详尽摘要**。这个详尽摘要版本的新来源会出现在左侧边栏的来源列表中，并默认被选中用于聊天上下文。
-
-3.  **选择聊天上下文来源:**
-    *   用户在左侧边栏点击一个笔记本，该笔记本下的来源列表会展示出来。
-    *   点击列表中的某个特定来源（例如，其名称或旁边的复选标记）会切换该来源是否包含在聊天上下文中。界面上会有清晰的视觉指示（如 ✓ 或 ☐）。
-
-4.  **与 AI 聊天互动:**
-    *   用户通过在左侧边栏点击来源来选择一个或多个来源作为聊天上下文。
-    *   聊天界面下方的上下文提示会更新，以反映当前选定的来源。
-    *   在聊天界面中输入问题。AI 将基于所选来源的**AI生成的详尽摘要**进行回答。如果某个来源的详尽摘要生成失败（例如，由于AI模型错误或内容无法处理），系统将尝试使用该来源提取出的原始内容作为聊天上下文，以确保对话仍能围绕相关素材进行。
-    *   聊天记录会实时显示，用户可以持续提问和互动。
-
-5.  **生成 HTML 报告:**
-    *   用户在右侧边栏中，通过复选框勾选希望包含在报告中的一个或多个内容来源。
-    *   点击“生成 HTML 报告(所选)”按钮。
-    *   系统会为每个选定的来源的**AI生成的详尽摘要**生成一个 HTML 文件，并在新的浏览器标签页中打开（如果浏览器设置允许）。用户可以查看、保存或分享这些报告。
-    *   `Notification` 系统可能会提示报告生成的进度或结果。
-
-通过这些流程，用户可以高效地利用 KnowmeLM 组织知识、提取洞见并进行智能交互。
-
-### UI/UX 设计原则
-
-KnowmeLM 的用户界面设计遵循了若干核心原则，以确保应用的易用性和效率：
-
-*   **清晰直观 (Clarity and Ease of Use):** 界面元素和操作流程力求简洁明了。三栏布局（导航/上下文选择在左，核心交互居中，辅助任务在右）提供了清晰的功能分区。图标和视觉指示器（如来源类型、聊天选择状态）帮助用户快速理解界面。
-*   **上下文感知 (Contextual Information):** 应用在关键交互点（如聊天界面）会明确提示当前的上下文（例如，当前用于聊天的来源组合），帮助用户理解 AI 的回应范围。
-*   **直接操作与流畅工作流 (Direct Manipulation and Smooth Workflows):** 用户可以直接在相应的界面区域完成核心任务。例如，在左侧边栏直接选择来源以更新聊天上下文，在右侧边栏管理报告生成。
-*   **及时的用户反馈 (Timely User Feedback):** 通过 `Notification` 系统和界面内的状态提示（如“AI 正在思考...”、“报告生成中...”），应用会及时向用户反馈操作的进展和结果。
-*   **渐进式披露 (Progressive Disclosure):** 信息和功能在需要时才展现。例如，添加来源的按钮和来源列表仅在选定笔记本后才显示，右侧边栏的内容也与当前笔记本相关联，避免了初期界面的信息过载。
-*   **清晰分离关注点 (Clear Separation of Concerns):** 新的三栏布局强化了此原则，左侧专注于导航和上下文设置，中间是主要的工作区（聊天、内容输入），右侧则处理特定的辅助任务（报告）。
-
-这些原则共同作用，旨在为用户提供一个既强大又易于导航的知识管理环境。
-
-*为了更直观地理解 KnowmeLM 的用户界面和交互体验，建议配合实际应用截图或操作演示视频进行查阅（若有提供）。*
-
-## 安装与设置
-
-### 后端
-
-1.  **Python**：确保您已安装 Python 3.x。
-2.  **依赖项**：使用 `requirements.txt` 安装所需的 Python 包：
+1.  **Prerequisites**: Ensure Python 3.x is installed.
+2.  **Clone Repository**: Clone the project repository (if you haven't already).
+3.  **Navigate to Backend Directory**: `cd path/to/your/backend_directory`
+4.  **Install Dependencies**: Install required Python packages using `requirements.txt`:
     ```bash
     pip install -r requirements.txt
     ```
-3.  **环境配置**：
-    -   在后端目录中通过复制示例文件创建一个 `.env` 文件：
-        ```bash
-        cp .env.example .env
-        ```
-    -   编辑 `.env` 文件以包含您的 OpenAI API 密钥和任何其他必要的配置：
-        ```
+5.  **Environment Configuration**:
+    *   Create a `.env` file in the backend directory (you can copy `.env.example` if provided).
+    *   Edit the `.env` file to include your OpenAI API key and any other necessary backend configurations:
+        ```env
         OPENAI_API_KEY='your_openai_api_key_here'
-        # 其他后端特定的环境变量
+        # Other backend-specific environment variables
         ```
-4.  **运行 Flask 服务器**：
+6.  **Run Flask Server**:
     ```bash
-    python app.py # 或您的主 Flask 应用程序文件
+    python app.py # Or the main Flask application file (e.g., run.py)
     ```
-    后端服务器通常会在 `http://localhost:5000` 上运行。
+    The backend server will typically start on `http://localhost:5000` or `http://localhost:5001`. Check your project's specific configuration.
 
-### 前端
+### Frontend Setup
 
-1.  **Node.js 和 npm**：确保您已安装 Node.js（包含 npm）。
-2.  **依赖项**：导航到前端目录并使用 `package.json` 安装所需的 Node.js 包：
+1.  **Prerequisites**: Ensure Node.js (which includes npm) is installed.
+2.  **Navigate to Frontend Directory**: `cd path/to/your/frontend_directory` (e.g., `frontend/`)
+3.  **Install Dependencies**: Install required Node.js packages:
     ```bash
     npm install
     ```
-3.  **运行 React 开发服务器**：
+4.  **Run React Development Server**:
     ```bash
     npm start
     ```
-    前端应用程序通常可在 `http://localhost:3000` 访问。
+    The frontend application will typically be accessible at `http://localhost:3000`.
 
-## 使用说明
+## Usage
 
-本应用程序的核心功能包括笔记本管理、多样化的内容来源添加（YouTube 视频、文本文件）、AI 驱动的内容摘要、基于摘要的交互式 AI 聊天以及 HTML 报告的生成。
+1.  **Open the Application**: Access the frontend URL (usually `http://localhost:3000`) in your web browser.
+2.  **Create a Notebook**:
+    *   In the left sidebar, click the "Create New Notebook" button (or similar).
+    *   Enter a title for your notebook when prompted. The new notebook will appear in the sidebar and be automatically selected.
+3.  **Add Content Sources**:
+    *   With a notebook selected, click "➕ Add YouTube Source" or "➕ Add File Source" in the left sidebar.
+    *   The corresponding input form will appear in the main content area.
+    *   **For YouTube**: Paste the video URL and submit.
+    *   **For Files**: Select a TXT, PDF, or MD file from your computer and submit.
+    *   The system will process the source, extract content, and generate an AI summary. The new source will appear in the left sidebar under the current notebook.
+4.  **Select Sources for Chat**:
+    *   In the left sidebar, click on the sources listed under the selected notebook to toggle their inclusion in the chat context. A visual indicator (e.g., a checkmark) will show which sources are active.
+5.  **Interact with the AI Chat**:
+    *   The chat interface is in the main content area.
+    *   The interface will indicate which sources are currently providing context.
+    *   Type your questions or prompts related to the selected source summaries and receive AI-generated responses.
+6.  **Generate HTML Reports**:
+    *   In the right sidebar, select the sources you want to include in your report using the checkboxes.
+    *   Click the "Generate HTML Report (Selected)" button.
+    *   The system will generate an HTML report for each selected source's summary, typically opening each in a new browser tab. These reports are also cached in `localStorage`.
+7.  **Manage Notebooks**:
+    *   **Rename**: Click an edit icon or option next to a notebook title in the left sidebar.
+    *   **Delete**: Click a delete icon or option next to a notebook in the left sidebar. Confirm the deletion when prompted.
 
-关于如何通过用户界面操作这些功能的详细步骤和典型用户交互流程，请参阅上一章节 “**前端设计与用户界面**” 中的 “典型用户交互流程” 小节。该章节详细介绍了如何创建和管理笔记本、添加和处理内容来源、与聊天机器人互动以及生成报告等。
+## Backend API Endpoints (Conceptual)
 
-## 后端 API 端点
+The backend likely provides API endpoints such as:
 
-后端提供以下 API 端点：
+*   `POST /summarize-youtube`: Accepts a YouTube URL, fetches content, generates a summary, and returns summary, title, and original content.
+*   `POST /summarize-text-file`: Accepts an uploaded text file, extracts content, generates a summary, and returns summary, filename, and original content.
+*   `POST /chat`: Accepts a user query and a list of selected source summaries (or original content as fallback) to provide context, then returns an AI-generated response.
+*   `POST /generate-html-report`: Accepts a summary text and title, and returns a formatted HTML report.
 
--   `POST /summarize-youtube`：接受 YouTube 视频 URL，处理视频内容（例如，字幕），**然后调用AI进一步生成详尽摘要**，并返回此详尽摘要及视频标题和原始字幕。
--   `POST /summarize-text-file`：接受上传的基于文本的文件（TXT、PDF、MD），提取其内容，**然后调用AI进一步生成详尽摘要**，并返回此详尽摘要及文件名和原始内容。
--   `POST /chat`：接受用户查询和选定来源摘要列表。根据提供的上下文返回人工智能生成的响应。
--   `POST /generate-html-report`：接受来源摘要列表并生成整合的 HTML 报告。
+*(Refer to the backend's specific API documentation for exact routes and request/response formats.)*
 
-## 免责声明
+## Contributing
 
-KnowmeLM 目前正处于开发阶段。产品需求文档（PRD）中描述的或最终产品设想的某些功能可能尚未完全实现，或者其当前实现可能有所不同。在我们继续改进应用程序的过程中，感谢您的理解和反馈。
+We welcome contributions to KnowmeLM! If you're interested in helping improve the application, please consider the following:
+
+*   **Reporting Bugs**: If you find a bug, please open an issue on the project's issue tracker, providing detailed steps to reproduce it.
+*   **Feature Suggestions**: Have an idea for a new feature or an improvement? Open an issue to discuss it.
+*   **Code Contributions**:
+    1.  Fork the repository.
+    2.  Create a new branch for your feature or bug fix (`git checkout -b feature/your-feature-name` or `bugfix/your-bug-fix`).
+    3.  Make your changes, adhering to the project's coding style and conventions.
+    4.  Write unit tests for your changes if applicable.
+    5.  Ensure all tests pass.
+    6.  Commit your changes and push them to your fork.
+    7.  Submit a pull request to the main repository for review.
+
+*(Please check if a `CONTRIBUTING.md` file exists for more specific guidelines.)*
+
+## Disclaimer
+
+KnowmeLM is an evolving project. Some features described in product requirement documents or envisioned for the final product may not be fully implemented or may behave differently in the current version. Your understanding and feedback are appreciated as we continue to develop and refine the application.
