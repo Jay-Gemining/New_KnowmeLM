@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动态流程图展示</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts for a modern look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom styles for the page and Mermaid animations -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Style for the flowchart connection lines for the animation */
+        .edgePaths path {
+            stroke-dasharray: 10; /* Defines the length of dashes and gaps */
+            animation: dash 1s linear infinite;
+        }
+
+        /* Center the Mermaid SVG diagrams within their containers */
+        .mermaid svg {
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Keyframe animation for the "marching ants" effect */
+        @keyframes dash {
+            from {
+                stroke-dashoffset: 10;
+            }
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 antialiased">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <!-- Header Section -->
+        <header class="text-center mb-10 sm:mb-16">
+            <h1 class="text-4xl sm:text-5xl font-bold text-white mb-2">项目核心工作流程</h1>
+            <p class="text-lg text-gray-400">使用 Mermaid.js 动态可视化</p>
+        </header>
+
+        <!-- Grid container for the flowcharts -->
+        <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+            <!-- Card 1: Notebook Management -->
+            <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-cyan-500/20 hover:border-cyan-500/50">
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-cyan-400 mb-4">1. 笔记本管理</h2>
+                    <div class="mermaid">
+%% Mermaid Code for Notebook Management
+graph TD
+    A(开始) --> B{选择操作};
+    B -- 创建新笔记本 --> C[点击“创建笔记本”按钮];
+    C --> D[系统提示输入笔记本标题];
+    D --> E[用户输入标题并确认];
+    E --> F[系统创建新笔记本并分配唯一ID];
+    F --> G[在侧边栏列表中显示新笔记本];
+    G --> H[自动选中新笔记本] --> I(结束);
+
+    B -- 编辑笔记本 --> J[在侧边栏选择一个现有笔记本];
+    J --> K[点击“编辑”选项];
+    K --> L[系统提示输入新标题];
+    L --> M[用户输入新标题并确认];
+    M --> N[系统更新笔记本标题];
+    N --> O[侧边栏列表中的名称更新] --> I;
+
+    B -- 删除笔记本 --> P[在侧边栏选择一个现有笔记本];
+    P --> Q[点击“删除”选项];
+    Q --> R{系统显示确认对话框};
+    R -- 是 --> S[系统删除该笔记本及其所有源];
+    S --> T[从侧边栏列表中移除该笔记本];
+    T --> U[系统自动选择另一个笔记本或无] --> I;
+    R -- 否 --> V[取消操作] --> I;
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Source Summarization & Addition -->
+            <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-pink-500/20 hover:border-pink-500/50">
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-pink-400 mb-4">2. 源摘要与添加</h2>
+                    <div class="mermaid">
+%% Mermaid Code for Source Summarization & Addition
+graph TD
+    A(开始) --> B{笔记本是否已选中?};
+    B -- 否 --> C[提示用户选择或创建笔记本] --> Z(结束);
+    B -- 是 --> D[用户点击“添加源”];
+    D --> E{选择源类型};
+    E -- URL --> F[弹出URL输入框];
+    F --> G[用户输入URL并提交];
+    G --> I{后端处理};
+    
+    E -- 文本文件 (.txt) --> H_TXT[弹出文件上传框];
+    H_TXT --> G_TXT[用户选择.txt文件并上传];
+    G_TXT --> I;
+    
+    E -- PDF 文件 (.pdf) --> H_PDF[弹出文件上传框];
+    H_PDF --> G_PDF[用户选择.pdf文件并上传];
+    G_PDF --> I;
+
+    subgraph "后端处理"
+        direction TB
+        I --> J[1. 提取文本内容];
+        J --> K[2. 将文本发送至AI模型进行摘要];
+        K --> L{摘要是否成功?};
+    end
+
+    L -- 是 --> M["创建“源”对象 (含名称、摘要等)"];
+    M --> N[将新“源”添加到当前选中的笔记本];
+    N --> O[在主内容区显示新“源”];
+    O --> P[显示成功通知] --> Z;
+
+    L -- 否 --> Q[显示错误通知] --> Z;
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Chat with Sources -->
+            <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-lime-500/20 hover:border-lime-500/50">
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-lime-400 mb-4">3. 与源聊天</h2>
+                    <div class="mermaid">
+%% Mermaid Code for Chat with Sources
+graph TD
+    A(开始) --> B[用户在活动笔记本中];
+    B --> C[用户使用复选框选择一个或多个“源”作为聊天上下文];
+    C --> D[用户在聊天输入框中输入问题];
+    D --> E[用户提交问题];
+    E --> F[前端将问题和所选源的内容发送到后端];
+    
+    subgraph "后端AI处理"
+        direction TB
+        F --> G["后端构建包含上下文(源内容)和问题的提示"];
+        G --> H[将提示发送给AI语言模型];
+        H --> I[接收AI生成的上下文相关回复];
+    end
+    
+    I --> J[前端在聊天界面显示AI的回复];
+    J --> K{继续提问?};
+    K -- 是 --> C;
+    K -- 否 --> L(结束会话);
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: Report Generation -->
+            <div class="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-purple-500/20 hover:border-purple-500/50">
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-purple-400 mb-4">4. 报告生成</h2>
+                    <div class="mermaid">
+%% Mermaid Code for Report Generation
+graph TD
+    A(开始) --> B[用户点击“生成报告”按钮];
+    B --> C[系统显示报告生成模态框];
+    C --> D[模态框中列出当前笔记本中的所有“源”];
+    D --> E[用户选择要包含在报告中的一个或多个“源”];
+    E --> F[用户点击“生成”];
+    F --> G(为每个选定的源启动生成流程);
+    
+    G -- 遍历每个源 --> H{检查该源的报告是否已缓存?};
+    H -- 是 (缓存命中) --> I[打开新浏览器标签页];
+    I --> J[从本地存储读取HTML内容];
+    J --> K[在新标签页中显示缓存的报告] --> L(流程结束);
+    
+    H -- 否 (缓存未命中) --> M[打开新浏览器标签页并显示“生成中...”];
+    M --> N[将源的标题和摘要发送到后端API];
+    
+    subgraph "后端报告生成"
+        direction TB
+        N --> O[后端将数据格式化为HTML页面];
+        O --> P[返回生成的HTML内容];
+    end
+    
+    P --> Q{生成是否成功?};
+    Q -- 是 --> R[在浏览器新标签页中显示HTML报告];
+    R --> S[将生成的HTML内容保存到本地缓存] --> L;
+    
+    Q -- 否 --> T[在新标签页中显示错误信息] --> L;
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="text-center mt-10 sm:mt-16 text-gray-500 text-sm">
+            <p>&copy; 2025 动态流程图展示。保留所有权利。</p>
+        </footer>
+
+    </div>
+
+    <!-- Mermaid.js library and initialization -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        
+        // Initialize Mermaid.js with a dark theme and custom settings
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'dark',
+            flowchart: {
+              useMaxWidth: true,
+              htmlLabels: true
+            },
+            themeVariables: {
+                background: '#1f2937', // bg-gray-800
+                primaryColor: '#374151', // bg-gray-700
+                primaryTextColor: '#d1d5db', // text-gray-300
+                lineColor: '#6b7280', // border-gray-500
+                textColor: '#d1d5db',
+                
+                // Specific colors for node types
+                nodeBorder: '#4b5563', // border-gray-600
+                mainBkg: '#374151', // bg-gray-700
+                clusterBkg: 'rgba(255, 255, 255, 0.05)',
+            }
+        });
+    </script>
+</body>
+</html>
