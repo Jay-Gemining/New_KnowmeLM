@@ -1,0 +1,296 @@
+/* 全局样式与重置 */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    margin: 0;
+    background-color: #ffffff;
+    color: #000000;
+    line-height: 1.6;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    padding: 0;
+}
+
+/* 顶部导航栏 (Header Bar) */
+.header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px; /* 增加内边距以提供更多留白 */
+    border-bottom: 1px solid #e0e0e0; /* 细微的分割线 */
+    background-color: #ffffff;
+    position: sticky; /* 固定在顶部 */
+    top: 0;
+    z-index: 1000;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-icon {
+    font-size: 28px; /* 图标稍大 */
+    margin-right: 8px;
+    color: #000000;
+}
+
+.logo-text {
+    font-size: 24px; /* 调整字号 */
+    font-weight: 600; /* Semi-bold */
+    color: #000000;
+}
+
+.controls-group {
+    display: flex;
+    align-items: center;
+    gap: 16px; /* 控件之间的间距 */
+}
+
+.control-button {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid #d0d0d0; /* 浅灰色描边 */
+    border-radius: 6px; /* 圆角 */
+    background-color: #ffffff;
+    color: #333333; /* 文字颜色 */
+    font-size: 14px;
+}
+
+.control-button .icon {
+    margin-right: 6px;
+    font-size: 16px; /* 图标大小 */
+}
+
+.settings-button .icon {
+    /* 齿轮图标特定样式 (如果需要) */
+}
+
+.pro-tag {
+    padding: 6px 10px;
+    background-color: #f0f0f0; /* 浅灰色背景 */
+    color: #555555; /* 文字颜色 */
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 4px; /* 圆角 */
+    text-transform: uppercase;
+}
+
+.app-switcher .icon {
+    font-size: 20px; /* 3x3 点阵图标 */
+    /* 字符实体 ░ 不太像，这里用 ⠿ (BRAILLE PATTERN DOTS-23456) 或其他更合适的 */
+    /* 也可以用SVG或图片 */
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* 正圆形 */
+    background-color: #cccccc; /* 占位背景色 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    /* 彩虹边框 - 使用伪元素或多重边框实现 */
+    border: 3px solid transparent; /* 透明边框占位 */
+    background-image: linear-gradient(white, white),
+                      linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+}
+
+.user-avatar .avatar-icon {
+    /* 宇航员图标特定样式 */
+}
+
+/* 主内容区欢迎与操作 */
+.main-content {
+    padding: 48px 32px; /* 上下留白更多 */
+    text-align: center;
+}
+
+.welcome-message {
+    font-size: 48px; /* 超大字号 */
+    font-weight: 600; /* 与Logo一致的字重 */
+    color: #000000;
+    margin-top: 0; /* 调整与顶部的距离 */
+    margin-bottom: 32px; /* 与下方按钮的距离 */
+}
+
+.create-new-button {
+    background-color: #000000; /* 黑色填充 */
+    color: #ffffff; /* 白色文字 */
+    font-size: 16px;
+    font-weight: 500;
+    padding: 14px 28px; /* 按钮大小 */
+    border-radius: 999px; /* 药丸形/胶囊形 */
+    display: inline-flex; /* 使图标和文字在同一行 */
+    align-items: center;
+    gap: 8px; /* 图标和文字间距 */
+    border: none;
+    transition: opacity 0.2s ease;
+}
+
+.create-new-button:hover {
+    opacity: 0.85; /* 悬停效果 */
+}
+
+.create-new-button .icon {
+    font-size: 20px; /* 加号图标大小 */
+    font-weight: bold;
+}
+
+/* 笔记本列表区 */
+.notebook-list-area {
+    margin-top: 48px; /* 与上方内容的间距 */
+    padding: 0 32px; /* 左右内边距 */
+}
+
+.list-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px; /* 与下方列表的间距 */
+}
+
+.view-toggle {
+    display: flex;
+    border: 1px solid #d0d0d0; /* 按钮组描边 */
+    border-radius: 6px;
+}
+
+.view-toggle .toggle-button {
+    padding: 8px 12px;
+    background-color: #ffffff;
+    color: #555555;
+    border: none;
+    font-size: 14px;
+}
+
+.view-toggle .toggle-button:first-child {
+    border-right: 1px solid #d0d0d0; /* 按钮间分割线 */
+    border-top-left-radius: 5px; /* 调整以匹配容器圆角 */
+    border-bottom-left-radius: 5px;
+}
+.view-toggle .toggle-button:last-child {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+
+.view-toggle .toggle-button .icon {
+    font-size: 18px; /* 视图切换图标 */
+}
+
+.view-toggle .toggle-button.selected {
+    background-color: #007bff; /* 蓝色背景 */
+    color: #ffffff; /* 白色图标/文字 */
+}
+
+.sort-dropdown {
+    /* 样式与 .control-button 类似，已通过class继承 */
+}
+
+.sort-dropdown .icon {
+    margin-left: 6px; /* 向下箭头与文字的间距 */
+}
+
+/* 笔记本列表表格 */
+.notebook-table {
+    width: 100%;
+    border-collapse: collapse; /* 合并边框 */
+    font-size: 14px;
+}
+
+.notebook-table th,
+.notebook-table td {
+    text-align: left;
+    padding: 12px 16px; /* 单元格内边距 */
+    border-bottom: 1px solid #f0f0f0; /* 行分割线 */
+}
+
+.notebook-table th {
+    color: #666666; /* 表头文字颜色 - 浅灰色 */
+    font-size: 13px; /* 表头字号较小 */
+    font-weight: 500; /* Medium weight */
+    text-transform: uppercase; /* 根据需要，有些设计表头会用大写 */
+}
+
+.notebook-table tbody tr:hover {
+    background-color: #f9f9f9; /* 鼠标悬停背景色 */
+}
+
+.notebook-table td:last-child {
+    text-align: right; /* "更多操作" 图标居右 */
+}
+
+.more-actions-icon {
+    font-size: 20px;
+    color: #888888;
+    cursor: pointer;
+    padding: 4px; /* 增加点击区域 */
+}
+/* 使用更合适的字符实体作为占位符 */
+.logo-icon { font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; } /* 确保emoji显示 */
+.settings-button .icon { content: "⚙"; } /* 明确指定，虽然html里有了 */
+.app-switcher .icon { content: "⠿"; } /* Braille dots for waffle icon */
+.user-avatar .avatar-icon { font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+.create-new-button .icon { /* + 已经很好 */ }
+.view-toggle .grid-view-button .icon { content: "▦"; } /* Grid icon */
+.view-toggle .list-view-button .icon { /* ✓☰ 比较复杂，纯CSS难完美，保持HTML的 */ }
+.sort-dropdown .icon { content: "▼"; } /* Chevron down */
+.more-actions-icon { content: "⋮"; } /* Vertical ellipsis */
+
+/* 响应式调整 (可选，根据需要添加) */
+@media (max-width: 768px) {
+    .header-bar {
+        padding: 12px 16px;
+    }
+    .logo-text {
+        font-size: 20px;
+    }
+    .controls-group {
+        gap: 8px;
+    }
+    .control-button, .pro-tag {
+        font-size: 12px;
+        padding: 6px 8px;
+    }
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+    .welcome-message {
+        font-size: 36px;
+    }
+    .create-new-button {
+        font-size: 14px;
+        padding: 12px 24px;
+    }
+    .notebook-list-area {
+        padding: 0 16px;
+    }
+    .list-toolbar {
+        flex-direction: column; /* 小屏幕时工具栏堆叠 */
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .notebook-table th,
+    .notebook-table td {
+        padding: 10px 8px;
+        font-size: 13px;
+    }
+    .notebook-table th:nth-child(3), /* 创建时间 */
+    .notebook-table td:nth-child(3),
+    .notebook-table th:nth-child(4), /* 角色 */
+    .notebook-table td:nth-child(4) {
+        /* 在非常小的屏幕上可以考虑隐藏某些列 */
+        /* display: none; */
+    }
+}

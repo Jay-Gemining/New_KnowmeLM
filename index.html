@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KnowmeLM 主仪表盘</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 顶部导航栏将在这里 -->
+    <header class="header-bar">
+        <!-- Logo 和 KnowmeLM 文字 -->
+        <div class="logo-container">
+            <!-- 占位符 Logo 图标 -->
+            <span class="logo-icon">📖</span>
+            <span class="logo-text">KnowmeLM</span>
+        </div>
+        <!-- 右侧控件组 -->
+        <div class="controls-group">
+            <!-- 设置按钮 -->
+            <button class="control-button settings-button">
+                <span class="icon">⚙️</span> 设置
+            </button>
+            <!-- PRO 标签 -->
+            <span class="pro-tag">PRO</span>
+            <!-- 应用切换器 -->
+            <button class="control-button app-switcher">
+                <span class="icon">░</span> <!-- 简化点阵图标 -->
+            </button>
+            <!-- 用户头像 -->
+            <div class="user-avatar">
+                <!-- 占位符宇航员头像 -->
+                <span class="avatar-icon">🧑‍🚀</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 欢迎语 -->
+        <h1 class="welcome-message">欢迎使用 KnowmeLM</h1>
+        <!-- 新建按钮 -->
+        <button class="create-new-button">
+            <span class="icon">+</span> 新建
+        </button>
+
+        <!-- 笔记本列表区 -->
+        <section class="notebook-list-area">
+            <!-- 列表工具栏 -->
+            <div class="list-toolbar">
+                <!-- 视图切换器 -->
+                <div class="view-toggle">
+                    <button class="toggle-button grid-view-button">
+                        <span class="icon">▦</span> <!-- 网格视图图标 -->
+                    </button>
+                    <button class="toggle-button list-view-button selected">
+                        <span class="icon">✓☰</span> <!-- 列表视图图标 (简化) -->
+                    </button>
+                </div>
+                <!-- 排序下拉菜单 -->
+                <button class="control-button sort-dropdown">
+                    最近 <span class="icon">▼</span>
+                </button>
+            </div>
+
+            <!-- 笔记本列表表格 -->
+            <table class="notebook-table">
+                <thead>
+                    <tr>
+                        <th>标题</th>
+                        <th>来源数量</th>
+                        <th>创建时间</th>
+                        <th>角色</th>
+                        <th></th> <!-- 更多操作的空表头 -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 示例行 1 -->
+                    <tr>
+                        <td>我的第一个笔记本</td>
+                        <td>2 个来源</td>
+                        <td>2024年7月29日</td>
+                        <td>Owner</td>
+                        <td><span class="more-actions-icon">⋮</span></td>
+                    </tr>
+                    <!-- 示例行 2 -->
+                    <tr>
+                        <td>项目需求文档</td>
+                        <td>5 个来源</td>
+                        <td>2024年7月28日</td>
+                        <td>Owner</td>
+                        <td><span class="more-actions-icon">⋮</span></td>
+                    </tr>
+                    <!-- 示例行 3 -->
+                    <tr>
+                        <td>会议纪要</td>
+                        <td>0 个来源</td>
+                        <td>2024年7月27日</td>
+                        <td>Owner</td>
+                        <td><span class="more-actions-icon">⋮</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+</body>
+</html>
