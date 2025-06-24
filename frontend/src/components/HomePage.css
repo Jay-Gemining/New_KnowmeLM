@@ -1,0 +1,311 @@
+/* Styles for HomePage.js - adapted from the <style jsx global> block */
+
+/* Basic CSS Reset/Defaults (Illustrative - check App.css/index.css for existing) */
+/* body { margin: 0; font-family: sans-serif; } */ /* Likely in index.css */
+
+.page-container { /* Added to root div of HomePage for scoping if needed */
+    min-height: 100vh;
+    background-color: #fff;
+}
+
+.home-header {
+    width: 100%;
+    border-bottom-width: 1px;
+    border-color: #e5e7eb; /* Example gray: gray-200 */
+    background-color: #fff;
+    padding-left: 1.5rem; /* px-6 */
+    padding-right: 1.5rem; /* px-6 */
+    padding-top: 1rem; /* py-4 */
+    padding-bottom: 1rem; /* py-4 */
+}
+
+.home-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 80rem; /* Example max width: 7xl */
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+}
+
+.home-logo-container {
+    display: flex;
+    align-items: center;
+}
+.home-logo-container > :not([hidden]) ~ :not([hidden]) { margin-left: 0.75rem; } /* space-x-3 */
+
+
+.home-logo-icon-container {
+    width: 2rem; /* w-8 */
+    height: 2rem; /* h-8 */
+    color: #000; /* text-black */
+}
+.home-logo-icon-container svg {
+    width: 24px;
+    height: 24px;
+}
+
+
+.home-logo-text {
+    font-size: 1.25rem; /* text-xl */
+    font-weight: 700; /* font-bold */
+    color: #000; /* text-black */
+}
+
+.home-controls-container {
+    display: flex;
+    align-items: center;
+}
+.home-controls-container > :not([hidden]) ~ :not([hidden]) { margin-left: 0.75rem; } /* space-x-3 */
+
+
+.home-button-settings {
+    /* Specific styling for settings button if needed, uses .button-outline */
+    color: #374151; /* text-gray-700 */
+    display: inline-flex; /* To align icon and text */
+    align-items: center;
+}
+.home-button-settings span {
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+
+
+.home-pro-tag {
+    padding-left: 0.75rem; /* px-3 */
+    padding-right: 0.75rem; /* px-3 */
+    padding-top: 0.25rem; /* py-1 */
+    padding-bottom: 0.25rem; /* py-1 */
+    background-color: #f3f4f6; /* bg-gray-100 */
+    border-radius: 0.375rem; /* rounded-md */
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 500; /* font-medium */
+    color: #374151; /* text-gray-700 */
+}
+
+.home-grid-button {
+    padding: 0.5rem; /* p-2 */
+    border-radius: 0.375rem; /* rounded-md */
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+.home-grid-button:hover {
+    background-color: #f3f4f6; /* hover:bg-gray-100 */
+}
+.home-grid-button > span { /* For icon placeholder */
+    width: 1.25rem; /* w-5 (for icon) */
+    height: 1.25rem; /* h-5 (for icon) */
+    color: #4b5563; /* text-gray-600 (for icon) */
+}
+
+
+.home-avatar {
+    width: 2.5rem; /* w-10 */
+    height: 2.5rem; /* h-10 */
+    border-radius: 50%;
+    overflow: hidden;
+    /* Gradient ring effect */
+    padding: 2px;
+    background: linear-gradient(to right, #ec4899, #8b5cf6, #3b82f6); /* pink-400, purple-400, blue-400 */
+    background-clip: padding-box;
+}
+.home-avatar img, .home-avatar .avatar-fallback { /* Ensure inner content fits and is circular */
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.home-avatar-fallback {
+    /* background: linear-gradient(to bottom right, #60a5fa, #a78bfa); from-blue-400 to-purple-600 */
+    background: #60a5fa; /* Simplified */
+    color: #fff; /* text-white */
+}
+
+
+/* Main Content Area */
+.home-main-content {
+    max-width: 80rem; /* max-w-7xl */
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem; /* px-6 */
+    padding-right: 1.5rem; /* px-6 */
+    padding-top: 3rem; /* py-12 */
+    padding-bottom: 3rem; /* py-12 */
+    box-sizing: border-box;
+}
+
+.home-welcome-section {
+    text-align: center; /* text-center */
+    margin-bottom: 4rem; /* mb-16 */
+}
+
+.home-welcome-title {
+    font-size: 3rem; /* text-5xl */
+    font-weight: 700; /* font-bold */
+    color: #000; /* text-black */
+    margin-bottom: 2rem; /* mb-8 */
+    letter-spacing: -0.025em; /* tracking-tight */
+}
+
+.home-button-new {
+    /* Uses .button-default styles from mock component */
+    /* Additional styles from Tailwind */
+    padding-left: 2rem; /* px-8 */
+    padding-right: 2rem; /* px-8 */
+    padding-top: 1.5rem; /* py-6 */
+    padding-bottom: 1.5rem; /* py-6 */
+    font-size: 1.125rem; /* text-lg */
+    font-weight: 500; /* font-medium */
+    border-radius: 9999px; /* rounded-full */
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); /* shadow-lg */
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms; /* duration-200 */
+    transform: scale(1); /* transform */
+    display: inline-flex; /* To align icon and text */
+    align-items: center;
+}
+.home-button-new:hover {
+    /* from .button-default:hover */
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); /* hover:shadow-xl */
+    transform: scale(1.05); /* hover:scale-105 */
+}
+.home-button-new > span:first-child { /* Icon */
+    margin-right: 0.5rem; /* mr-2 */
+}
+.home-button-new span {
+    vertical-align: middle;
+}
+
+
+/* Notebook List Section */
+.home-notebook-section {
+    /* Simulating space-y-6 */
+}
+.home-notebook-section > :not([hidden]) ~ :not([hidden]) { margin-top: 1.5rem; }
+
+.home-list-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.home-view-toggle {
+    display: flex;
+    border: 1px solid #e5e7eb; /* border-gray-200 */
+    border-radius: 0.5rem; /* rounded-lg */
+    overflow: hidden; /* overflow-hidden */
+}
+
+.home-view-button {
+    padding-left: 1rem; /* px-4 */
+    padding-right: 1rem; /* px-4 */
+    padding-top: 0.5rem; /* py-2 */
+    padding-bottom: 0.5rem; /* py-2 */
+    display: flex;
+    align-items: center;
+    /* space-x-2 */
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms; /* transition-colors */
+    background-color: #fff; /* bg-white */
+    color: #374151; /* text-gray-700 */
+    border: none;
+    cursor: pointer;
+}
+.home-view-button > :not([hidden]) ~ :not([hidden]) { margin-left: 0.5rem; } /* space-x-2 for icon and text */
+
+.home-view-button:hover {
+    background-color: #f9fafb; /* hover:bg-gray-50 */
+}
+.home-view-button.home-view-button-active {
+    background-color: #3b82f6; /* bg-blue-500 */
+    color: #fff; /* text-white */
+}
+.home-view-button .icon-placeholder { /* For Grid2X2Icon or ListIcon placeholders */
+    width: 1rem; /* w-4 */
+    height: 1rem; /* h-4 */
+}
+
+.home-list-icon { /* Custom list icon styling */
+    width: 1rem; /* w-4 */
+    height: 1rem; /* h-4 */
+    display: flex;
+    flex-direction: column; /* flex-col */
+    justify-content: center; /* justify-center */
+}
+.home-list-icon > :not([hidden]) ~ :not([hidden]) { margin-top: 0.125rem; } /* space-y-0.5 */
+.home-list-icon div {
+    width: 100%; /* w-full */
+    height: 2px; /* h-0.5, adjusted for visibility */
+    background-color: currentColor; /* bg-current */
+}
+
+
+.home-dropdown { /* MockDropdown styling */
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    border: 1px solid #d1d5db; /* gray-300 */
+}
+
+.home-notebook-list { /* MockNotebookList styling */
+    padding: 1rem;
+    border: 1px solid #e5e7eb; /* gray-200 */
+    border-radius: 0.375rem;
+    margin-top: 1rem;
+}
+
+/* General Button styles from mock component - can be global or scoped */
+.button-default {
+    background-color: #000;
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px; /* Or other appropriate radius */
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+}
+.button-default:hover {
+    background-color: #333; /* Or gray-800 equivalent */
+}
+
+.button-outline {
+    background-color: white;
+    color: #374151; /* gray-700 */
+    border: 1px solid #d1d5db; /* gray-300 */
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem; /* rounded-md */
+    cursor: pointer;
+    font-weight: 500;
+}
+.button-outline:hover {
+    background-color: #f9fafb; /* gray-50 */
+}
+.button-sm {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+/* General Avatar styles from mock component */
+.avatar {
+    border-radius: 50%;
+    overflow: hidden;
+    display: inline-block; /* Or flex if needed for fallbacks */
+    vertical-align: middle;
+}
+.avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: #ccc; /* Default fallback bg */
+    color: #fff;
+}

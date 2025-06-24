@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css'; // Import new CSS
 import Sidebar from './components/Sidebar';
 import MainContent from './components/MainContent';
 import RightSidebar from './components/RightSidebar'; // Import RightSidebar
+import HomePage from './components/HomePage'; // Import new HomePage
+import DashboardPage from './components/DashboardPage'; // Import new DashboardPage
 import Notification from './components/Notification'; // New import
 import './components/Notification.css'; // New import for CSS
 import Modal from './components/Modal'; // Import Modal
@@ -11,7 +14,8 @@ import TextFileSummarizer from './components/TextFileSummarizer'; // Import Text
 import ReportGenerationModal from './components/ReportGenerationModal'; // Import ReportGenerationModal
 import { getNotebooks, saveNotebooks as saveNotebooksToStorage, getHtmlReport, saveHtmlReport } from './utils/localStorageHelper'; // Renamed for clarity, added report helpers
 
-function App() {
+// This component will now contain the original App's content
+const MainAppLayout = () => {
   const [notebooks, setNotebooks] = useState([]);
   const [selectedNotebookId, setSelectedNotebookId] = useState(null);
   const [activeModal, setActiveModal] = useState(null); // New state for active modal
@@ -323,6 +327,20 @@ function App() {
         </Modal>
       )}
     </div>
+  );
+};
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/app" element={<MainAppLayout />} />
+        {/* Optional: Redirect from a common path like /notebooklm to /app or /dashboard */}
+        {/* <Route path="/notebooklm" element={<Navigate to="/app" replace />} /> */}
+      </Routes>
+    </BrowserRouter>
   );
 }
 
