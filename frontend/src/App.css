@@ -695,3 +695,55 @@ input[type="file"] {
 
 /* Ensure Notification.css is also updated if it defines its own colors */
 /* This App.css provides a fallback/override based on the new palette */
+
+/* Welcome Screen Styles */
+.welcome-screen-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--spacing-xl);
+  height: 100vh; /* Full viewport height */
+  width: 100vw; /* Full viewport width */
+  box-sizing: border-box;
+  background-color: var(--color-background-panel); /* Or a specific welcome bg color */
+}
+
+.welcome-title {
+  font-size: 2.5rem; /* Large title, e.g., text-5xl */
+  font-weight: 700; /* font-bold */
+  color: var(--color-text-primary); /* text-black equivalent */
+  margin-bottom: 2rem; /* mb-8 */
+  letter-spacing: -0.025em; /* tracking-tight */
+}
+
+.welcome-new-button {
+  /* Based on .home-button-new styles */
+  background-color: var(--color-text-primary); /* black */
+  color: var(--color-background-panel); /* white */
+  padding: 1rem 2rem; /* px-8 py-4 (adjust from py-6) */
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 500; /* font-medium */
+  border-radius: 9999px; /* rounded-full */
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); /* shadow-lg */
+  transition: all 0.2s ease-in-out;
+  transform: scale(1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+}
+
+.welcome-new-button:hover {
+  background-color: #333; /* Darken black */
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); /* shadow-xl */
+  transform: scale(1.05);
+}
+
+.welcome-new-button .plus-icon {
+  margin-right: 0.5rem; /* mr-2 */
+  font-size: 1.25em; /* Make plus icon a bit larger */
+  line-height: 1;
+}

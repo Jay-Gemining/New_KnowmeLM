@@ -4,8 +4,9 @@ import './App.css'; // Import new CSS
 import Sidebar from './components/Sidebar';
 import MainContent from './components/MainContent';
 import RightSidebar from './components/RightSidebar'; // Import RightSidebar
-import HomePage from './components/HomePage'; // Import new HomePage
-import DashboardPage from './components/DashboardPage'; // Import new DashboardPage
+// HomePage and DashboardPage are no longer needed
+// import HomePage from './components/HomePage';
+// import DashboardPage from './components/DashboardPage';
 import Notification from './components/Notification'; // New import
 import './components/Notification.css'; // New import for CSS
 import Modal from './components/Modal'; // Import Modal
@@ -18,10 +19,11 @@ import { getNotebooks, saveNotebooks as saveNotebooksToStorage, getHtmlReport, s
 const MainAppLayout = () => {
   const [notebooks, setNotebooks] = useState([]);
   const [selectedNotebookId, setSelectedNotebookId] = useState(null);
-  const [activeModal, setActiveModal] = useState(null); // New state for active modal
-  const [notification, setNotification] = useState({ message: '', type: '' }); // New state for notification
-  const [generatingReports, setGeneratingReports] = useState(false); // Moved from RightSidebar
-  const [reportGenerationStatus, setReportGenerationStatus] = useState([]); // Moved from RightSidebar
+  const [activeModal, setActiveModal] = useState(null);
+  const [notification, setNotification] = useState({ message: '', type: '' });
+  const [generatingReports, setGeneratingReports] = useState(false);
+  const [reportGenerationStatus, setReportGenerationStatus] = useState([]);
+  const [showWelcomeScreen, setShowWelcomeScreen] = useState(false); // New state for welcome screen
 
 
   // Load notebooks from localStorage on mount
@@ -31,19 +33,21 @@ const MainAppLayout = () => {
         ...notebook,
         sources: (notebook.sources || []).map(source => ({
             ...source,
-            // Default to true if property is missing (for migration)
             isSelectedForChat: source.isSelectedForChat === undefined ? true : source.isSelectedForChat
         }))
     }));
     setNotebooks(migratedNotebooks);
-    // Optionally, select the first notebook by default or the last selected one
-    if (migratedNotebooks.length > 0) {
+    if (migratedNotebooks.length === 0) {
+      setShowWelcomeScreen(true); // Show welcome if no notebooks
+    } else {
+      // Optionally, select the first notebook by default or the last selected one
       // setSelectedNotebookId(migratedNotebooks[0].id);
     }
   }, []);
 
   const handleSelectNotebook = (notebookId) => {
     setSelectedNotebookId(notebookId);
+    setShowWelcomeScreen(false); // Hide welcome screen when a notebook is selected
     // setSelectedSourceId(null); // No longer needed
   };
 
@@ -59,11 +63,25 @@ const MainAppLayout = () => {
         sources: []
       };
       const updatedNotebooks = [...notebooks, newNotebook];
+      setShowWelcomeScreen(false); // Try setting this first
+      const newNotebook = {
+        id: Date.now(), // Simple unique ID
+        title: title,
+        createdAt: new Date().toISOString(),
+        sources: []
+      };
+      const updatedNotebooks = [...notebooks, newNotebook];
       setNotebooks(updatedNotebooks);
       saveNotebooksToStorage(updatedNotebooks);
       setSelectedNotebookId(newNotebook.id); // Select the new notebook
-      // setSelectedSourceId(null); // No longer needed
     }
+  };
+
+  // Specific handler for the welcome screen's "新建" button
+  const handleWelcomeCreateNew = () => {
+    // This will call the existing prompt-based handleAddNotebook
+    // which already sets selectedNotebookId and should hide the welcome screen.
+    handleAddNotebook();
   };
 
   const handleAddSourceToNotebook = useCallback((notebookId, sourceData) => {
@@ -269,39 +287,49 @@ const MainAppLayout = () => {
 
   return (
     <div className="app-container">
-      <Sidebar
-        notebooks={notebooks}
-        selectedNotebookId={selectedNotebookId}
-        onSelectNotebook={handleSelectNotebook}
-        onAddNotebook={handleAddNotebook}
-        onAddSourceToNotebook={handleAddSourceToNotebook}
-        // Removed onSelectSource and selectedSourceId props
-        onToggleSourceChatSelection={handleToggleSourceChatSelection} // Ensured this is passed
-        onEditNotebookTitle={handleEditNotebookTitle}
-        onDeleteNotebook={handleDeleteNotebook}
-        onToggleWebsiteSummarizer={() => setActiveModal('website')}
-        onToggleTextFileSummarizer={() => setActiveModal('file')}
-      />
-      <MainContent
-        selectedNotebook={selectedNotebook}
-        onUpdateNotebook={handleUpdateNotebook} // Pass this down
-        onAddSourceToNotebook={handleAddSourceToNotebook}
-        selectedNotebookId={selectedNotebookId}
-        onToggleSourceChatSelection={handleToggleSourceChatSelection}
-        showNotification={showNotification} // Pass showNotification to MainContent
-      />
-      <RightSidebar
-        selectedNotebook={selectedNotebook}
-        showNotification={showNotification}
-        onToggleSourceChatSelection={handleToggleSourceChatSelection}
-        onOpenReportModal={() => setActiveModal('reportGeneration')}
-      />
+      {showWelcomeScreen ? (
+        <div className="welcome-screen-container">
+          <h2 className="welcome-title">欢迎使用 NotebookLM</h2>
+          <button className="welcome-new-button" onClick={handleWelcomeCreateNew}>
+            <span className="plus-icon">+</span> 新建
+          </button>
+        </div>
+      ) : (
+        <>
+          <Sidebar
+            notebooks={notebooks}
+            selectedNotebookId={selectedNotebookId}
+            onSelectNotebook={handleSelectNotebook}
+            onAddNotebook={handleAddNotebook} // Sidebar uses the general add notebook
+            onAddSourceToNotebook={handleAddSourceToNotebook}
+            onToggleSourceChatSelection={handleToggleSourceChatSelection}
+            onEditNotebookTitle={handleEditNotebookTitle}
+            onDeleteNotebook={handleDeleteNotebook}
+            onToggleWebsiteSummarizer={() => setActiveModal('website')}
+            onToggleTextFileSummarizer={() => setActiveModal('file')}
+          />
+          <MainContent
+            selectedNotebook={selectedNotebook}
+            onUpdateNotebook={handleUpdateNotebook}
+            onAddSourceToNotebook={handleAddSourceToNotebook}
+            selectedNotebookId={selectedNotebookId}
+            onToggleSourceChatSelection={handleToggleSourceChatSelection}
+            showNotification={showNotification}
+          />
+          <RightSidebar
+            selectedNotebook={selectedNotebook}
+            showNotification={showNotification}
+            onToggleSourceChatSelection={handleToggleSourceChatSelection}
+            onOpenReportModal={() => setActiveModal('reportGeneration')}
+          />
+        </>
+      )}
       <Notification
         message={notification.message}
         type={notification.type}
         onDismiss={() => setNotification({ message: '', type: '' })}
       />
-      {activeModal && (
+      {activeModal && !showWelcomeScreen && ( // Modals should not show over welcome screen
         <Modal isOpen={!!activeModal} onClose={handleCloseModal}>
           {activeModal === 'website' && (
             <WebsiteSummarizer
@@ -334,11 +362,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/app" element={<MainAppLayout />} />
-        {/* Optional: Redirect from a common path like /notebooklm to /app or /dashboard */}
-        {/* <Route path="/notebooklm" element={<Navigate to="/app" replace />} /> */}
+        <Route path="/" element={<MainAppLayout />} />
+        {/* Redirect /app to / if anyone still uses the old path, or remove if not needed */}
+        <Route path="/app" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
