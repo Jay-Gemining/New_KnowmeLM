@@ -8,7 +8,12 @@
 
 .dashboard-main-content {
   flex-grow: 1;
-  padding: 24px 48px; /* More padding for a spacious feel */
+  /* New width and padding */
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto; /* For centering the content area */
+  padding: 24px 32px; /* Adjusted horizontal padding */
+  box-sizing: border-box;
   overflow-y: auto;
 }
 
@@ -122,7 +127,32 @@
   padding: 16px 20px; /* More padding in cells */
   text-align: left;
   border-bottom: 1px solid #e9ecef; /* Lighter border for rows */
+  vertical-align: middle; /* Ensure vertical alignment is consistent */
 }
+
+/* Column specific styling */
+.dashboard-notebook-table .col-title {
+  /* This column will take up remaining space. No explicit width needed, or width: auto; */
+  /* If issues, can use width: 60% or similar as a starting point then adjust */
+}
+
+.dashboard-notebook-table .col-sources {
+  width: 120px; /* Fixed width for source count */
+}
+
+.dashboard-notebook-table .col-created {
+  width: 150px; /* Fixed width for creation date */
+}
+
+.dashboard-notebook-table .col-role {
+  width: 100px; /* Fixed width for role */
+}
+
+.dashboard-notebook-table .col-actions {
+  width: 80px;
+  text-align: center; /* Center align actions column content */
+}
+
 
 .dashboard-notebook-table th {
   background-color: #f8f9fa; /* Very light grey for header */
@@ -136,7 +166,7 @@
   background-color: #f1f3f5; /* Hover effect for rows */
 }
 
-.notebook-title-cell {
+.notebook-title-cell { /* This class is on the <td> for the title */
   font-weight: 500;
   color: #007bff; /* Blue for clickable titles */
   cursor: pointer;
@@ -146,12 +176,13 @@
   text-decoration: underline;
 }
 
-.rename-input {
+.rename-input { /* Input field within the title cell */
   padding: 6px 8px;
   border: 1px solid #007bff;
   border-radius: 4px;
   font-size: 1em;
   width: calc(100% - 16px); /* Adjust width to fit cell */
+  box-sizing: border-box; /* Ensure padding/border don't make it overflow */
 }
 
 /* Kebab menu and dropdown */

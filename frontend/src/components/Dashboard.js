@@ -168,17 +168,17 @@ function Dashboard({ notebooks, onNavigateToNotebook, onCreateNotebook, onEditNo
                             <table className="dashboard-notebook-table">
                                 <thead>
                                     <tr>
-                                        <th>标题</th>
-                                        <th>来源数量</th>
-                                        <th>创建时间</th>
-                                        <th>角色</th>
-                                        <th>操作</th>
+                                        <th className="col-title">标题</th>
+                                        <th className="col-sources">来源数量</th>
+                                        <th className="col-created">创建时间</th>
+                                        <th className="col-role">角色</th>
+                                        <th className="col-actions">操作</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {processedNotebooks.map((notebook) => (
                                         <tr key={notebook.id} onDoubleClick={() => onNavigateToNotebook(notebook.id)}>
-                                            <td onClick={() => onNavigateToNotebook(notebook.id)} className="notebook-title-cell">
+                                            <td onClick={() => onNavigateToNotebook(notebook.id)} className="notebook-title-cell col-title">
                                                 {editingNotebookId === notebook.id ? (
                                                     <input
                                                         type="text"
@@ -193,10 +193,10 @@ function Dashboard({ notebooks, onNavigateToNotebook, onCreateNotebook, onEditNo
                                                     notebook.title
                                                 )}
                                             </td>
-                                            <td>{notebook.sources?.length || 0} 个来源</td>
-                                            <td>{formatDate(notebook.createdAt)}</td>
-                                            <td>Owner</td> {/* Placeholder as per PRD */}
-                                            <td>
+                                            <td className="col-sources">{notebook.sources?.length || 0} 个来源</td>
+                                            <td className="col-created">{formatDate(notebook.createdAt)}</td>
+                                            <td className="col-role">Owner</td> {/* Placeholder as per PRD */}
+                                            <td className="col-actions">
                                                 <div className="notebook-actions-menu">
                                                     <button className="kebab-button" onClick={(e) => e.currentTarget.nextElementSibling.classList.toggle('show')}>
                                                         <span className="material-symbols-outlined">more_vert</span>
