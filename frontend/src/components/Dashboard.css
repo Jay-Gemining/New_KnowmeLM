@@ -1,0 +1,303 @@
+/* General Dashboard Container */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Full viewport height */
+  background-color: #f8f9fa; /* Light background for the dashboard area */
+}
+
+.dashboard-main-content {
+  flex-grow: 1;
+  padding: 24px 48px; /* More padding for a spacious feel */
+  overflow-y: auto;
+}
+
+/* Welcome Area */
+.dashboard-welcome-area {
+  text-align: center;
+  margin-bottom: 40px; /* Increased spacing */
+  padding-top: 20px;
+}
+
+.dashboard-welcome-area h1 {
+  font-size: 2.8em; /* Larger welcome message */
+  font-weight: 600; /* Semi-bold */
+  color: #212529; /* Darker text */
+  margin-bottom: 24px;
+}
+
+.dashboard-create-new-button {
+  background-color: #000000; /* Black button */
+  color: #ffffff;
+  border: none;
+  padding: 14px 28px; /* Larger padding */
+  border-radius: 50px; /* Pill shape */
+  font-size: 1.1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboard-create-new-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-create-new-button .plus-icon {
+  font-size: 1.4em;
+  font-weight: bold;
+}
+
+/* List Area Toolbar */
+.dashboard-list-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.view-toggle {
+  display: flex;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  overflow: hidden; /* Ensures rounded corners apply to children */
+}
+
+.view-button {
+  background-color: #fff;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  color: #495057;
+  transition: background-color 0.2s;
+}
+
+.view-button:not(:last-child) {
+  border-right: 1px solid #dee2e6;
+}
+
+.view-button.active {
+  background-color: #007bff; /* Blue for active */
+  color: white;
+}
+
+.view-button:hover:not(.active) {
+  background-color: #e9ecef;
+}
+
+.view-button .material-symbols-outlined {
+  display: block; /* Ensure icon is block for proper alignment/sizing */
+  font-size: 20px; /* Adjust icon size */
+}
+
+
+.sort-dropdown .dashboard-select {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  background-color: #fff;
+  color: #495057;
+  font-size: 0.9em;
+}
+
+/* Notebook Table (List View) */
+.dashboard-notebook-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  overflow: hidden; /* For rounded corners on table */
+}
+
+.dashboard-notebook-table th,
+.dashboard-notebook-table td {
+  padding: 16px 20px; /* More padding in cells */
+  text-align: left;
+  border-bottom: 1px solid #e9ecef; /* Lighter border for rows */
+}
+
+.dashboard-notebook-table th {
+  background-color: #f8f9fa; /* Very light grey for header */
+  font-weight: 500; /* Medium weight for headers */
+  color: #6c757d; /* Grey text for headers */
+  font-size: 0.9em;
+  text-transform: uppercase; /* As per PRD example */
+}
+
+.dashboard-notebook-table tbody tr:hover {
+  background-color: #f1f3f5; /* Hover effect for rows */
+}
+
+.notebook-title-cell {
+  font-weight: 500;
+  color: #007bff; /* Blue for clickable titles */
+  cursor: pointer;
+}
+
+.notebook-title-cell:hover {
+  text-decoration: underline;
+}
+
+.rename-input {
+  padding: 6px 8px;
+  border: 1px solid #007bff;
+  border-radius: 4px;
+  font-size: 1em;
+  width: calc(100% - 16px); /* Adjust width to fit cell */
+}
+
+/* Kebab menu and dropdown */
+.notebook-actions-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.kebab-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.kebab-button:hover {
+  background-color: #e0e0e0;
+}
+
+.kebab-button .material-symbols-outlined {
+  font-size: 20px;
+  color: #555;
+}
+
+.actions-dropdown {
+  display: none; /* Hidden by default */
+  position: absolute;
+  right: 0;
+  top: 100%; /* Position below the button */
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 10;
+  min-width: 150px; /* Minimum width for dropdown */
+  padding: 5px 0;
+}
+
+.actions-dropdown.show {
+  display: block;
+}
+
+.actions-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 10px 15px;
+  text-align: left;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.9em;
+  color: #333;
+}
+
+.actions-dropdown button:hover {
+  background-color: #f5f5f5;
+}
+
+
+/* Empty State */
+.dashboard-empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d; /* Softer text color for empty state */
+}
+
+.dashboard-empty-state p {
+  font-size: 1.1em;
+  margin-bottom: 8px;
+}
+
+.dashboard-no-results {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+  font-size: 1.1em;
+}
+
+/* Grid View */
+.dashboard-notebook-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Responsive grid */
+  gap: 24px; /* Gap between grid items */
+  padding-top: 10px;
+}
+
+.grid-item {
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.grid-item:hover {
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  transform: translateY(-3px);
+}
+
+.grid-item h3 {
+  font-size: 1.3em;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.grid-item p {
+  font-size: 0.9em;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.grid-item-actions {
+  margin-top: 15px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 10px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.grid-item-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2em; /* Larger icons for grid actions */
+  color: #6c757d;
+}
+
+.grid-item-actions button:hover {
+  color: #007bff;
+}
+
+/* Ensure material icons are available */
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+}

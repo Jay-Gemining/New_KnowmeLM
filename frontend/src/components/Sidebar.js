@@ -15,6 +15,7 @@ const Sidebar = ({
     onDeleteNotebook,
     onToggleWebsiteSummarizer, // Changed from onToggleYoutubeSummarizer
     onToggleTextFileSummarizer, // New prop
+    onNavigateToDashboard, // New prop to go back to dashboard
 }) => {
     // const [showYoutubeSummarizer, setShowYoutubeSummarizer] = useState(false); // Removed
     // const [showTextFileSummarizer, setShowTextFileSummarizer] = useState(false); // Removed
@@ -41,6 +42,16 @@ const Sidebar = ({
 
     return (
         <div className="sidebar">
+            {/* Simple way to navigate back to Dashboard from Sidebar */}
+            <button
+                onClick={onNavigateToDashboard}
+                className="action"
+                style={{ width: '100%', marginBottom: 'var(--spacing-md)', backgroundColor: 'var(--color-background-secondary)' }}
+            >
+                <span className="material-symbols-outlined" style={{ marginRight: 'var(--spacing-sm)'}}>arrow_back</span>
+                Back to Dashboard
+            </button>
+
             <h2>Notebooks</h2>
             <button
                 onClick={onAddNotebook}
@@ -89,15 +100,15 @@ const Sidebar = ({
             <hr className="sidebar-section-separator" />
 
             {selectedNotebook && (
-                <div style={{ marginTop: '20px' }}>
+                <div style={{ marginTop: 'var(--spacing-lg)' }}> {/* Consistent spacing */}
                     {/* Add Source Buttons */}
-                    <div className="add-source-buttons-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)', marginBottom: 'var(--spacing-xl)' }}>
+                    <div className="add-source-buttons-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)', marginBottom: 'var(--spacing-lg)' }}> {/* Consistent spacing */}
                         <button onClick={() => onToggleWebsiteSummarizer(true)} className="action icon-button"> {/* Changed from primary to action */}
-                            <span className="material-symbols-outlined" style={{ marginRight: 'var(--spacing-sm)'}}>add_link</span>
+                            <span className="material-symbols-outlined" style={{ marginRight: 'var(--spacing-sm)' }}>add_link</span>
                             Add Website Source
                         </button>
                         <button onClick={() => onToggleTextFileSummarizer(true)} className="action icon-button"> {/* Changed from primary to action */}
-                            <span className="material-symbols-outlined" style={{ marginRight: 'var(--spacing-sm)'}}>note_add</span>
+                            <span className="material-symbols-outlined" style={{ marginRight: 'var(--spacing-sm)' }}>note_add</span>
                             Add File Source
                         </button>
                     </div>

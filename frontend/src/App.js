@@ -3,6 +3,7 @@ import './App.css'; // Import new CSS
 import Sidebar from './components/Sidebar';
 import MainContent from './components/MainContent';
 import RightSidebar from './components/RightSidebar'; // Import RightSidebar
+import Dashboard from './components/Dashboard'; // Import Dashboard
 import Notification from './components/Notification'; // New import
 import './components/Notification.css'; // New import for CSS
 import Modal from './components/Modal'; // Import Modal
@@ -14,11 +15,22 @@ import { getNotebooks, saveNotebooks as saveNotebooksToStorage, getHtmlReport, s
 function App() {
   const [notebooks, setNotebooks] = useState([]);
   const [selectedNotebookId, setSelectedNotebookId] = useState(null);
+  const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard' or 'notebookWorkspace'
   const [activeModal, setActiveModal] = useState(null); // New state for active modal
   const [notification, setNotification] = useState({ message: '', type: '' }); // New state for notification
   const [generatingReports, setGeneratingReports] = useState(false); // Moved from RightSidebar
   const [reportGenerationStatus, setReportGenerationStatus] = useState([]); // Moved from RightSidebar
 
+
+  // Load notebooks from localStorage on mount
+  // Determine currentView based on selectedNotebookId
+  useEffect(() => {
+    if (selectedNotebookId) {
+      setCurrentView('notebookWorkspace');
+    } else {
+      setCurrentView('dashboard');
+    }
+  }, [selectedNotebookId]);
 
   // Load notebooks from localStorage on mount
   useEffect(() => {
@@ -40,26 +52,24 @@ function App() {
 
   const handleSelectNotebook = (notebookId) => {
     setSelectedNotebookId(notebookId);
-    // setSelectedSourceId(null); // No longer needed
   };
 
-  // Removed handleSelectSource function
-
-  const handleAddNotebook = () => {
-    const title = prompt("Enter new notebook title:", `Untitled notebook ${notebooks.length + 1}`);
-    if (title) {
-      const newNotebook = {
-        id: Date.now(), // Simple unique ID
-        title: title,
-        createdAt: new Date().toISOString(),
-        sources: []
-      };
-      const updatedNotebooks = [...notebooks, newNotebook];
-      setNotebooks(updatedNotebooks);
-      saveNotebooksToStorage(updatedNotebooks);
-      setSelectedNotebookId(newNotebook.id); // Select the new notebook
-      // setSelectedSourceId(null); // No longer needed
-    }
+  // Renamed from handleAddNotebook for clarity in Dashboard context
+  const handleCreateNewNotebook = (title = `Untitled notebook ${notebooks.length + 1}`) => {
+    // const title = prompt("Enter new notebook title:", `Untitled notebook ${notebooks.length + 1}`);
+    // For now, let's use a default title as per PRD, can be changed later via rename from dashboard
+    const newNotebook = {
+      id: Date.now(), // Simple unique ID
+      title: title,
+      createdAt: new Date().toISOString(),
+      sources: [],
+      chatHistory: [] // Initialize chat history
+    };
+    const updatedNotebooks = [...notebooks, newNotebook];
+    setNotebooks(updatedNotebooks);
+    saveNotebooksToStorage(updatedNotebooks);
+    setSelectedNotebookId(newNotebook.id); // Select the new notebook to navigate to workspace
+    return newNotebook.id; // Return new notebook ID
   };
 
   const handleAddSourceToNotebook = useCallback((notebookId, sourceData) => {
@@ -265,33 +275,52 @@ function App() {
 
   return (
     <div className="app-container">
-      <Sidebar
-        notebooks={notebooks}
-        selectedNotebookId={selectedNotebookId}
-        onSelectNotebook={handleSelectNotebook}
-        onAddNotebook={handleAddNotebook}
-        onAddSourceToNotebook={handleAddSourceToNotebook}
-        // Removed onSelectSource and selectedSourceId props
-        onToggleSourceChatSelection={handleToggleSourceChatSelection} // Ensured this is passed
-        onEditNotebookTitle={handleEditNotebookTitle}
-        onDeleteNotebook={handleDeleteNotebook}
-        onToggleWebsiteSummarizer={() => setActiveModal('website')}
-        onToggleTextFileSummarizer={() => setActiveModal('file')}
-      />
-      <MainContent
-        selectedNotebook={selectedNotebook}
-        onUpdateNotebook={handleUpdateNotebook} // Pass this down
-        onAddSourceToNotebook={handleAddSourceToNotebook}
-        selectedNotebookId={selectedNotebookId}
-        onToggleSourceChatSelection={handleToggleSourceChatSelection}
-        showNotification={showNotification} // Pass showNotification to MainContent
-      />
-      <RightSidebar
-        selectedNotebook={selectedNotebook}
-        showNotification={showNotification}
-        onToggleSourceChatSelection={handleToggleSourceChatSelection}
-        onOpenReportModal={() => setActiveModal('reportGeneration')}
-      />
+      {currentView === 'dashboard' ? (
+        <Dashboard
+          notebooks={notebooks}
+          onNavigateToNotebook={handleSelectNotebook} // Used to select and switch view
+          onCreateNotebook={handleCreateNewNotebook} // Used to create and switch view
+          onEditNotebookTitle={handleEditNotebookTitle}
+          onDeleteNotebook={handleDeleteNotebook}
+          // TODO: Add other props like sorting, view toggle handlers later
+        />
+      ) : (
+        <>
+          <Sidebar
+            notebooks={notebooks} // Still needed for context, though not primary display
+            selectedNotebookId={selectedNotebookId}
+            onSelectNotebook={handleSelectNotebook} // To switch between notebooks if needed from here
+            onAddNotebook={handleCreateNewNotebook} // Or a more specific "add source" trigger
+            onAddSourceToNotebook={handleAddSourceToNotebook}
+            onToggleSourceChatSelection={handleToggleSourceChatSelection}
+            onEditNotebookTitle={handleEditNotebookTitle}
+            onDeleteNotebook={(notebookId) => {
+              handleDeleteNotebook(notebookId);
+              // If the deleted notebook was the selected one, go back to dashboard
+              if (selectedNotebookId === notebookId) {
+                setSelectedNotebookId(null);
+              }
+            }}
+            onToggleWebsiteSummarizer={() => setActiveModal('website')}
+            onToggleTextFileSummarizer={() => setActiveModal('file')}
+            onNavigateToDashboard={() => setSelectedNotebookId(null)} // Prop to go to dashboard
+          />
+          <MainContent
+            selectedNotebook={selectedNotebook}
+            onUpdateNotebook={handleUpdateNotebook}
+            onAddSourceToNotebook={handleAddSourceToNotebook}
+            selectedNotebookId={selectedNotebookId}
+            onToggleSourceChatSelection={handleToggleSourceChatSelection}
+            showNotification={showNotification}
+          />
+          <RightSidebar
+            selectedNotebook={selectedNotebook}
+            showNotification={showNotification}
+            onToggleSourceChatSelection={handleToggleSourceChatSelection}
+            onOpenReportModal={() => setActiveModal('reportGeneration')}
+          />
+        </>
+      )}
       <Notification
         message={notification.message}
         type={notification.type}
