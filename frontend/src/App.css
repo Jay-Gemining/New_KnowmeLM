@@ -255,10 +255,12 @@ input[type="file"] {
   overflow: hidden; /* Content inside should scroll */
   display: flex;
   flex-direction: column;
-  background-color: var(--color-background-panel); /* White main area */
-  border-radius: var(--border-radius-default);
-  margin-left: var(--spacing-md); /* 12px, if sidebar has shadow or distinct bg */
-  box-shadow: var(--box-shadow-default);
+  background-color: var(--color-background-chat); /* Papyrus White for chat background */
+  /* remove border and shadow for a flatter look when it's the chat view */
+  /* border-radius: var(--border-radius-default); */
+  /* margin-left: var(--spacing-md); */
+  /* box-shadow: var(--box-shadow-default); */
+  border-left: 1px solid var(--color-border-primary); /* Keep a subtle separator from sidebar */
 }
 
 /* Right Sidebar (if it exists and needs styling) */
@@ -458,9 +460,9 @@ input[type="file"] {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  border-top: 1px solid var(--color-border-primary);
-  margin-top: var(--spacing-xl); /* 24px */
-  padding-top: var(--spacing-lg); /* 16px */
+  /* border-top: 1px solid var(--color-border-primary); */ /* Remove top border for cleaner look */
+  /* margin-top: var(--spacing-xl); */ /* Remove margin for more seamless integration */
+  padding: var(--spacing-lg); /* Add padding around the entire chat area for breathing room */
   min-height: 0; /* Important for flex column layout */
   overflow: hidden;
 }
@@ -468,95 +470,156 @@ input[type="file"] {
 .chat-messages {
   flex-grow: 1;
   overflow-y: auto;
-  padding: var(--spacing-lg); /* 16px */
-  background-color: var(--color-background-primary); /* Light grey */
-  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-lg); /* Generous padding inside messages container */
+  background-color: transparent; /* Inherit Papyrus White from .main-content */
+  margin-bottom: var(--spacing-xl); /* Increased space before input area */
   min-height: 100px; /* Ensure it has some visible height */
-  border-radius: var(--border-radius-default); /* Was 8px */
-  border: 1px solid var(--color-border-primary);
+  border: none; /* Remove border */
+  box-shadow: none; /* Remove shadow */
 }
 
 .chat-message {
-  margin-bottom: var(--spacing-md); /* 12px */
-  padding: var(--spacing-sm) var(--spacing-md); /* 8px 12px */
-  border-radius: 18px; /* Keep chat bubble feel */
-  max-width: 80%; /* Slightly wider */
-  line-height: 1.4;
+  margin-bottom: var(--spacing-lg); /* Keep generous spacing */
+  padding: var(--spacing-lg) var(--spacing-xl); /* Generous padding: 16px 24px */
+  border-radius: 18px; /* Generous, consistent radius for now */
+  max-width: 82%; /* Slightly increase max-width */
+  line-height: 1.55; /* Slightly more spacious line height */
   word-wrap: break-word;
+  box-shadow: 0 4px 12px -2px var(--color-chat-bubble-shadow); /* Soft shadow */
+  border: none;
+  position: relative; /* For pseudo-element tails */
+  font-weight: 500; /* Slightly bolder for better readability */
 }
+
+/* Tail base styles - hidden by default, shown by user/ai specific */
+.chat-message::after {
+  content: '';
+  position: absolute;
+  bottom: 6px; /* Adjust to align with bottom curve of bubble */
+  width: 12px; /* Triangle size */
+  height: 12px; /* Triangle size */
+  background-color: inherit; /* Will be overridden by specific bubble type */
+  /* clip-path: polygon(0% 100%, 50% 0%, 100% 100%); Classic triangle pointing up */
+  /* For side tails, we'll use a skewed square or a more complex clip-path if needed */
+  /* Simple square for now, to be shaped by border radius and rotation/skew */
+  /* visibility: hidden; */ /* Let specific rules handle visibility and color */
+}
+
 
 .chat-message.user {
-  background-color: var(--color-action-primary); /* Blue/purple for user */
-  color: var(--color-button-primary-text); /* White text */
+  /* background-color: var(--color-action-primary); */ /* Will be replaced by gradient */
+  color: var(--color-button-primary-text); /* Keeping white text, should contrast well with soft green */
   margin-left: auto;
-  border-bottom-right-radius: var(--spacing-xs); /* 4px, for bubble tail */
   text-align: left;
+  border-radius: 18px 18px 6px 18px; /* Tail corner less rounded */
+  background-image: linear-gradient(135deg, var(--color-chat-user-bg-start), var(--color-chat-user-bg-end)); /* This now uses the green variables */
 }
 
-.chat-message.ai {
-  background-color: var(--color-border-primary); /* Grey for AI, was neutral-bg-alt */
-  color: var(--color-text-primary);
-  margin-right: auto;
-  border-bottom-left-radius: var(--spacing-xs); /* 4px, for bubble tail */
+.chat-message.user::after {
+  /* visibility: visible; */
+  right: -6px; /* Position outside the bubble */
+  /* transform: rotate(45deg); */ /* Example rotation */
+  background-color: var(--color-chat-user-bg-end); /* Match end of green gradient */
+  /* More precise tail shaping */
+  width: 15px;
+  height: 15px;
+  bottom: 10px;
+  border-bottom-right-radius: 4px;
+  transform: skewX(25deg) scaleY(0.8); /* Create a slanted tail appearance */
+  box-shadow: 2px 2px 4px -1px rgba(0,0,0,0.03); /* Subtle shadow for tail */
 }
+
+
+.chat-message.ai {
+  background-color: var(--color-chat-ai-bg-solid);
+  color: var(--color-text-chat-primary);
+  margin-right: auto;
+  border-radius: 18px 18px 18px 6px; /* Tail corner less rounded */
+}
+
+.chat-message.ai::after {
+  /* visibility: visible; */
+  left: -6px; /* Position outside the bubble */
+  /* transform: rotate(-45deg); */ /* Example rotation */
+  background-color: var(--color-chat-ai-bg-solid);
+  /* More precise tail shaping */
+  width: 15px;
+  height: 15px;
+  bottom: 10px;
+  border-bottom-left-radius: 4px;
+  transform: skewX(-25deg) scaleY(0.8); /* Create a slanted tail appearance */
+  box-shadow: -2px 2px 4px -1px rgba(0,0,0,0.03); /* Subtle shadow for tail */
+}
+
 
 .chat-input-area {
   display: flex;
   align-items: stretch; /* Make items same height */
   padding-top: var(--spacing-md); /* 12px */
+  border-top: 1px solid var(--color-border-primary); /* Subtle separator for input area */
+  margin: 0 var(--spacing-lg); /* Align with chat-messages padding */
 }
 
-.chat-input-area textarea { /* Updated from input to textarea */
+.chat-input-area textarea {
   flex-grow: 1;
   padding: var(--spacing-md); /* 12px */
-  border: 1px solid var(--color-border-secondary);
-  border-radius: var(--border-radius-default);
+  border: 1px solid var(--color-border-primary); /* Softer border */
+  border-radius: 12px; /* Rounded corners */
   margin-right: var(--spacing-md); /* 12px */
   font-size: var(--font-size-base); /* 16px */
   line-height: var(--line-height-base);
-  box-shadow: var(--box-shadow-default);
+  box-shadow: none; /* Remove shadow */
   resize: none; /* Disable manual resize */
   min-height: calc(var(--font-size-base) * var(--line-height-base) + 2 * var(--spacing-md) + 2px); /* Approx 1 row */
   max-height: 150px; /* Allow ~5-6 rows before scroll */
+  background-color: var(--color-background-panel); /* Keep it light, or slightly off-white */
+  color: var(--color-text-chat-primary);
 }
 .chat-input-area textarea:focus {
-  border-color: var(--color-action-primary);
-  box-shadow: 0 0 0 2px var(--color-action-primary-lighter);
+  border-color: var(--color-accent-claude-terracotta); /* Terracotta focus */
+  box-shadow: 0 0 0 2px var(--color-accent-claude-terracotta_lighter); /* Lighter terracotta for focus ring */
   outline: none;
 }
 
-.chat-input-area button.send-button { /* Send button */
-  padding: var(--spacing-md) var(--spacing-xl); /* 12px 24px */
-  margin-bottom: 0; /* Remove default margin */
-  /* Should be styled as 'action' or 'primary' button */
-  /* Example: class="action send-button" */
-  /* Defaulting to 'action' style for now */
-  background-color: var(--color-action-primary);
-  color: var(--color-button-primary-text);
-  border-color: var(--color-action-primary);
+.chat-input-area button.send-button {
+  padding: var(--spacing-md) var(--spacing-lg); /* Adjusted padding (was md xl) */
+  margin-bottom: 0;
+  background-color: var(--color-accent-claude-terracotta);
+  color: var(--color-button-primary-text); /* White text */
+  border: 1px solid var(--color-accent-claude-terracotta);
+  border-radius: 12px; /* Rounded corners */
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
+  box-shadow: none; /* Remove shadow */
+  font-weight: 500;
 }
 .chat-input-area button.send-button:hover {
-  background-color: var(--color-action-primary-darker);
-  border-color: var(--color-action-primary-darker);
+  background-color: var(--color-accent-claude-terracotta_darker); /* Slightly darker terracotta */
+  border-color: var(--color-accent-claude-terracotta_darker);
 }
-.send-icon.material-symbols { /* If Material Symbol is used */
+.chat-input-area button.send-button:disabled {
+  background-color: var(--color-border-secondary);
+  border-color: var(--color-border-secondary);
+  color: var(--color-text-secondary);
+  opacity: 0.7;
+}
+.send-icon.material-symbols {
   font-size: 1.25rem; /* ~20px */
+  /* Consider using a simpler, custom SVG or no icon for extreme minimalism if Material icon feels too heavy */
 }
 
 
 /* Chat Context Display */
 .chat-context-display {
-  padding: var(--spacing-xs) var(--spacing-md); /* 4px 12px */
+  padding: var(--spacing-sm) var(--spacing-md); /* Increased padding (was xs, md) */
   text-align: center;
   font-size: var(--font-size-sm); /* 14px */
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-md); /* 12px */
-  /* background-color: var(--color-background-primary); */ /* Optional subtle background */
-  /* border-bottom: 1px solid var(--color-border-primary); */ /* Optional separator */
+  color: var(--color-text-chat-secondary); /* Softer secondary text */
+  margin-bottom: var(--spacing-lg); /* Increased margin (was md) */
+  /* background-color: transparent; */ /* Ensure no conflicting background */
+  /* border-bottom: none; */ /* Remove border if any */
 }
 
 /* AI Thinking Message */
@@ -564,16 +627,17 @@ input[type="file"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-md); /* 12px */
+  gap: var(--spacing-sm); /* Reduced gap (was md) */
   padding: var(--spacing-md);
   font-style: italic;
-  color: var(--color-text-secondary);
+  color: var(--color-text-chat-secondary); /* Softer secondary text */
+  margin-bottom: var(--spacing-sm); /* Add some space below if input is directly after */
 }
 .spinner-inline {
   width: 1rem; /* 16px */
   height: 1rem; /* 16px */
-  border: 2px solid var(--color-background-primary); /* Was neutral-bg-alt */
-  border-top-color: var(--color-action-primary); /* Was primary-blue */
+  border: 2px solid var(--color-background-chat); /* Use chat background for transparent part */
+  border-top-color: var(--color-accent-claude-terracotta); /* Terracotta for spinner active part */
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }

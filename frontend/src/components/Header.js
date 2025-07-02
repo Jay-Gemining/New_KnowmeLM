@@ -7,7 +7,7 @@ const Header = ({ onNavigateToDashboard }) => {
       <div className="header-logo" onClick={onNavigateToDashboard} style={{ cursor: 'pointer' }}>
         {/* Placeholder for actual logo icon */}
         <span role="img" aria-label="logo-icon" style={{ marginRight: '8px', fontSize: '1.5em' }}>📚</span>
-        NotebookLM
+        KnowmeLM
       </div>
       <div className="header-actions">
         {/* Placeholders for right-side elements */}

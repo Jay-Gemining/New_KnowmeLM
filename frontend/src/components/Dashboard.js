@@ -123,7 +123,7 @@ function Dashboard({ notebooks, onNavigateToNotebook, onCreateNotebook, onEditNo
 
             <div className="dashboard-main-content">
                 <div className="dashboard-welcome-area">
-                    <h1>欢迎使用 NotebookLM</h1>
+                    <h1>欢迎使用 KnowmeLM</h1>
                     <button onClick={handleCreateAndNavigate} className="dashboard-create-new-button">
                         <span className="plus-icon">+</span> 新建
                     </button>

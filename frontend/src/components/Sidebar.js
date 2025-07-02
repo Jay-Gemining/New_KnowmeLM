@@ -46,9 +46,10 @@ const Sidebar = ({
             <button
                 onClick={onNavigateToDashboard}
                 className="action"
-                style={{ width: '100%', marginBottom: 'var(--spacing-md)', backgroundColor: 'var(--color-background-secondary)' }}
+                style={{ width: '100%', marginBottom: 'var(--spacing-md)', backgroundColor: 'var(--color-background-secondary)', display: 'flex', alignItems: 'center' }}
             >
-                <span className="material-symbols-outlined" style={{ marginRight: 'var(--spacing-sm)'}}>arrow_back</span>
+                <span role="img" aria-label="logo-icon" style={{ fontSize: '1.5em' }}>📚</span>
+                <span style={{ marginLeft: 'var(--spacing-xs)', marginRight: 'var(--spacing-sm)'}}>KnowmeLM</span>
                 Back to Dashboard
             </button>
 
