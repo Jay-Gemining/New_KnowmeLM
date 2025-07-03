@@ -54,28 +54,7 @@ const Sidebar = ({
             </button>
 
             <h2>Notebooks</h2>
-            <button
-                onClick={onAddNotebook}
-                className="action" // Changed from primary to action
-                style={{ width: '100%', marginBottom: 'var(--spacing-lg)' }} // Used CSS var
-            >
-                {/* Using Material Symbol for consistency if desired, or keep text */}
-                {/* <span className="material-symbols-outlined" style={{ marginRight: 'var(--spacing-sm)'}}>add_circle</span> */}
-                Create New Notebook
-            </button>
-            {notebooks.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: 'var(--spacing-xl) var(--spacing-sm)', color: 'var(--color-text-secondary)' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '2.5rem', marginBottom: 'var(--spacing-md)', display: 'block' }}>
-                        note_add
-                    </span>
-                    <p style={{ fontSize: 'var(--font-size-base)', margin: 0, color: 'var(--color-text-primary)' }}>
-                        No notebooks yet.
-                    </p>
-                    <p style={{ fontSize: 'var(--font-size-sm)', marginTop: 'var(--spacing-xs)'}}>
-                        Click "Create New Notebook" to get started.
-                    </p>
-                </div>
-            ) : (
+            {notebooks.length > 0 && (
                 <ul className="notebook-list">
                     {notebooks.map((notebook) => (
                         <li
